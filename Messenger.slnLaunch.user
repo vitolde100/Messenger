@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Новый профиль",
+    "Projects": [
+      {
+        "Path": "MessengerClient\\MessengerClient.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "MessengerServer\\MessengerServer.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

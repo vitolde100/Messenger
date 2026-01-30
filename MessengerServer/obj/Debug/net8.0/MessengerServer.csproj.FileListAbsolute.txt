@@ -1,0 +1,15 @@
+D:\Документы\Projects\Messenger\MessengerServer\bin\Debug\net8.0\MessengerServer.exe
+D:\Документы\Projects\Messenger\MessengerServer\bin\Debug\net8.0\MessengerServer.deps.json
+D:\Документы\Projects\Messenger\MessengerServer\bin\Debug\net8.0\MessengerServer.runtimeconfig.json
+D:\Документы\Projects\Messenger\MessengerServer\bin\Debug\net8.0\MessengerServer.dll
+D:\Документы\Projects\Messenger\MessengerServer\bin\Debug\net8.0\MessengerServer.pdb
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.GeneratedMSBuildEditorConfig.editorconfig
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.AssemblyInfoInputs.cache
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.AssemblyInfo.cs
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.csproj.CoreCompileInputs.cache
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.dll
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\refint\MessengerServer.dll
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.pdb
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.genruntimeconfig.cache
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\ref\MessengerServer.dll
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.sourcelink.json
