@@ -16,10 +16,10 @@ namespace MessengerClient
                 Program.IP = fragments[0];
                 Program.Port = Convert.ToInt32(fragments[1]);
                 Program.client.SetName(Program.NickName);
-                Program.client.Connect(Program.IP, Program.Port);
+                Thread thread = new Thread(() => Program.client.Connect(Program.IP, Program.Port));
+                thread.Start();
                 Close();
-            } 
+            }
         }
-       
     }
 }

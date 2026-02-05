@@ -3,36 +3,20 @@
   "WorkspaceRootPath": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerclient\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|solutionrelative:messengerclient\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerserver\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|solutionrelative:messengerserver\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerserver\\clientregistry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|solutionrelative:messengerserver\\clientregistry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerserver\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|solutionrelative:messengerserver\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerclient\\registration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|solutionrelative:messengerclient\\registration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|solutionrelative:messengerclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerserver\\clienthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|solutionrelative:messengerserver\\clienthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}|MessengerServer\\MessengerServer.csproj|solutionrelative:messengerserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|d:\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\projects\\messenger\\messengerclient\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|solutionrelative:messengerclient\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5332536E-409D-44DB-898D-7786FE58D9ED}|MessengerClient\\MessengerClient.csproj|D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\messengerclient\\registration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
@@ -50,35 +34,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 422,
-          "SelectedChildIndex": 9,
+          "SelectedChildIndex": 5,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Program.cs",
-              "RelativeDocumentMoniker": "MessengerClient\\Program.cs",
-              "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Program.cs",
-              "RelativeToolTip": "MessengerClient\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T12:46:52.693Z",
-              "IsPinned": true
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Registration.cs",
-              "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Registration.cs",
-              "RelativeDocumentMoniker": "MessengerClient\\Registration.cs",
-              "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Registration.cs",
-              "RelativeToolTip": "MessengerClient\\Registration.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T12:53:34.931Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
@@ -93,99 +50,79 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Logger.cs",
-              "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\Logger.cs",
-              "RelativeDocumentMoniker": "MessengerServer\\Logger.cs",
-              "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\Logger.cs",
-              "RelativeToolTip": "MessengerServer\\Logger.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-29T17:26:41.871Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ClientRegistry.cs",
-              "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\ClientRegistry.cs",
-              "RelativeDocumentMoniker": "MessengerServer\\ClientRegistry.cs",
-              "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\ClientRegistry.cs",
-              "RelativeToolTip": "MessengerServer\\ClientRegistry.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-29T17:25:32.118Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ClientHandler.cs",
-              "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\ClientHandler.cs",
-              "RelativeDocumentMoniker": "MessengerServer\\ClientHandler.cs",
-              "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\ClientHandler.cs",
-              "RelativeToolTip": "MessengerServer\\ClientHandler.cs",
-              "ViewState": "AgIAAIIAAAAAAAAAAAAiwJEAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-29T17:23:43.935Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\Program.cs",
               "RelativeDocumentMoniker": "MessengerServer\\Program.cs",
               "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\Program.cs",
               "RelativeToolTip": "MessengerServer\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-29T17:21:22.904Z"
+              "WhenOpened": "2026-02-05T11:08:23.165Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Server.cs",
               "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\Server.cs",
               "RelativeDocumentMoniker": "MessengerServer\\Server.cs",
               "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerServer\\Server.cs",
               "RelativeToolTip": "MessengerServer\\Server.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwDUAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-29T17:20:37.108Z",
+              "WhenOpened": "2026-02-05T11:08:20.869Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 0,
               "Title": "Client.cs",
               "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Client.cs",
               "RelativeDocumentMoniker": "MessengerClient\\Client.cs",
               "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Client.cs",
               "RelativeToolTip": "MessengerClient\\Client.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAABVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T13:43:47.779Z"
+              "WhenOpened": "2026-02-05T11:03:39.916Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 2,
+              "Title": "Registration.cs",
+              "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Registration.cs",
+              "RelativeDocumentMoniker": "MessengerClient\\Registration.cs",
+              "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Registration.cs",
+              "RelativeToolTip": "MessengerClient\\Registration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAcwBcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-05T11:00:38.821Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Chat.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Chat.cs",
               "RelativeDocumentMoniker": "MessengerClient\\Chat.cs",
               "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Chat.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "RelativeToolTip": "MessengerClient\\Chat.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-25T10:37:54.067Z"
+              "WhenOpened": "2026-01-25T10:37:54.067Z",
+              "EditorCaption": " [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 4,
               "Title": "Registration.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "DocumentMoniker": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Registration.cs",
               "RelativeDocumentMoniker": "MessengerClient\\Registration.cs",
               "ToolTip": "D:\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\Projects\\Messenger\\MessengerClient\\Registration.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "RelativeToolTip": "MessengerClient\\Registration.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-24T12:45:55.124Z"
+              "WhenOpened": "2026-01-24T12:45:55.124Z",
+              "EditorCaption": " [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]"
             }
           ]
         },
