@@ -10,31 +10,22 @@ namespace MessengerClient
         private TcpClient m_client = new TcpClient();
         private NetworkStream m_stream;
         public Client()
-        {
-        }
+        { }
 
         private void SendHandshake()
         {
             m_stream.Write(UTF8Encoding.UTF8.GetBytes(m_name), 0, m_name.Length);
         }
 
-        public void Connect(string host, int port)
+        public void TryConnect(string host, int port)
         {
-            try
-            {
-                m_client.Connect(host, port);
-                m_stream = m_client.GetStream();
-                SendHandshake();
-                m_isConnected = m_stream.CanRead && m_stream.CanWrite ? true : false;
-            }
-            catch
-            {
-
-            }
+            m_client.Connect(host, port);
+            m_stream = m_client.GetStream();
+            SendHandshake();
+            m_isConnected = m_stream.CanRead && m_stream.CanWrite ? true : false;
         }
 
         public void SetName(string name)
         { m_name = name; }
-        
     }
 }

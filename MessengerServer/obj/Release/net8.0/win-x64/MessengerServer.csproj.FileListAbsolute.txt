@@ -181,7 +181,6 @@ D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-
 D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-x64\hostfxr.dll
 D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-x64\hostpolicy.dll
 D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-x64\mscordaccore.dll
-D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-x64\mscordaccore_amd64_amd64_8.0.2225.52707.dll
 D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-x64\mscordbi.dll
 D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-x64\mscorrc.dll
 D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-x64\msquic.dll
@@ -196,3 +195,4 @@ D:\Документы\Projects\Messenger\MessengerServer\obj\Release\net8.0\win-
 D:\Документы\Projects\Messenger\MessengerServer\obj\Release\net8.0\win-x64\MessengerServer.pdb
 D:\Документы\Projects\Messenger\MessengerServer\obj\Release\net8.0\win-x64\MessengerServer.genruntimeconfig.cache
 D:\Документы\Projects\Messenger\MessengerServer\obj\Release\net8.0\win-x64\ref\MessengerServer.dll
+D:\Документы\Projects\Messenger\MessengerServer\bin\Release\net8.0\win-x64\mscordaccore_amd64_amd64_8.0.2325.60607.dll
