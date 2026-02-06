@@ -6,7 +6,7 @@ namespace MessengerClient
     public class Client
     {
         private bool m_isConnected;
-        private string m_name;
+        private string m_name = "";
         private TcpClient m_client = new TcpClient();
         private NetworkStream m_stream;
         public Client()

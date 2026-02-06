@@ -70,7 +70,7 @@
             ListPanel.BorderStyle = BorderStyle.FixedSingle;
             ListPanel.Location = new Point(30, 30);
             ListPanel.Name = "ListPanel";
-            ListPanel.Size = new Size(290, 269);
+            ListPanel.Size = new Size(600, 269);
             ListPanel.TabIndex = 2;
             ListPanel.Click += ListPanel_Click;
             // 

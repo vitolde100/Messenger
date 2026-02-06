@@ -4,7 +4,7 @@
     <Compile Update="ChatForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Windows\Registration.cs">
+    <Compile Update="Registration.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Welcome window.cs">

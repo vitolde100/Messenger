@@ -1,6 +1,6 @@
 ﻿namespace MessengerClient.Windows
 {
-    public class ChatWindow
+    public class ChatWindow : IWindow
     {
         string m_name;
         public Point m_position;
@@ -8,11 +8,10 @@
 
         Color m_backColor = Color.FromArgb(64, 64, 64);
 
-        public Panel ChatPanel;
-        Panel UserPanel;
-        ScrollBar ChatScrollBar;
+        Panel m_userPanel;
+        ScrollBar m_chatScrollBar;
 
-        public ChatWindow(string name, Point position, Size size)
+        public ChatWindow(string name, Point position, Size size) : base(name, position, size)
         {
             m_name = name;
             m_position = position;
@@ -20,47 +19,39 @@
             InitializeInterface();
         }
 
-        private void InitializeInterface()
+        public override void InitializeInterface()
         {
-            ChatPanel = new Panel();
-            UserPanel = new Panel();
-            ChatScrollBar = new VScrollBar();
-            ChatPanel.SuspendLayout();
+            m_userPanel = new Panel();
+            m_chatScrollBar = new VScrollBar();
+            WindowPanel.SuspendLayout();
             //
             //ChatPanel
             //
-            ChatPanel.Location = m_position;
-            ChatPanel.Size = m_size;
-            ChatPanel.BackColor = m_backColor;
-            ChatPanel.Controls.Add(UserPanel);
-            ChatPanel.Controls.Add(ChatScrollBar);
+            WindowPanel.Location = m_position;
+            WindowPanel.Size = m_size;
+            WindowPanel.BackColor = m_backColor;
+            WindowPanel.Controls.Add(m_userPanel);
+            WindowPanel.Controls.Add(m_chatScrollBar);
             //
             //UserPanel
             //
-            UserPanel.Location = new Point(0, 0);
-            UserPanel.Size = new Size(m_size.Width, 40);
-            UserPanel.BackColor = Color.FromArgb(125, 125, 125);
+            m_userPanel.Location = new Point(0, 0);
+            m_userPanel.Size = new Size(m_size.Width, 40);
+            m_userPanel.BackColor = Color.FromArgb(125, 125, 125);
             //
             //ChatScrollBar
             //
-            ChatScrollBar.Location = new Point(m_size.Width - 25, UserPanel.Size.Height);
-            ChatScrollBar.Size = new Size(15, m_size.Height - UserPanel.Size.Height);
-
+            m_chatScrollBar.Location = new Point(m_size.Width - 25, m_userPanel.Size.Height);
+            m_chatScrollBar.Size = new Size(15, m_size.Height - m_userPanel.Size.Height);
         }
 
-        public void SetSize(Size newSize)
+        public override void SetSize(Size newSize)
         {
             m_size = newSize;
-            ChatPanel.Size = m_size;
-            UserPanel.Size = new Size(m_size.Width, UserPanel.Size.Height);
-            ChatScrollBar.Location = new Point(m_size.Width - 20, UserPanel.Size.Height);
-            ChatScrollBar.Size = new Size(ChatScrollBar.Size.Width, m_size.Height - UserPanel.Size.Height);
-        }
-        
-        public void SetPosition(Point newPosition)
-        {
-            m_position = newPosition;
-            ChatPanel.Location = m_position;
+            WindowPanel.Size = m_size;
+            m_userPanel.Size = new Size(m_size.Width, m_userPanel.Size.Height);
+            m_chatScrollBar.Location = new Point(m_size.Width - 20, m_userPanel.Size.Height);
+            m_chatScrollBar.Size = new Size(m_chatScrollBar.Size.Width, m_size.Height - m_userPanel.Size.Height);
         }
     }
 }
