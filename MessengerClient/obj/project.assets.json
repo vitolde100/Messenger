@@ -1,15 +1,33 @@
 {
   "version": 3,
   "targets": {
-    "net8.0-windows7.0": {}
+    "net8.0-windows7.0": {
+      "MessengerShared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/MessengerShared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MessengerShared.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "MessengerShared/1.0.0": {
+      "type": "project",
+      "path": "../MessengerShared/MessengerShared.csproj",
+      "msbuildProject": "../MessengerShared/MessengerShared.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0-windows7.0": []
+    "net8.0-windows7.0": [
+      "MessengerShared >= 1.0.0"
+    ]
   },
   "packageFolders": {
-    "C:\\Users\\vitol\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\Витольд\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -17,15 +35,11 @@
       "projectUniqueName": "D:\\Документы\\Projects\\Messenger\\MessengerClient\\MessengerClient.csproj",
       "projectName": "MessengerClient",
       "projectPath": "D:\\Документы\\Projects\\Messenger\\MessengerClient\\MessengerClient.csproj",
-      "packagesPath": "C:\\Users\\vitol\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\Витольд\\.nuget\\packages\\",
       "outputPath": "D:\\Документы\\Projects\\Messenger\\MessengerClient\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\vitol\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\Витольд\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -38,7 +52,11 @@
       "frameworks": {
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Документы\\Projects\\Messenger\\MessengerShared\\MessengerShared.csproj": {
+              "projectPath": "D:\\Документы\\Projects\\Messenger\\MessengerShared\\MessengerShared.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

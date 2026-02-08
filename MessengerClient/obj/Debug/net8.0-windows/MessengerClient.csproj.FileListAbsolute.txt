@@ -17,3 +17,8 @@ D:\Документы\Projects\Messenger\MessengerClient\obj\Debug\net8.0-window
 D:\Документы\Projects\Messenger\MessengerClient\obj\Debug\net8.0-windows\ref\MessengerClient.dll
 D:\Документы\Projects\Messenger\MessengerClient\obj\Debug\net8.0-windows\MessengerClient.ChatForm.resources
 D:\Документы\Projects\Messenger\MessengerClient\obj\Debug\net8.0-windows\MessengerClient.Welcome_window.resources
+D:\Документы\Projects\Messenger\MessengerClient\obj\Debug\net8.0-windows\MessengerClient.Test_Form.resources
+D:\Документы\Projects\Messenger\MessengerClient\obj\Debug\net8.0-windows\MessengerClient.csproj.AssemblyReference.cache
+D:\Документы\Projects\Messenger\MessengerClient\bin\Debug\net8.0-windows\MessengerShared.dll
+D:\Документы\Projects\Messenger\MessengerClient\bin\Debug\net8.0-windows\MessengerShared.pdb
+D:\Документы\Projects\Messenger\MessengerClient\obj\Debug\net8.0-windows\Messenge.E5B8A37B.Up2Date

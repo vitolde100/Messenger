@@ -8,7 +8,7 @@ namespace MessengerClient
         public static string NickName;
         public static string IP;
         public static int Port;
-        public static bool isConnected = false;
+        public static bool isConnected = true;
         public static Client client = new Client();
         /// <summary>
         ///  The main entry point for the application.
@@ -19,18 +19,18 @@ namespace MessengerClient
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            /*if (!isConnected)
+            if (!isConnected)
             {
                 Form Welcome = new Welcome_window();
                 Application.Run(Welcome);
             }
             if (isConnected)
             {
-                Form Chat = new ChatForm();
-                Application.Run(Chat);
-            }*/
-            Form Chat = new ChatForm();
-            Application.Run(Chat);
+                //Form Chat = new ChatForm();
+                //Application.Run(Chat);
+            }
+            Test_Form Test = new Test_Form();
+            Application.Run(Test);
         }
     }
 }

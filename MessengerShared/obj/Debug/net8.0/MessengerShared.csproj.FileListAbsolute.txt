@@ -1,0 +1,12 @@
+D:\Документы\Projects\Messenger\MessengerShared\bin\Debug\net8.0\MessengerShared.deps.json
+D:\Документы\Projects\Messenger\MessengerShared\bin\Debug\net8.0\MessengerShared.dll
+D:\Документы\Projects\Messenger\MessengerShared\bin\Debug\net8.0\MessengerShared.pdb
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\MessengerShared.GeneratedMSBuildEditorConfig.editorconfig
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\MessengerShared.AssemblyInfoInputs.cache
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\MessengerShared.AssemblyInfo.cs
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\MessengerShared.csproj.CoreCompileInputs.cache
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\MessengerShared.sourcelink.json
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\MessengerShared.dll
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\refint\MessengerShared.dll
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\MessengerShared.pdb
+D:\Документы\Projects\Messenger\MessengerShared\obj\Debug\net8.0\ref\MessengerShared.dll

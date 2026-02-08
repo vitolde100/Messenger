@@ -7,6 +7,12 @@
     <Compile Update="Registration.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="RoundedPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Test Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Welcome window.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,14 +1,10 @@
-﻿using System.Net.Sockets;
+﻿using MessengerShared;
+
+using System.Net.Sockets;
 using System.Text;
 
 namespace MessengerServer
 {
-    struct MessageArguments
-    {
-        public string Data;
-        public string Sender;
-    }
-
     internal class ClientHandler
     {
         bool m_isConnected;
