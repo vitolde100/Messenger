@@ -13,3 +13,7 @@ D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\Messen
 D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.genruntimeconfig.cache
 D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\ref\MessengerServer.dll
 D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.sourcelink.json
+D:\Документы\Projects\Messenger\MessengerServer\bin\Debug\net8.0\MessengerShared.dll
+D:\Документы\Projects\Messenger\MessengerServer\bin\Debug\net8.0\MessengerShared.pdb
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\MessengerServer.csproj.AssemblyReference.cache
+D:\Документы\Projects\Messenger\MessengerServer\obj\Debug\net8.0\Messenge.BEBF3BDD.Up2Date

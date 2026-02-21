@@ -1,6 +1,6 @@
 ﻿namespace MessengerClient
 {
-    partial class Welcome_window
+    partial class WelcomeForm
     {
         /// <summary>
         /// Required designer variable.

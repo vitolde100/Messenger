@@ -1,5 +1,4 @@
-using System.Net;
-using System.Text;
+using MessengerShared;
 
 namespace MessengerClient
 {
@@ -8,7 +7,7 @@ namespace MessengerClient
         public static string NickName;
         public static string IP;
         public static int Port;
-        public static bool isConnected = true;
+        public static bool isConnected = false;
         public static Client client = new Client();
         /// <summary>
         ///  The main entry point for the application.
@@ -21,13 +20,15 @@ namespace MessengerClient
             ApplicationConfiguration.Initialize();
             if (!isConnected)
             {
-                Form Welcome = new Welcome_window();
+                Form Welcome = new WelcomeForm();
                 Application.Run(Welcome);
             }
-            if (isConnected)
+            else
             {
-                //Form Chat = new ChatForm();
-                //Application.Run(Chat);
+                Thread read = new Thread(client.Read);
+                read.Start();
+                Form Chat = new ChatForm();
+                Application.Run(Chat);
             }
             Test_Form Test = new Test_Form();
             Application.Run(Test);

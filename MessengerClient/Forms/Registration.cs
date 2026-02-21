@@ -57,10 +57,7 @@ namespace MessengerClient
             });
             ConnectThread.Start();
             if (!ConnectThread.Join(5000))
-            {
                 ex = new TimeoutException("Connection timed out");
-            }
-
             if (ex != null)
             {
                 ConnectionExLable.Text = ex.Message;

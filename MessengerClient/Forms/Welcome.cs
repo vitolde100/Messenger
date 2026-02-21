@@ -1,8 +1,8 @@
 ﻿namespace MessengerClient
 {
-    public partial class Welcome_window : Form
+    public partial class WelcomeForm : Form
     {
-        public Welcome_window()
+        public WelcomeForm()
         {
             InitializeComponent();
         }

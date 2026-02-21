@@ -1,20 +1,9 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.Eventing.Reader;
-using System.Drawing.Text;
-using System.Numerics;
-using System.Reflection;
+﻿using System.Numerics;
 
 namespace MessengerClient.Windows
 {
     public abstract class IWindow
     {
-        const int FrameRate = 8;
-        protected string m_name;
-        protected Point m_position;
-        protected Size m_size;
-
-        public Panel WindowPanel = new Panel();
-
         private struct AnimationData
         {
             public Size TargetSize;
@@ -41,8 +30,15 @@ namespace MessengerClient.Windows
             }
         }
 
-        private AnimationData m_animationData;
+        const int FrameRate = 8;
+        protected string m_name;
+        protected Point m_position;
+        protected Size m_size;
 
+        public Panel WindowPanel = new Panel();
+
+
+        private AnimationData m_animationData;
         private System.Windows.Forms.Timer m_animationTimer;
 
         public IWindow(string name, Point position, Size size)
@@ -53,10 +49,10 @@ namespace MessengerClient.Windows
 
             WindowPanel.Location = m_position;
             WindowPanel.Size = m_size;
-            InitializeInterface();
+            InitializeComponents();
         }
 
-        abstract public void InitializeInterface();
+        abstract public void InitializeComponents();
 
         public void SetPosition(Point newPosition)
         {
@@ -101,23 +97,5 @@ namespace MessengerClient.Windows
         }
 
         abstract public void SetSize(Size newSize);
-
-        /*public void SetMaxSize(Size newSize)
-        {
-            if (WindowPanel.Size.Width > newSize.Width)
-                SetSize(new Size(newSize.Width, WindowPanel.Height));
-            if (WindowPanel.Size.Height > newSize.Height)
-                SetSize(new Size(WindowPanel.Width, newSize.Height));
-            WindowPanel.MaximumSize = newSize;
-        }
-
-        public void SetMinSize(Size newSize)
-        {
-            if (WindowPanel.Size.Width < newSize.Width)
-                SetSize(new Size(newSize.Width, WindowPanel.Height));
-            if (WindowPanel.Size.Height < newSize.Height)
-                SetSize(new Size(WindowPanel.Width, newSize.Height));
-            WindowPanel.MinimumSize = newSize;
-        }*/
     } 
 }

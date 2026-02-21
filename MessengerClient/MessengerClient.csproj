@@ -13,4 +13,8 @@
     <ProjectReference Include="..\MessengerShared\MessengerShared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Elements\Message.cs" />
+  </ItemGroup>
+
 </Project>

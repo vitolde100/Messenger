@@ -1,5 +1,4 @@
 ﻿using MessengerShared;
-
 using System.Net.Sockets;
 using System.Text;
 
@@ -14,8 +13,6 @@ namespace MessengerServer
         ClientRegistry m_registry;
         Logger m_logger = Logger.instance;
 
-        const int NameMaxLength = 32;
-        const int MSGMaxLength = 256;
         TimeSpan MSGCooldown = TimeSpan.FromSeconds(1.5f);
 
         public ClientHandler(TcpClient client)
@@ -31,7 +28,7 @@ namespace MessengerServer
             try
             {
                 m_stream.ReadTimeout = 5000;
-                byte[] buffer = new byte[NameMaxLength];
+                byte[] buffer = new byte[MessagingConsts.MaxNameLength];
                 int bytesRead = m_stream.Read(buffer, 0, buffer.Length);
 
                 if (bytesRead <= 0)
@@ -42,7 +39,7 @@ namespace MessengerServer
                 else
                 {
                     m_name = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    if (!string.IsNullOrEmpty(m_name) && m_name.Length <= NameMaxLength)
+                    if (!string.IsNullOrEmpty(m_name) && m_name.Length <= MessagingConsts.MaxNameLength)
                     {
                         return true;
                     }
@@ -68,14 +65,13 @@ namespace MessengerServer
                 m_registry.Add(m_name, this);
                 m_stream.ReadTimeout = Timeout.Infinite;
             }
-            else
-                Disconnect();
+            else Disconnect();
             
-            while (m_isConnected)
+            try
             {
-                try
+                while (m_isConnected)
                 {
-                    byte[] buffer = new byte[MSGMaxLength + NameMaxLength];
+                    byte[] buffer = new byte[MessagingConsts.MaxLength + MessagingConsts.MaxNameLength];
                     int bytesRead = m_stream.Read(buffer, 0, buffer.Length);
                     if (DateTime.UtcNow - LastMSGTime < MSGCooldown)
                     {
@@ -87,7 +83,6 @@ namespace MessengerServer
                             Disconnect();
                             return;
                         }
-
                     }
                     if (bytesRead <= 0)
                     {
@@ -96,52 +91,41 @@ namespace MessengerServer
                     }
                     else
                     {
-                        string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        string[] Data = msg.Split('|',2);
-
-                        if (msg.Length <= MSGMaxLength && !string.IsNullOrEmpty(Data[1]) && Data[0].Length <= NameMaxLength)
+                        try
                         {
-                            MessageArguments message = new MessageArguments();
-                            message.Sender = m_name;
-                            message.Data += Data[1];
-                            m_logger.log("[" + m_name + "]->[" + Data[0] + "]:" + message.Data, this.GetType().Name);
-                            Send(Data[0], message);
+                            string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                            ChatMessage? message; 
+                            ChatMessage.TryParse(msg,out message);
                             LastMSGTime = DateTime.UtcNow;
                         }
-                        else
+                        catch
                         {
                             m_logger.log("Client Bad Message", this.GetType().Name);
                             Disconnect();
-                        }
-
+                        } 
                     }
                 }
-                catch (Exception ex)
-                {
-                    m_logger.log("Read error: " + ex.Message, this.GetType().Name);
-                    Disconnect();
-                }
+            }
+            catch (Exception ex)
+            {
+                m_logger.log("Read error: " + ex.Message, this.GetType().Name);
+                Disconnect();
             }
         }
 
-        public void Send(string target, MessageArguments message)
+        public void Send(string target, ChatMessage message)
         {
             ClientHandler client = m_registry.GetClient(target);
             if (client != null)
             {
-                client.Write(message);
+                byte[] buffer = Encoding.UTF8.GetBytes("[" + message.Sender + "]" + message.Text);
+                m_stream.Write(buffer, 0, buffer.Length);
             }
             else
             {
-                SendSystemMsg("No Target Client"); //<--- Del later
+                SendSystemMsg("No Target Client"); //<--- Del later (For testing)
                 m_logger.log("No Target Client", this.GetType().Name);
             }
-        }
-        
-        private void Write(MessageArguments message)
-        {
-            byte[] msg = Encoding.UTF8.GetBytes("[" + message.Sender + "]" + message.Data);
-            m_stream.Write(msg, 0, msg.Length);
         }
 
         public void SendSystemMsg(string message)
