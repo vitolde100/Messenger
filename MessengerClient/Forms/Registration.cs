@@ -7,7 +7,7 @@ namespace MessengerClient
             InitializeComponent();
         }
 
-        void ConnectButton_Click(object sender, EventArgs e)
+        async void ConnectButton_Click(object sender, EventArgs e)
         {
             string[] Adressfragments = IPBox.Text.Split(':', 2);
             if (string.IsNullOrEmpty(NameBox.Text))
@@ -41,8 +41,6 @@ namespace MessengerClient
                 }
             }
 
-            Program.client.SetName(Program.NickName);
-
             Exception ex = null;
             Thread ConnectThread = new Thread(() =>
             {
@@ -56,6 +54,7 @@ namespace MessengerClient
                 }
             });
             ConnectThread.Start();
+
             if (!ConnectThread.Join(5000))
                 ex = new TimeoutException("Connection timed out");
             if (ex != null)

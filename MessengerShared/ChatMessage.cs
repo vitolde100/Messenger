@@ -8,10 +8,20 @@ namespace MessengerShared
         public string Sender { get; set; }
         public string Text { get; set; }
 
+        public ChatMessage() {   }
+
+        public ChatMessage(TimeSpan sendTime, string target, string sender, string text)
+        {
+            SendTime = sendTime;
+            Target = target;
+            Sender = sender;
+            Text = text;
+        }
+
         /// <summary>
         /// Returns a string that represents the current object, including the send time, target, sender, and message.
         /// </summary>
-        /// <returns> Returns a string containing a message in the format: {SendTime}|{Target}|{Sender}|{Message}.
+        /// <returns> Returns a string containing a message in the format: {SendTime}|{Target}|{Sender}|{Text}.
         /// </returns>
         public override string ToString()
         {
@@ -36,13 +46,7 @@ namespace MessengerShared
                 data[3].Length > MessagingConsts.MaxLength)
                 return false;
 
-            message = new ChatMessage()
-            {
-                SendTime = time,
-                Target = data[1],
-                Sender = data[2],
-                Text = data[3]
-            };
+            message = new ChatMessage(time, data[1], data[2], data[3]);
             
             return true;
         }

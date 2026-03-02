@@ -1,37 +1,32 @@
 using MessengerShared;
+using System.Net;
 
 namespace MessengerClient
 {
     internal static class Program
     {
-        public static string NickName;
-        public static string IP;
-        public static int Port;
+        public static string NickName = "Test";
+        public static string IP = "192.168.1.2";
+        public static int Port = 5000;
+        public static bool isGuest = true;
         public static bool isConnected = false;
         public static Client client = new Client();
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
+
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            if (!isConnected)
-            {
-                Form Welcome = new WelcomeForm();
+            Form Welcome = new WelcomeForm();
+            if (isGuest) 
                 Application.Run(Welcome);
-            }
-            else
-            {
-                Thread read = new Thread(client.Read);
-                read.Start();
-                Form Chat = new ChatForm();
-                Application.Run(Chat);
-            }
-            Test_Form Test = new Test_Form();
-            Application.Run(Test);
+            
+            if(!isConnected)
+                Application.Run(Welcome);
+
+            Form Chat = new ChatForm();
+            Application.Run(Chat);
+            //Test_Form Test = new Test_Form();
+            //Application.Run(Test);
         }
     }
 }

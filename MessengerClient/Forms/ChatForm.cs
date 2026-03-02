@@ -17,12 +17,15 @@ namespace MessengerClient
             TabBar.Size = new Size(Width, TabBar.Height);
             ToolBar.Size = new Size(ToolBar.Width, Height);
 
-            /*m_chatWindow = new ChatWindow(
+            m_chatWindow = new ChatWindow(
                 "General",
                 new Point(ToolBar.Width, TabBar.Height),
-                new Size(Width - WINDOW_PADDING_X - ToolBar.Width, Height - WINDOW_PADDING_Y - TabBar.Height
-            ));*/
+                new Size(Width - WINDOW_PADDING_X - ToolBar.Width, Height - WINDOW_PADDING_Y - TabBar.Height),
+                Program.client
+            );
             Controls.Add(m_chatWindow.WindowPanel);
+            m_chatWindow.SetTarget("Eblysha");
+
         }
 
         private void Chat_Resize(object sender, EventArgs e)

@@ -6,7 +6,6 @@ namespace MessengerClient
 {
     public class Client //CHANGE EXCEPTIONS LATER
     {
-        private string m_name = "";
         private TcpClient m_client = new TcpClient();
         private NetworkStream? m_stream;
         public event Action<ChatMessage> MessageReceived;
@@ -15,7 +14,9 @@ namespace MessengerClient
 
         private void SendHandshake()
         {
-            m_stream.Write(UTF8Encoding.UTF8.GetBytes(m_name), 0, m_name.Length);
+            if (string.IsNullOrEmpty(Program.NickName) || m_stream == null) return;
+            byte[] data = Encoding.UTF8.GetBytes(Program.NickName);
+            m_stream.Write(data, 0, data.Length);
         }
 
         public void TryConnect(string host, int port)
@@ -26,6 +27,7 @@ namespace MessengerClient
                 m_stream = m_client.GetStream();
                 SendHandshake();
                 Program.isConnected = m_stream.CanRead && m_stream.CanWrite ? true : false;
+                ReadAsync();
             }
             catch (Exception ex)
             {
@@ -33,47 +35,38 @@ namespace MessengerClient
             }
         }
 
-        public void Read()
+        public async Task ReadAsync()
         {
-            while (Program.isConnected)
+            byte[] buffer = new byte[1024];
+            while (Program.isConnected && m_stream != null)
             {
-                byte[] buffer = new byte[1024];
-                try
+                int bytesRead = await m_stream.ReadAsync(buffer, 0, buffer.Length);
+                if (bytesRead <= 0)
                 {
-                    int bytesRead = m_stream.Read(buffer, 0, buffer.Length);
-                    if (bytesRead <= 0)
-                    {
-                        Disconnect();
-                    }
-                    else
-                    {
-                        string msg = UTF8Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        ChatMessage? message;
-                        if (!ChatMessage.TryParse(msg,out message))
-                        {
-                            //Check Server MSG
-                        }
-                        MessageReceived?.Invoke(message);
-                    }
+                    Disconnect();
+                    break;
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+
+                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                if (ChatMessage.TryParse(msg, out var message))
+                    MessageReceived?.Invoke(message);
             }
         }
 
         public Task SendMessage(ChatMessage message)
         {
+            if (Program.isConnected)
+            {
                 byte[] buffer = UTF8Encoding.UTF8.GetBytes(message.ToString());
                 m_stream.Write(buffer, 0, buffer.Length);
-                return Task.CompletedTask;
+            }
+            return Task.CompletedTask;
         }
 
         public void SetName(string name)
-        { m_name = name; } //<--- Needs Server Changes
+        { Program.NickName = name; } //<--- Needs Server Changes
 
-        public void Disconnect() //<--- Needs Changes IDK 
+        public void Disconnect() //<--- Need Changes IDK 
         {
             try
             {

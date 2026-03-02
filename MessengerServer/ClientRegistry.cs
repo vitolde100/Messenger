@@ -36,8 +36,8 @@ namespace MessengerServer
         {
             try
             {
-            m_clients.TryRemove(name,out _);
-            m_logger.log("Deleted " + name + "\r", this.GetType().Name);
+                m_clients.TryRemove(name,out _);
+                m_logger.log("Deleted " + name + "\r", this.GetType().Name);
             }
             catch (Exception e)
             {
@@ -49,7 +49,7 @@ namespace MessengerServer
         {
             foreach (var client in m_clients)
             {
-                client.Value.Disconnect();
+                client.Value.Disconnect("Ok Bye!!!1!");
             }
         }
     }

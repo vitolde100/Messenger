@@ -96,11 +96,14 @@ namespace MessengerClient.Windows
                 ChatMessage message = new ChatMessage();
                 DateTime utcNow = DateTime.UtcNow;
                 DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
                 message.SendTime = utcNow - unixEpoch;
                 message.Target = m_target;
                 message.Sender = Program.NickName;
                 message.Text = m_inputBox.Text;
+
                 AddMessage(message);
+                
                 await m_client.SendMessage(message);
                 m_inputBox.Clear();
             }
@@ -114,6 +117,8 @@ namespace MessengerClient.Windows
             nameLabel.Location = new Point(5, 10);
             nameLabel.Text = target;
             m_userBar.Controls.Add(nameLabel);
+
+            m_target = target;
         }
 
         public override void SetSize(Size newSize)
