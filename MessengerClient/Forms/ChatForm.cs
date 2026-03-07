@@ -24,8 +24,6 @@ namespace MessengerClient
                 Program.client
             );
             Controls.Add(m_chatWindow.WindowPanel);
-            m_chatWindow.SetTarget("Eblysha");
-
         }
 
         private void Chat_Resize(object sender, EventArgs e)

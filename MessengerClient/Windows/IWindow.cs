@@ -29,14 +29,13 @@ namespace MessengerClient.Windows
                 Factor.Y = TargetSize.Height - currentSize.Height;
             }
         }
+        private const int FrameRate = 8;
 
-        const int FrameRate = 8;
         protected string m_name;
         protected Point m_position;
         protected Size m_size;
 
         public Panel WindowPanel = new Panel();
-
 
         private AnimationData m_animationData;
         private System.Windows.Forms.Timer m_animationTimer;
@@ -65,7 +64,7 @@ namespace MessengerClient.Windows
             return m_position;
         }
 
-        public void ChangeSize(Size TargetSize)
+        public void ChangeSize(Size TargetSize)//<-- WIP
         {
             m_animationData = new AnimationData
             {

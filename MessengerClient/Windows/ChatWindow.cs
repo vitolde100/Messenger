@@ -1,5 +1,4 @@
-﻿using MessengerClient.Elements;
-using MessengerShared;
+﻿using MessengerShared;
 
 namespace MessengerClient.Windows
 {
@@ -14,11 +13,12 @@ namespace MessengerClient.Windows
         Button m_sendButton;
 
         int m_messagesLength = 0;
-        int m_lastOffset = 0;
-        int m_offsetMultiplier = 5;
         const int PADDING_Y = 5;
 
-        string m_target;
+        int m_lastOffset = 0;
+        int m_offsetMultiplier = 5;
+
+        string m_target = "Test";
 
         Color m_backColor = Color.FromArgb(64, 64, 64);
         private Client m_client;
@@ -78,47 +78,33 @@ namespace MessengerClient.Windows
 
         public void AddMessage(ChatMessage message)
         {
+            if (message.Target != m_target && message.Target != Program.NickName) return;
+
             m_messages.Add(message);
+
             int offset = m_scrollBar.Value * m_offsetMultiplier;
             int YPos = (m_userBar.Height + m_messagesLength + (PADDING_Y * m_messages.Count) - offset);
             int XPos = 0;
+
             if (message.Target == m_target) XPos = 0;
-            else XPos = m_size.Width - m_scrollBar.Width;
+            else if(message.Target == Program.NickName) XPos = m_size.Width - m_scrollBar.Width;
+         
             m_messagePanels.Add(new Elements.Message(message, new Point(XPos,YPos)));
-            WindowPanel.Controls.Add(m_messagePanels.Last().Panel);
             m_messagesLength += m_messagePanels.Last().Panel.Height;
+
+            WindowPanel.Controls.Add(m_messagePanels.Last().Panel);
         }
  
-        private async void SendButton_Click(object? sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(m_inputBox.Text))
-            {
-                ChatMessage message = new ChatMessage();
-                DateTime utcNow = DateTime.UtcNow;
-                DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-                message.SendTime = utcNow - unixEpoch;
-                message.Target = m_target;
-                message.Sender = Program.NickName;
-                message.Text = m_inputBox.Text;
-
-                AddMessage(message);
-                
-                await m_client.SendMessage(message);
-                m_inputBox.Clear();
-            }
-        }
-
-        public void SetTarget(string target)
+        public void SetTarget(ChatUser Target)
         {
             m_userBar.Controls.Clear();
             Label nameLabel = new Label();
             nameLabel.AutoSize = true;
             nameLabel.Location = new Point(5, 10);
-            nameLabel.Text = target;
+            nameLabel.Text = Target.UserName;
             m_userBar.Controls.Add(nameLabel);
 
-            m_target = target;
+            m_target = Target.UserName;
         }
 
         public override void SetSize(Size newSize)
@@ -142,6 +128,31 @@ namespace MessengerClient.Windows
             foreach (Elements.Message message in m_messagePanels)
             {
                 message.SetPosition(new Point(m_size.Width - m_scrollBar.Size.Width - message.Panel.Width, message.Panel.Location.Y));
+            }
+        }
+
+        public void linkToList(Action<ChatUser> onUserChanged)
+        {
+            onUserChanged += SetTarget;
+        }
+
+        private async void SendButton_Click(object? sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(m_inputBox.Text))
+            {
+                ChatMessage message = new ChatMessage();
+                DateTime utcNow = DateTime.UtcNow;
+                DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+                message.SendTime = utcNow - unixEpoch;
+                message.Target = m_target;
+                message.Sender = Program.NickName;
+                message.Text = m_inputBox.Text;
+
+                AddMessage(message);
+                
+                await m_client.SendMessage(message);
+                m_inputBox.Clear();
             }
         }
 

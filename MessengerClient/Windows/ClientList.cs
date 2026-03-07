@@ -1,16 +1,13 @@
-﻿using MessengerClient.Elements;
+﻿using MessengerShared;
+using MessengerClient.Elements;
 
 namespace MessengerClient.Windows
 {
 
     internal class ClientList : IWindow
     {
-        internal struct User
-        {
-            public string UserName { get; set; }
-        }
 
-        List<User> m_users = new List<User>();
+        List<ChatUser> m_users = new List<ChatUser>();
         List<UserPanel> m_userPanels = new List<UserPanel>();
 
         Label Label = new Label();
@@ -23,21 +20,16 @@ namespace MessengerClient.Windows
         int lastOffset = 0;
         int offset = 0;
 
-        
+        public event Action<ChatUser> onUserChanged;
 
         public ClientList(string name, Point location, Size size, Client client) : base(name, location, size) 
         {
-            client.MessageReceived += Client_MessageReceived;
+            client.MessageReceived += onMessageReceived;
         }
 
-
-        public ClientList(string name, Point location, Size size, Client client, List<User> users) : base(name, location, size)
+        public ClientList(string name, Point location, Size size, Client client, List<ChatUser> users) : base(name, location, size)
         {
-            m_users = users ?? new List<User>();
-        }
-        private void Client_MessageReceived(MessengerShared.ChatMessage obj)
-        {
-            //throw new NotImplementedException();
+            m_users = users ?? new List<ChatUser>();
         }
 
         public override void InitializeComponents()
@@ -52,7 +44,7 @@ namespace MessengerClient.Windows
             //Users
             //
             if (!(m_users == null || m_users.Count == 0))
-            { 
+            {
                 for (int i = 0; i < m_users.Count; i++)
                 {
                     string userName = m_users[i].UserName ?? string.Empty;
@@ -90,6 +82,32 @@ namespace MessengerClient.Windows
 
         }
 
+        public void FindOrAdd(ChatUser user)
+        {
+            AddUser(user);
+        }
+
+        public void AddUser(ChatUser user)
+        {
+            m_users.Add(user);
+            m_userPanels.Add(new UserPanel(
+                user.UserName,
+                new Point(
+                    0, m_userPanelSize.Height * (m_users.Count - 1) - (offset - lastOffset)),
+                    m_userPanelSize));
+            WindowPanel.Controls.Add(m_userPanels.Last().Panel);
+        }
+
+        public override void SetSize(Size newSize)
+        {
+            WindowPanel.Size = newSize;
+        }
+
+        private void onMessageReceived(MessengerShared.ChatMessage obj)
+        {
+            //throw new NotImplementedException();
+        }
+
         private void ScrollBar_ValueChanged(object? sender, EventArgs e)
         {
             int offset = m_scrollBar.Value * offsetMultiplier;
@@ -108,27 +126,6 @@ namespace MessengerClient.Windows
             if ((m_scrollBar.Value + offset) >= m_scrollBar.Minimum &&
                 (m_scrollBar.Value + offset) <= m_scrollBar.Maximum)
                 m_scrollBar.Value += offset;
-        }
-
-        public void FindOrAdd(User user)
-        {
-            AddUser(user);
-        }
-
-        public void AddUser(User user)
-        {
-            m_users.Add(user);
-            m_userPanels.Add(new UserPanel(
-                user.UserName,
-                new Point(
-                    0, m_userPanelSize.Height * (m_users.Count - 1) - (offset - lastOffset)),
-                    m_userPanelSize));
-            WindowPanel.Controls.Add(m_userPanels.Last().Panel);
-        }
-
-        public override void SetSize(Size newSize)
-        {
-            WindowPanel.Size = newSize;
         }
     }
 }

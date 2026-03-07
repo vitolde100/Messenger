@@ -1,11 +1,8 @@
-﻿using MessengerClient.Windows;
-using MessengerShared;
-namespace MessengerClient
+﻿namespace MessengerClient
 {
     public partial class Test_Form : Form
     {
-        ChatWindow m_chat = new ChatWindow("chat", new Point(0, 0), new Size(500, 500), Program.client);
-        ClientList m_clientList = new ClientList("clientList", new Point(500, 0), new Size(200, 500), Program.client);
+        //LayoutRenderer renderer = new LayoutRenderer(new Panel());
         public Test_Form()
         {
             InitializeComponent();
@@ -13,13 +10,12 @@ namespace MessengerClient
 
         private void Test_Form_Load(object sender, EventArgs e)
         {
-            Controls.Add(m_chat.WindowPanel);
-            Controls.Add(m_clientList.WindowPanel);
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            m_chat.SetTarget(textBox1.Text);
+            //m_chat.SetTarget();
         }
 
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)

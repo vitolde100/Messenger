@@ -34,11 +34,9 @@ namespace MessengerServer
                 }
                 catch (Exception ex)
                 {
-                    m_logger.log("А Я УЕБАН!\n", this.GetType().Name);
                     m_logger.log(ex.Message, this.GetType().Name);
                 }
             }
-            m_logger.log("А Я УЕБАН!\n", this.GetType().Name);
         }
 
         private void OnClientConnected(string name, ClientHandler client)
