@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MessengerShared;
 using System.Net;
 using System.Net.Sockets;
 
@@ -16,24 +16,54 @@ namespace MessengerServer
             m_listener = new TcpListener(ip, port);
         }
 
-        public void Run()
+        public async Task Run()
         {
-            m_listener.Start();
             m_logger.log("Server Started\n", this.GetType().Name);
+            m_listener.Start();
             while (m_running)
             {
                 try
                 {
-                    TcpClient client = m_listener.AcceptTcpClient();
+                    TcpClient client = await m_listener.AcceptTcpClientAsync();
                     ClientHandler handler = new ClientHandler(client);
-                    Thread HandlerThread = new Thread(handler.Read);
-                    HandlerThread.Start();
+                    handler.OnClientConnected += OnClientConnected;
+                    handler.OnMessageRecieved += OnMessageReceived;
+                    handler.OnClientDead += OnClientDead;
+                    handler.Read();
+                    
                 }
                 catch (Exception ex)
                 {
                     m_logger.log(ex.Message, this.GetType().Name);
                 }
             }
+        }
+
+        private void OnClientConnected(string name, ClientHandler client)
+        {
+            m_registry.Add(name, client);
+        }
+
+        private void OnMessageReceived(ClientHandler senderHandler, ChatMessage message)
+        {
+            ClientHandler client = m_registry.GetClient(message.Target);
+
+            if (client != null)
+            {
+                client.Send(message);
+                senderHandler.SendSystemMsg("0");
+            }
+            else
+            {
+                senderHandler.SendSystemMsg("No Target Client"); //<--- Del later (For testing)
+                m_logger.log("No Target Client", this.GetType().Name);
+            }
+        }
+
+        private void OnClientDead(string name)
+        {
+            m_registry.Remove(name);
+            
         }
 
         public void Stop()

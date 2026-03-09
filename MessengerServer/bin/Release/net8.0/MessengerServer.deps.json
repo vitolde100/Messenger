@@ -7,14 +7,30 @@
   "targets": {
     ".NETCoreApp,Version=v8.0": {
       "MessengerServer/1.0.0": {
+        "dependencies": {
+          "MessengerShared": "1.0.0"
+        },
         "runtime": {
           "MessengerServer.dll": {}
+        }
+      },
+      "MessengerShared/1.0.0": {
+        "runtime": {
+          "MessengerShared.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }
   },
   "libraries": {
     "MessengerServer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MessengerShared/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -10,8 +10,10 @@ namespace MessengerServer
         string m_name;
         TcpClient m_client;
         NetworkStream m_stream;
-        ClientRegistry m_registry;
         Logger m_logger = Logger.instance;
+        public event Action<string, ClientHandler> OnClientConnected;
+        public event Action<ClientHandler, ChatMessage> OnMessageRecieved;
+        public event Action<string> OnClientDead;
 
         TimeSpan MSGCooldown = TimeSpan.FromSeconds(1.5f);
 
@@ -20,7 +22,6 @@ namespace MessengerServer
             m_client = client;
             m_stream = m_client.GetStream();
             m_isConnected = m_stream.CanRead && m_stream.CanWrite ? true : false;
-            m_registry = ClientRegistry.instance;
         }
 
         private bool CheckHandshake()
@@ -54,94 +55,102 @@ namespace MessengerServer
             }
         }
 
-        public void Read()
+        public async Task Read()
         {
             int ErrorCount = 0;
             DateTime LastMSGTime = DateTime.MinValue;
             m_isConnected = CheckHandshake();
+
             if (m_isConnected)
             {
                 m_logger.log("Client Connected " + m_name, this.GetType().Name);
-                m_registry.Add(m_name, this);
                 m_stream.ReadTimeout = Timeout.Infinite;
+
+                OnClientConnected?.Invoke(m_name, this);
             }
-            else Disconnect();
+            else 
+            {
+                Disconnect("No HandShake");
+                return; 
+            }
             
             try
             {
                 while (m_isConnected)
                 {
                     byte[] buffer = new byte[MessagingConsts.MaxLength + MessagingConsts.MaxNameLength];
-                    int bytesRead = m_stream.Read(buffer, 0, buffer.Length);
+                    int bytesRead = await m_stream.ReadAsync(buffer, 0, buffer.Length);
                     if (DateTime.UtcNow - LastMSGTime < MSGCooldown)
                     {
                         ErrorCount++;
                         m_logger.log(m_name + ":To fast " + ErrorCount, this.GetType().Name);
                         if (ErrorCount > 2)
                         {
-                            m_logger.log(m_name + ":Flood", this.GetType().Name);
-                            Disconnect();
+                            Disconnect("Flood");
                             return;
                         }
                     }
                     if (bytesRead <= 0)
                     {
-                        m_logger.log(m_name + " Disconnects the connection", this.GetType().Name);
-                        Disconnect();
+                        Disconnect(m_name + "Disconnects the connection");
+                        return;
                     }
                     else
                     {
-                        try
+                        string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                        ChatMessage? message;
+                        
+                        if (ChatMessage.TryParse(msg, out message))
                         {
-                            string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                            ChatMessage? message; 
-                            ChatMessage.TryParse(msg,out message);
+                            OnMessageRecieved?.Invoke(this, message);
                             LastMSGTime = DateTime.UtcNow;
                         }
-                        catch
+                        else
                         {
-                            m_logger.log("Client Bad Message", this.GetType().Name);
-                            Disconnect();
-                        } 
+                            Disconnect("Bad Message " + msg);
+                            return;
+                        }
                     }
                 }
+                Disconnect(null);
+                return;
             }
             catch (Exception ex)
             {
-                m_logger.log("Read error: " + ex.Message, this.GetType().Name);
-                Disconnect();
+                Disconnect(ex.Message);
+                return;
             }
         }
 
-        public void Send(string target, ChatMessage message)
+        public void Send(ChatMessage message)
         {
-            ClientHandler client = m_registry.GetClient(target);
-            if (client != null)
-            {
-                byte[] buffer = Encoding.UTF8.GetBytes("[" + message.Sender + "]" + message.Text);
-                m_stream.Write(buffer, 0, buffer.Length);
-            }
-            else
-            {
-                SendSystemMsg("No Target Client"); //<--- Del later (For testing)
-                m_logger.log("No Target Client", this.GetType().Name);
-            }
-        }
-
-        public void SendSystemMsg(string message)
-        {
-            byte[] msg = Encoding.UTF8.GetBytes("[Server]" + message);
+            byte[] msg = UnicodeEncoding.UTF8.GetBytes(message.ToString());
             m_stream.Write(msg, 0, msg.Length);
         }
 
-        public void Disconnect()
+        public void SendSystemMsg(string text)
+        {
+            ChatMessage message = new ChatMessage();
+            DateTime utcNow = DateTime.UtcNow;
+            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            message.SendTime = utcNow - unixEpoch;
+            message.Target = this.GetType().Name;
+            message.Sender = this.GetType().Name;
+            message.Text = text;
+
+            byte[] msg = Encoding.UTF8.GetBytes(message.ToString());
+            m_stream.Write(msg, 0, msg.Length);
+        }
+
+        public void Disconnect(string? cause)
         {
             m_isConnected = false;
             m_stream.Close();
             m_client.Close();
-            m_logger.log("Client Disconnected", this.GetType().Name);
-            if(!string.IsNullOrEmpty(m_name))
-                m_registry.Remove(m_name);
+            if (cause != null) m_logger.log($"Client {m_name} Disconnected: {cause}", this.GetType().Name);
+            else m_logger.log($"Client {m_name} Disconnected", this.GetType().Name);
+
+            OnClientDead?.Invoke(m_name);
         }
     }
 }

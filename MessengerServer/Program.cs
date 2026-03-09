@@ -16,6 +16,7 @@ namespace MessengerServer
                 server.m_running = false;
             }).Start();*/
             server.Run();
+            Console.ReadKey();
         }
     }
 }

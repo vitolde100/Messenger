@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11415.280 d18.0
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerServer", "MessengerServer\MessengerServer.csproj", "{8316BF7D-1F19-4F8D-BEA2-9DCA075B7081}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerClient", "MessengerClient\MessengerClient.csproj", "{5332536E-409D-44DB-898D-7786FE58D9ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerShared", "MessengerShared\MessengerShared.csproj", "{AE2BB502-6998-4214-AF33-430B90D19CF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceAttempts", "InterfaceAttempts\InterfaceAttempts.csproj", "{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,18 @@ Global
 		{AE2BB502-6998-4214-AF33-430B90D19CF1}.Release|x64.Build.0 = Release|Any CPU
 		{AE2BB502-6998-4214-AF33-430B90D19CF1}.Release|x86.ActiveCfg = Release|Any CPU
 		{AE2BB502-6998-4214-AF33-430B90D19CF1}.Release|x86.Build.0 = Release|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|x64.Build.0 = Debug|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|x86.Build.0 = Debug|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|x64.ActiveCfg = Release|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|x64.Build.0 = Release|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|x86.ActiveCfg = Release|Any CPU
+		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

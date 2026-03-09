@@ -10,7 +10,7 @@
     <Compile Update="Elements\RoundedPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Forms\Test Form.cs">
+    <Compile Update="Forms\TestForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forms\Welcome.cs">
