@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerClient", "Messenge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerShared", "MessengerShared\MessengerShared.csproj", "{AE2BB502-6998-4214-AF33-430B90D19CF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceAttempts", "InterfaceAttempts\InterfaceAttempts.csproj", "{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,18 +55,6 @@ Global
 		{AE2BB502-6998-4214-AF33-430B90D19CF1}.Release|x64.Build.0 = Release|Any CPU
 		{AE2BB502-6998-4214-AF33-430B90D19CF1}.Release|x86.ActiveCfg = Release|Any CPU
 		{AE2BB502-6998-4214-AF33-430B90D19CF1}.Release|x86.Build.0 = Release|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|x64.Build.0 = Debug|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Debug|x86.Build.0 = Debug|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|x64.ActiveCfg = Release|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|x64.Build.0 = Release|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|x86.ActiveCfg = Release|Any CPU
-		{2C6AB3C2-D697-4E1B-AD21-B2F474C1550F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
