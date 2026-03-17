@@ -26,6 +26,7 @@ namespace MessengerClient.Interface
         {
             m_client = client;
             m_client.MessageReceived += AddMessage;
+            BackColor = Color.FromArgb(125,125,125);
         }
 
         protected override void InitializeComponents()

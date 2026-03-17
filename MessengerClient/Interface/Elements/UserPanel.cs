@@ -1,4 +1,4 @@
-﻿namespace MessengerClient.Elements
+﻿namespace MessengerClient.Interface.Elements
 {
     class UserPanel
     {

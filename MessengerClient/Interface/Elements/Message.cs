@@ -1,7 +1,7 @@
 ﻿using MessengerShared;
 using System.Text;
 
-namespace MessengerClient.Elements
+namespace MessengerClient.Interface.Elements
 {
     public class Message
     {

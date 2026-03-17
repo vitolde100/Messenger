@@ -1,7 +1,7 @@
 ﻿using MessengerShared;
-using MessengerClient.Elements;
+using MessengerClient.Interface.Elements;
 
-namespace MessengerClient.Interface.Windows
+namespace MessengerClient.Interface
 {
 
     internal class ClientList : ContentNode

@@ -1,6 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 
-namespace MessengerClient.Elements
+namespace MessengerClient.Interface.Elements
 {
     public class RoundedPanel : Panel
     {
