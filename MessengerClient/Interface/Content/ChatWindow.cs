@@ -8,6 +8,7 @@ namespace MessengerClient.Interface
         List<Elements.Message> m_messagePanels = new List<Elements.Message>();
 
         Panel m_userBar;
+        Panel m_chatPanel;
         ScrollBar m_scrollBar;
         TextBox m_inputBox;
         Button m_sendButton;
@@ -22,21 +23,21 @@ namespace MessengerClient.Interface
         private Client m_client;
         private Size m_size = new Size(0,0);
         
-        public ChatWindow(int id, string title, Client client) : base(id, title)
+        public ChatWindow(Client client) : base()
         {
             m_client = client;
             m_client.MessageReceived += AddMessage;
-            BackColor = Color.FromArgb(125,125,125);
         }
 
         protected override void InitializeComponents()
         {
             m_userBar = new Panel();
+            m_chatPanel = new Panel();
             m_scrollBar = new VScrollBar();
             m_inputBox = new TextBox();
             m_sendButton = new Button();
             //
-            //UserPanel
+            //UserBar
             //
             m_userBar.Location = new Point(0, 0);
             m_userBar.Size = new Size(m_size.Width, 40);
@@ -63,10 +64,17 @@ namespace MessengerClient.Interface
             m_sendButton.FlatStyle = FlatStyle.Flat;
             m_sendButton.Click += SendButton_Click;
             //
+            //m_chatPanel
+            //
+            m_chatPanel.Location = new Point(0, m_userBar.Size.Height);
+            m_chatPanel.Size = new Size(m_userBar.Size.Width - m_scrollBar.Width, m_scrollBar.Height - m_inputBox.Height);
+            m_chatPanel.BackColor = Color.FromArgb(75, 75, 75);
+            //
             //Add
             //
             Controls.Add(m_userBar);
             Controls.Add(m_scrollBar);
+            Controls.Add(m_chatPanel);
             Controls.Add(m_inputBox);
             Controls.Add(m_sendButton);
         }
@@ -87,10 +95,12 @@ namespace MessengerClient.Interface
             m_messagePanels.Add(new Elements.Message(message, new Point(XPos,YPos)));
             m_messagesLength += m_messagePanels.Last().Panel.Height;
 
-            Controls.Add(m_messagePanels.Last().Panel);
+            m_chatPanel.Controls.Add(m_messagePanels.Last().Panel);
+
+            _owner?.MarkDirty(DirtyFlags.Visual);
         }
 
-        public void SetTarget(ChatUser Target)
+        public void SetTarget(ChatUser Target) //<-- хуйня, переписать!
         {
             m_userBar.Controls.Clear();
             Label nameLabel = new Label();
@@ -100,6 +110,8 @@ namespace MessengerClient.Interface
             m_userBar.Controls.Add(nameLabel);
 
             m_target = Target.UserName;
+
+            _owner?.MarkDirty(DirtyFlags.Visual);
         }
 
         public override void SetSize(Size newSize)
@@ -119,10 +131,14 @@ namespace MessengerClient.Interface
 
             m_sendButton.Location = new Point(m_inputBox.Width + m_inputBox.Location.X, m_inputBox.Location.Y);
 
+            m_chatPanel.Size = new Size(m_userBar.Size.Width - m_scrollBar.Width, m_scrollBar.Height - m_inputBox.Height);
+            
             foreach (Elements.Message message in m_messagePanels)
             {
                 message.SetPosition(new Point(m_size.Width - m_scrollBar.Size.Width - message.Panel.Width, message.Panel.Location.Y));
             }
+
+            _owner?.MarkDirty(DirtyFlags.Visual);
         }
 
         public void linkToList(Action<ChatUser> onUserChanged)

@@ -25,17 +25,23 @@ namespace MessengerClient.Interface
 
         public event Action<ChatUser> onUserChanged;
 
-        public ClientList(int id, string title, Client client) : base(id,title) 
+        public ClientList(Client client) : base() 
         {
             _client = client;
             client.MessageReceived += onMessageReceived;
         }
 
-        public ClientList(int id, string title, Client client, List<ChatUser> users) : base(id, title)
+        public ClientList(Client client, List<ChatUser> users) : base()
         {
             _client = client;
             client.MessageReceived += onMessageReceived;
             m_users = users ?? new List<ChatUser>();
+        }
+
+        public override void SetOwner(LayoutNode owner)
+        {
+            base.SetOwner(owner);
+            _owner?.Visual.SetBackColor(Color.White);
         }
 
         protected override void InitializeComponents()
@@ -76,7 +82,7 @@ namespace MessengerClient.Interface
             Label.AutoSize = true;
             Label.Location = new Point(0, m_size.Height - 50);
             //
-            //Add Controls
+            //Add
             //
             Controls.Add(m_scrollBar);
             Controls.Add(Label);

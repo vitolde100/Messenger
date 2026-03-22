@@ -2,19 +2,22 @@
 {
     internal abstract class ContentNode
     {
-        public int ID;
-        public string Title;
-
         public List<Control> Controls { get; protected set; }
-
+        protected LayoutNode? _owner;
         public Color BackColor { get; protected set; }
 
-        public ContentNode(int id, string title) 
+        public ContentNode(LayoutNode? owner = null) 
         { 
-            ID = id;
-            Title = title;
+            _owner = owner;
             Controls = new List<Control>();
             InitializeComponents();
+            _owner?.MarkDirty(DirtyFlags.Visual);
+        }
+
+        public virtual void SetOwner(LayoutNode owner)
+        {
+            _owner = owner;
+            _owner.MarkDirty(DirtyFlags.Visual);
         }
 
         public void SetBackColor(Color color)

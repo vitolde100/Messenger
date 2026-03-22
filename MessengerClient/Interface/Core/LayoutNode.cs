@@ -1,6 +1,6 @@
 ﻿namespace MessengerClient.Interface
-{ 
-    public class LayoutNode
+{
+    internal class LayoutNode
     {
 
         public VisualStyle Visual;
@@ -10,14 +10,14 @@
         public LayoutNode? Parent { get; private set; }
         public List<LayoutNode>? Childrens { get; } = new(); 
 
-        public LayoutNode(RenderData data, LayoutNode? parent = null)
+        public LayoutNode(RenderData? data = null, LayoutNode? parent = null)
         {
             Visual = new(this);
-            Data = data;
+            Data = data != null ? data : new RenderData();
             SetParent(parent);
             if(Childrens != null)
                 foreach (var child in Childrens) child.SetParent(this);
-            MarkDirty(DirtyFlags.Layout);
+            MarkDirty(DirtyFlags.Layout | DirtyFlags.Visual);
         }
         
         //For Render
@@ -30,6 +30,12 @@
         public virtual void SetSize(Size size)
         {
             Data.Bounds.Size = size;
+            if(Childrens != null)
+                foreach(var child in Childrens)
+                {
+                    child.SetSize(size);
+                }
+            MarkDirty(DirtyFlags.Layout);
         }
 
         public virtual RenderData GetRenderData()

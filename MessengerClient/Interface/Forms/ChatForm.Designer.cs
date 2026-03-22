@@ -28,40 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            TabBar = new Panel();
-            HideButton = new Button();
-            ToolBar = new Panel();
-            TabBar.SuspendLayout();
             SuspendLayout();
-            // 
-            // TabBar
-            // 
-            TabBar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            TabBar.BackColor = SystemColors.ControlDark;
-            TabBar.Controls.Add(HideButton);
-            TabBar.Location = new Point(0, 0);
-            TabBar.Name = "TabBar";
-            TabBar.Size = new Size(522, 30);
-            TabBar.TabIndex = 0;
-            // 
-            // HideButton
-            // 
-            HideButton.FlatStyle = FlatStyle.Flat;
-            HideButton.Location = new Point(0, 0);
-            HideButton.Name = "HideButton";
-            HideButton.Size = new Size(35, 30);
-            HideButton.TabIndex = 0;
-            HideButton.Text = "S";
-            HideButton.UseVisualStyleBackColor = true;
-            HideButton.Click += HideButton_Click;
-            // 
-            // ToolBar
-            // 
-            ToolBar.BackColor = SystemColors.AppWorkspace;
-            ToolBar.Location = new Point(0, 30);
-            ToolBar.Name = "ToolBar";
-            ToolBar.Size = new Size(35, 268);
-            ToolBar.TabIndex = 1;
             // 
             // ChatForm
             // 
@@ -69,19 +36,13 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Black;
             ClientSize = new Size(878, 521);
-            Controls.Add(ToolBar);
-            Controls.Add(TabBar);
             Name = "ChatForm";
             Text = "Work window";
             Load += ChatForm_Load;
-            Resize += Chat_Resize;
-            TabBar.ResumeLayout(false);
+            SizeChanged += ChatForm_SizeChanged;
             ResumeLayout(false);
         }
 
         #endregion
-        private Panel TabBar;
-        private Panel ToolBar;
-        private Button HideButton;
     }
 }

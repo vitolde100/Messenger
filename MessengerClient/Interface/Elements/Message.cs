@@ -3,7 +3,7 @@ using System.Text;
 
 namespace MessengerClient.Interface.Elements
 {
-    public class Message
+    internal class Message
     {
         const int MAX_LINE_LENGTH = 50;
         const int MAX_WIDTH = 300;

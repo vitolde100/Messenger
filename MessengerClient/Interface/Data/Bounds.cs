@@ -1,6 +1,6 @@
 ﻿namespace MessengerClient.Interface;
 
-public class Bounds
+internal class Bounds
 {
     public Point Position;
     public Size Size;
@@ -12,4 +12,6 @@ public class Bounds
     }
 
     public Bounds(Point position) : this(position, new Size(100, 100)) { }
+
+    public Bounds() : this(new Point(0, 0), new Size(100, 100)) { }
 }

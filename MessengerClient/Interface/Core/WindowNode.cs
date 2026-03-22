@@ -2,14 +2,13 @@
 {
     internal class WindowNode : LayoutNode
     {
-        public ContentNode? Content { get; private set; }
+        public ContentNode Content { get; private set; }
 
         public WindowNode(RenderData data, ContentNode content, LayoutNode? parent = null) : base(data, parent) 
         {
             Content = content;
+            Content.SetOwner(this);
             Content.SetSize(Data.Bounds.Size);
-
-            Visual.SetBackColor(Color.FromArgb(76, 76, 76));
         }
     
         public override void SetSize(Size size)
@@ -21,7 +20,7 @@
 
         public override RenderData GetRenderData()
         {
-            if (Content != null) Data.Controls = Content.Controls;
+            if (Content.Controls != null) Data.Controls = Content.Controls;
             return Data;
         }
     }

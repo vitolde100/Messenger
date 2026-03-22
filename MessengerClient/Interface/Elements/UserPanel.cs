@@ -1,6 +1,6 @@
 ﻿namespace MessengerClient.Interface.Elements
 {
-    class UserPanel
+    internal class UserPanel
     {
         public Panel Panel = new Panel();
         Label m_label = new Label();

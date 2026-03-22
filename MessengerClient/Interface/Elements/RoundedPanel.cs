@@ -2,7 +2,7 @@
 
 namespace MessengerClient.Interface.Elements
 {
-    public class RoundedPanel : Panel
+    internal class RoundedPanel : Panel
     {
         private float _thickness = 5;
         public float Thickness
