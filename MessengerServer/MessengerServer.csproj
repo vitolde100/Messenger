@@ -11,4 +11,8 @@
     <ProjectReference Include="..\MessengerShared\MessengerShared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="certs\server.pfx" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
 </Project>

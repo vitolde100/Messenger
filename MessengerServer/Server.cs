@@ -1,52 +1,92 @@
 ﻿using MessengerShared;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MessengerServer
 {
     internal class Server
     {
-        TcpListener m_listener;
-        ClientRegistry m_registry = ClientRegistry.instance;
-        Logger m_logger = Logger.instance;
-        public bool m_running = true;
-
-        public Server(IPAddress ip, int port)
+        TcpListener _listener;
+        ClientRegistry _registry = ClientRegistry.instance;
+        Logger _logger = Logger.instance;
+        public bool _running = true;
+        bool _useTls;
+        X509Certificate2 _cert;
+        public Server(IPAddress ip, int port, bool useTls)
         {
-            m_listener = new TcpListener(ip, port);
+            _listener = new TcpListener(ip, port);
+            _useTls = useTls; 
         }
+
+        string certPath = Path.Combine(AppContext.BaseDirectory, "server.pfx");
+        string certPassword = "123456";
 
         public async Task Run()
         {
-            m_logger.log("Server Started\n", this.GetType().Name);
-            m_listener.Start();
-            while (m_running)
+            try
+            {
+                _cert = new X509Certificate2(certPath, certPassword);
+                Console.WriteLine("Cert loaded: " + _cert.Subject);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to load cert: " + ex.Message);
+            }
+            _logger.log("Server Started\n", this.GetType().Name);
+
+            _listener.Start();
+
+            while (_running)
             {
                 try
                 {
-                    TcpClient client = await m_listener.AcceptTcpClientAsync();
-                    ClientHandler handler = new ClientHandler(client);
+                    var tcp = await _listener.AcceptTcpClientAsync();
+                    Stream stream;
+
+                    if (_useTls)
+                    {
+                        var ssl = new SslStream(tcp.GetStream(), false);
+                        await ssl.AuthenticateAsServerAsync(_cert);
+                        stream = ssl;
+                    }
+                    else
+                    {
+                        stream = tcp.GetStream();
+                    }
+
+                    ClientHandler handler = new ClientHandler(tcp, stream);
                     handler.OnClientConnected += OnClientConnected;
                     handler.OnMessageRecieved += OnMessageReceived;
                     handler.OnClientDead += OnClientDead;
-                    handler.Read();
-                    
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await handler.Run();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.log(ex.Message, this.GetType().Name);
+                        }
+                    });
                 }
                 catch (Exception ex)
                 {
-                    m_logger.log(ex.Message, this.GetType().Name);
+                    _logger.log(ex.Message, this.GetType().Name);
                 }
             }
         }
 
-        private void OnClientConnected(string name, ClientHandler client)
+        private void OnClientConnected(string id, ClientHandler client)
         {
-            m_registry.Add(name, client);
+            _registry.Add(id, client);
         }
 
         private void OnMessageReceived(ClientHandler senderHandler, ChatMessage message)
         {
-            ClientHandler client = m_registry.GetClient(message.Target);
+            ClientHandler client = _registry.GetClient(message.Target);
 
             if (client != null)
             {
@@ -56,28 +96,27 @@ namespace MessengerServer
             else
             {
                 senderHandler.SendSystemMsg("No Target Client"); //<--- Del later (For testing)
-                m_logger.log("No Target Client", this.GetType().Name);
+                _logger.log("No Target Client", this.GetType().Name);
             }
         }
 
-        private void OnClientDead(string name)
+        private void OnClientDead(string id)
         {
-            m_registry.Remove(name);
-            
+            _registry.Remove(id);
         }
 
         public void Stop()
         {
             try
             {
-                m_listener.Stop();
+                _listener.Stop();
             }
             catch (Exception ex)
             {
-                m_logger.log(ex.Message, this.GetType().Name);
+                _logger.log(ex.Message, this.GetType().Name);
             }
-            m_registry.DisconnectAll();
-            m_logger.log("Server Closed\n", this.GetType().Name);
+            _registry.DisconnectAll();
+            _logger.log("Server Closed\n", this.GetType().Name);
         }
     }
 }

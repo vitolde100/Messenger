@@ -3,10 +3,8 @@ using MessengerClient.Interface.Elements;
 
 namespace MessengerClient.Interface
 {
-
     internal class ClientList : ContentNode
     {
-
         List<ChatUser> m_users = new List<ChatUser>();
         List<UserPanel> m_userPanels = new List<UserPanel>();
 
@@ -15,7 +13,6 @@ namespace MessengerClient.Interface
 
         Size m_size = new Size();
         Size m_userPanelSize;
-        Color m_backColor = Color.FromArgb(125, 125, 125);
 
         int offsetMultiplier = 5;
         int lastOffset = 0;
@@ -103,6 +100,7 @@ namespace MessengerClient.Interface
                     0, m_userPanelSize.Height * (m_users.Count - 1) - (offset - lastOffset)),
                     m_userPanelSize));
             Controls.Add(m_userPanels.Last().Panel);
+            _owner?.MarkDirty(DirtyFlags.Visual);
         }
 
         public override void SetSize(Size newSize)

@@ -1,72 +1,75 @@
 ﻿using MessengerShared;
 using System.Net.Sockets;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MessengerServer
 {
     internal class ClientHandler
     {
-        bool m_isConnected;
-        string m_name;
-        TcpClient m_client;
-        NetworkStream m_stream;
-        Logger m_logger = Logger.instance;
+        bool _isConnected;
+        public string UserID { get; set; }
+        public string Name { get; private set; }
+        TcpClient _client;
+        Stream _stream;
+        Logger _logger = Logger.instance;
+
         public event Action<string, ClientHandler> OnClientConnected;
         public event Action<ClientHandler, ChatMessage> OnMessageRecieved;
         public event Action<string> OnClientDead;
 
         TimeSpan MSGCooldown = TimeSpan.FromSeconds(1.5f);
 
-        public ClientHandler(TcpClient client)
+        public ClientHandler(TcpClient client, Stream stream)
         {
-            m_client = client;
-            m_stream = m_client.GetStream();
-            m_isConnected = m_stream.CanRead && m_stream.CanWrite ? true : false;
+            _client = client;
+            _stream = stream;
+            _isConnected = _stream.CanRead && _stream.CanWrite ? true : false;
         }
 
-        private bool CheckHandshake()
+        private bool Handshake()
         {
             try
             {
-                m_stream.ReadTimeout = 5000;
+                _stream.ReadTimeout = 5000;
                 byte[] buffer = new byte[MessagingConsts.MaxNameLength];
-                int bytesRead = m_stream.Read(buffer, 0, buffer.Length);
+                int bytesRead = _stream.Read(buffer, 0, buffer.Length);
 
                 if (bytesRead <= 0)
                 {
-                    m_logger.log("No Handhake", this.GetType().Name);
+                    _logger.log("No Handhake", this.GetType().Name);
                     return false;
                 }
                 else
                 {
-                    m_name = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    if (!string.IsNullOrEmpty(m_name) && m_name.Length <= MessagingConsts.MaxNameLength)
+                    Name = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    if (!string.IsNullOrEmpty(Name) && Name.Length <= MessagingConsts.MaxNameLength)
                     {
                         return true;
                     }
-                    m_logger.log("Client bad name:" + m_name.Length, this.GetType().Name);
+                    _logger.log("Client bad name:" + Name.Length, this.GetType().Name);
                     return false;
                 }
             }
             catch (IOException)
             {
-                m_logger.log("No Handshake Exeption or Timeout!", this.GetType().Name);
+                _logger.log("No Handshake Exeption or Timeout!", this.GetType().Name);
                 return false;
             }
         }
 
-        public async Task Read()
+        public async Task Run()
         {
             int ErrorCount = 0;
             DateTime LastMSGTime = DateTime.MinValue;
-            m_isConnected = CheckHandshake();
+            _isConnected = Handshake();
 
-            if (m_isConnected)
+            if (_isConnected)
             {
-                m_logger.log("Client Connected " + m_name, this.GetType().Name);
-                m_stream.ReadTimeout = Timeout.Infinite;
+                _logger.log("Client Connected " + Name, this.GetType().Name);
+                _stream.ReadTimeout = Timeout.Infinite;
 
-                OnClientConnected?.Invoke(m_name, this);
+                OnClientConnected?.Invoke(Name, this);
             }
             else 
             {
@@ -76,14 +79,14 @@ namespace MessengerServer
             
             try
             {
-                while (m_isConnected)
+                while (_isConnected)
                 {
                     byte[] buffer = new byte[MessagingConsts.MaxLength + MessagingConsts.MaxNameLength];
-                    int bytesRead = await m_stream.ReadAsync(buffer, 0, buffer.Length);
+                    int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
                     if (DateTime.UtcNow - LastMSGTime < MSGCooldown)
                     {
                         ErrorCount++;
-                        m_logger.log(m_name + ":To fast " + ErrorCount, this.GetType().Name);
+                        _logger.log(Name + ":To fast " + ErrorCount, this.GetType().Name);
                         if (ErrorCount > 2)
                         {
                             Disconnect("Flood");
@@ -92,7 +95,7 @@ namespace MessengerServer
                     }
                     if (bytesRead <= 0)
                     {
-                        Disconnect(m_name + "Disconnects the connection");
+                        Disconnect(Name + "Disconnects the connection");
                         return;
                     }
                     else
@@ -122,10 +125,10 @@ namespace MessengerServer
             }
         }
 
-        public void Send(ChatMessage message)
+        public async void Send(ChatMessage message)
         {
             byte[] msg = UnicodeEncoding.UTF8.GetBytes(message.ToString());
-            m_stream.Write(msg, 0, msg.Length);
+            await _stream.WriteAsync(msg, 0, msg.Length);
         }
 
         public void SendSystemMsg(string text)
@@ -139,18 +142,18 @@ namespace MessengerServer
             message.Text = text;
 
             byte[] msg = Encoding.UTF8.GetBytes(message.ToString());
-            m_stream.Write(msg, 0, msg.Length);
+            _stream.Write(msg, 0, msg.Length);
         }
 
-        public void Disconnect(string? cause)
+        public async void Disconnect(string? cause)
         {
-            m_isConnected = false;
-            m_stream.Close();
-            m_client.Close();
-            if (cause != null) m_logger.log($"Client {m_name} Disconnected: {cause}", this.GetType().Name);
-            else m_logger.log($"Client {m_name} Disconnected", this.GetType().Name);
+            _isConnected = false;
+            await _stream.DisposeAsync();
+            _client.Dispose();
+            if (cause != null) _logger.log($"Client {Name} Disconnected: {cause}", this.GetType().Name);
+            else _logger.log($"Client {Name} Disconnected", this.GetType().Name);
 
-            OnClientDead?.Invoke(m_name);
+            OnClientDead?.Invoke(Name);
         }
     }
 }

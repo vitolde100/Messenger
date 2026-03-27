@@ -1,4 +1,5 @@
 ﻿using MessengerClient.Interface;
+using MessengerShared;
 
 namespace MessengerClient
 {
@@ -31,7 +32,7 @@ namespace MessengerClient
             currentSize = new Size(Size.Width - WINDOW_PADDING_X, Size.Height - WINDOW_PADDING_Y);
 
             ContentNode content = new ChatWindow(Program.client);
-            ContentNode content1 = new ClientList(Program.client);
+            ClientList content1 = new ClientList(Program.client);
             WindowNode window = new WindowNode(new RenderData(),content);
             WindowNode window1 = new WindowNode(new RenderData(), content1);
             
@@ -43,8 +44,14 @@ namespace MessengerClient
             ));
 
 
+            
+
             _Renderer.SetSize(Size);
             frame.Start();
+
+            ChatUser user  = new ChatUser("Hello");
+            content1.AddUser(user);
+
         }
 
         private void ChatForm_SizeChanged(object sender, EventArgs e)

@@ -14,10 +14,10 @@ namespace MessengerServer
             m_logger.log("Registry Initialized",this.GetType().Name);
         }
 
-        public void Add(string name, ClientHandler handler)
+        public void Add(string userID, ClientHandler handler)
         {
-            m_clients.TryAdd(name, handler);
-            m_logger.log("Added " + name + "\r", this.GetType().Name);
+            m_clients.TryAdd(userID, handler);
+            m_logger.log("Added " + userID + "\r", this.GetType().Name);
         }
 
         public ClientHandler GetClient(string name)

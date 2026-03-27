@@ -9,7 +9,7 @@ namespace MessengerServer
             Console.Title = "ServerLogs";
             int port = 5000;
             IPAddress ip = IPAddress.Any;
-            Server server = new Server(ip,port);
+            Server server = new Server(ip,port, true);
             /*new Thread(() =>
             {
                 Console.ReadLine();

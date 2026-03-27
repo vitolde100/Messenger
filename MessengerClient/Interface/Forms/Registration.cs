@@ -46,7 +46,7 @@ namespace MessengerClient
             {
                 try
                 {
-                    Program.client.TryConnect(Program.IP, Program.Port);
+                    Program.client.ConnectAsync(Program.IP, Program.Port);
                 }
                 catch (Exception e)
                 {
