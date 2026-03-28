@@ -20,7 +20,7 @@ namespace MessengerServer
             _useTls = useTls; 
         }
 
-        string certPath = Path.Combine(AppContext.BaseDirectory, "server.pfx");
+        string certPath = Path.Combine(AppContext.BaseDirectory, "certs/server.pfx");
         string certPassword = "123456";
 
         public async Task Run()

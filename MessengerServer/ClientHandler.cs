@@ -1,7 +1,6 @@
 ﻿using MessengerShared;
 using System.Net.Sockets;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MessengerServer
 {
@@ -62,6 +61,7 @@ namespace MessengerServer
         {
             int ErrorCount = 0;
             DateTime LastMSGTime = DateTime.MinValue;
+
             _isConnected = Handshake();
 
             if (_isConnected)
