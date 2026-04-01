@@ -7,7 +7,7 @@ namespace MessengerClient
     {
         public static string NickName = "Test";
         public static string IP = "192.168.1.2";
-        public static int Port = 5000;
+        public static int Port = Protocol.DefaultPort;
         public static bool isGuest = true;
         public static bool isConnected = false;
         public static Client client = new Client();

@@ -49,7 +49,7 @@ namespace MessengerClient
             _Renderer.SetSize(Size);
             frame.Start();
 
-            ChatUser user  = new ChatUser("Hello");
+            ClientData user  = new ClientData("Hello");
             content1.AddUser(user);
 
         }

@@ -11,6 +11,7 @@ namespace MessengerServer
         TcpListener _listener;
         ClientRegistry _registry = ClientRegistry.instance;
         Logger _logger = Logger.instance;
+
         public bool _running = true;
         bool _useTls;
         X509Certificate2 _cert;
@@ -28,11 +29,11 @@ namespace MessengerServer
             try
             {
                 _cert = new X509Certificate2(certPath, certPassword);
-                Console.WriteLine("Cert loaded: " + _cert.Subject);
+                _logger.log("Cert loaded: " + _cert.Subject, this.GetType().Name);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to load cert: " + ex.Message);
+                _logger.log("Failed to load cert: " + ex.Message, this.GetType().Name);
             }
             _logger.log("Server Started\n", this.GetType().Name);
 
@@ -91,14 +92,14 @@ namespace MessengerServer
             if (client != null)
             {
                 client.Send(message);
-                senderHandler.SendSystemMsg("0");
+                senderHandler.SendSystemMsg(ServerCodes.None);
             }
             else
             {
-                senderHandler.SendSystemMsg("No Target Client"); //<--- Del later (For testing)
+                senderHandler.SendSystemMsg(ServerCodes.NoTargetClient);
                 _logger.log("No Target Client", this.GetType().Name);
             }
-        }
+        } 
 
         private void OnClientDead(string id)
         {
@@ -107,6 +108,7 @@ namespace MessengerServer
 
         public void Stop()
         {
+            _running = false;
             try
             {
                 _listener.Stop();

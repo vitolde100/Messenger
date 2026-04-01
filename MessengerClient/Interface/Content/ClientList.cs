@@ -5,7 +5,7 @@ namespace MessengerClient.Interface
 {
     internal class ClientList : ContentNode
     {
-        List<ChatUser> m_users = new List<ChatUser>();
+        List<ClientData> m_users = new List<ClientData>();
         List<UserPanel> m_userPanels = new List<UserPanel>();
 
         Label Label = new Label();
@@ -20,7 +20,7 @@ namespace MessengerClient.Interface
 
         private Client _client;
 
-        public event Action<ChatUser> onUserChanged;
+        public event Action<ClientData> onUserChanged;
 
         public ClientList(Client client) : base() 
         {
@@ -28,11 +28,11 @@ namespace MessengerClient.Interface
             client.MessageReceived += onMessageReceived;
         }
 
-        public ClientList(Client client, List<ChatUser> users) : base()
+        public ClientList(Client client, List<ClientData> users) : base()
         {
             _client = client;
             client.MessageReceived += onMessageReceived;
-            m_users = users ?? new List<ChatUser>();
+            m_users = users ?? new List<ClientData>();
         }
 
         public override void SetOwner(LayoutNode owner)
@@ -86,12 +86,12 @@ namespace MessengerClient.Interface
 
         }
 
-        public void FindOrAdd(ChatUser user)
+        public void FindOrAdd(ClientData user)
         {
             AddUser(user);
         }
 
-        public void AddUser(ChatUser user)
+        public void AddUser(ClientData user)
         {
             m_users.Add(user);
             m_userPanels.Add(new UserPanel(

@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using MessengerShared;
 
 namespace MessengerServer
 {
@@ -7,16 +8,11 @@ namespace MessengerServer
         static async Task Main(string[] args)
         {
             Console.Title = "ServerLogs";
-            int port = 5000;
             IPAddress ip = IPAddress.Any;
-            Server server = new Server(ip,port, true);
-            /*new Thread(() =>
-            {
-                Console.ReadLine();
-                server.m_running = false;
-            }).Start();*/
+            Server server = new Server(ip, Protocol.DefaultPort, true);
             server.Run();
             Console.ReadKey();
+            server.Stop();
         }
     }
 }

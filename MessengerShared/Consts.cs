@@ -1,8 +1,13 @@
 ﻿namespace MessengerShared
 {
+    public enum ServerCodes
+    {
+        None = 0,
+        NoTargetClient = 1,
+    }
+
     public static class Protocol
     {
-        public const string Version = "1.0";
         public const int DefaultPort = 5000;
     }
 
@@ -11,6 +16,7 @@
         public const int MaxNameLength = 32;
         public const int MaxLength = 4096;
         public const int PartsCount = 4;
+        public const int HandshakeCount = 3;
         public const char SplitChar = '|';
     }
 }

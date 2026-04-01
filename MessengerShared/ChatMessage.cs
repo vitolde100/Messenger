@@ -1,5 +1,4 @@
-﻿
-namespace MessengerShared
+﻿namespace MessengerShared
 {
     public class ChatMessage
     {

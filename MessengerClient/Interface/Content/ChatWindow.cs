@@ -100,7 +100,7 @@ namespace MessengerClient.Interface
             _owner?.MarkDirty(DirtyFlags.Visual);
         }
 
-        public void SetTarget(ChatUser Target) //<-- хуйня, переписать!
+        public void SetTarget(ClientData Target) //<-- хуйня, переписать!
         {
             m_userBar.Controls.Clear();
             Label nameLabel = new Label();
@@ -141,7 +141,7 @@ namespace MessengerClient.Interface
             _owner?.MarkDirty(DirtyFlags.Visual);
         }
 
-        public void linkToList(Action<ChatUser> onUserChanged)
+        public void linkToList(Action<ClientData> onUserChanged)
         {
             onUserChanged += SetTarget;
         }
