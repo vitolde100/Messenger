@@ -16,7 +16,7 @@ namespace MessengerShared.API
     {
         public string openedKey;
         public string closedKey;
-        private DateTime expires;
+        public DateTime expires { get; private set; } // for storage
 
         //SERVER ONLY
         public string userLogin;
@@ -30,8 +30,7 @@ namespace MessengerShared.API
         {
             this.openedKey = openedKey;
             this.closedKey = closedKey;
-            expires = DateTime.UtcNow;
-            expires.AddHours(24);
+            expires = DateTime.UtcNow.AddHours(24);
             this.userLogin = userLogin;
         }
 

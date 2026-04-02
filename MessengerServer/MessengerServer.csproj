@@ -21,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\users\" />
+    <Folder Include="Data\Users\" />
+    <Folder Include="Data\Sessions\" />
   </ItemGroup>
 	
 

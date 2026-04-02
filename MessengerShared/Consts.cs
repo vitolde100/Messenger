@@ -19,6 +19,6 @@
         public const int MaxLength = 4096;
         public const int PartsCount = 4;
         public const int HandshakeCount = 3;
-        public const char SplitChar = '|';
+        public const char SplitChar = '卐';
     }
 }

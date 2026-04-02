@@ -1,7 +1,10 @@
 ﻿using MessengerServer.Data;
 using MessengerShared;
+using MessengerShared.API;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace MessengerServer
 {
@@ -10,7 +13,7 @@ namespace MessengerServer
         TcpClient _client;
         Stream _stream;
         Logger _logger = Logger.instance;
-        IClientStorage _storage;
+        IStorageStorage _storage;
 
         bool _isConnected;
         public ClientData User = new ClientData();
@@ -19,9 +22,9 @@ namespace MessengerServer
         public event Action<ClientHandler, ChatMessage> OnMessageRecieved;
         public event Action<string> OnClientDead;
 
-        TimeSpan MSGCooldown = TimeSpan.FromSeconds(1.5f);
+        TimeSpan MSGCooldown = TimeSpan.FromSeconds(0f);
 
-        public ClientHandler(TcpClient client, Stream stream, IClientStorage repository)
+        public ClientHandler(TcpClient client, Stream stream, IStorageStorage repository)
         {
             _client = client;
             _stream = stream;
@@ -44,30 +47,22 @@ namespace MessengerServer
                 }
                 else
                 {
-                    HandshakeMessage message = new HandshakeMessage();
                     string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    if (HandshakeMessage.TryParse(msg, out message))
+                    HandshakeMessage handshake; 
+                    if(HandshakeMessage.TryParse(msg, out handshake))
                     {
-                        if (message.Status)
-                        {
-                            if (_storage.TryGetClientByLogin(message.Login,out User))
-                            {
-                                _logger.log("Client " + User.Login + " Handshake Success!", this.GetType().Name);
-                                SendSystemMsg(ServerCodes.HandshakeSuccess);
-                                return true;
-                            }
-                            else
-                            {
-                                SendSystemMsg(ServerCodes.HandshakeFailed);
-                            }
-                        }
+                        string openedKey = Guid.NewGuid().ToString();
+                        string closedKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+                        var session = new Session(openedKey, closedKey, handshake.Login);
+                        string package = session.ConvertToPackage();
+                        SendSystemMsg(package);
+
+                        User.ID = Guid.NewGuid().ToString();
+                        User.Login = handshake.Login;
+                        User.Password = handshake.Password;
+                        User.FriendID = null;
                         return true;
                     }
-                    else
-                    {
-                        
-                    }
-
                     _logger.log("Client bad handshake!", this.GetType().Name);
                     return false;
                 }
@@ -89,8 +84,7 @@ namespace MessengerServer
             if (_isConnected)
             {
                 _stream.ReadTimeout = Timeout.Infinite;
-                _logger.log("Client Connected " + User.Login, this.GetType().Name);
-
+                _logger.log("Client Connected " + User.ID, this.GetType().Name);
                 OnClientConnected?.Invoke(User.ID, this);
             }
             else 
@@ -123,18 +117,9 @@ namespace MessengerServer
                     else
                     {
                         string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        ChatMessage? message;
                         
-                        if (ChatMessage.TryParse(msg, out message))
-                        {
-                            OnMessageRecieved?.Invoke(this, message);
-                            LastMSGTime = DateTime.UtcNow;
-                        }
-                        else
-                        {
-                            Disconnect("Bad Message " + msg);
-                            return;
-                        }
+                        //Later ¯\_(ツ)_/¯
+
                     }
                 }
                 Disconnect(null);
@@ -167,15 +152,21 @@ namespace MessengerServer
             _stream.Write(msg, 0, msg.Length);
         }
 
+        public void SendSystemMsg(string message)
+        {
+            byte[] msg = Encoding.UTF8.GetBytes(message);
+            _stream.Write(msg, 0, msg.Length);
+        }
+
         public async void Disconnect(string? cause)
         {
             _isConnected = false;
             await _stream.DisposeAsync();
             _client.Dispose();
-            if (cause != null) _logger.log($"Client {User.Login} Disconnected: {cause}", this.GetType().Name);
-            else _logger.log($"Client {User.Login} Disconnected", this.GetType().Name);
-
-            OnClientDead?.Invoke(User.Login);
+            if (cause != null) _logger.log($"Client {User.ID} Disconnected: {cause}", this.GetType().Name);
+            else _logger.log($"Client {User.ID} Disconnected", this.GetType().Name);
+            _storage.DeleteSession(User.ID);
+            OnClientDead?.Invoke(User.ID);
         }
     }
 }
