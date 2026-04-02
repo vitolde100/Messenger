@@ -1,4 +1,6 @@
-﻿namespace MessengerClient2
+﻿using MessengerClient2.src.web.lowLevel;
+
+namespace MessengerClient2
 {
     internal static class Program
     {

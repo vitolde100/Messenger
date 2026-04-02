@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace MessengerClient2
+namespace MessengerClient2.src.web.lowLevel
 {
     public static class ClientConnectionHandler
     {
@@ -145,119 +145,5 @@ namespace MessengerClient2
 
         #endregion
 
-    }
-
-    /// <summary>
-    /// Позволяет подписаться на изменение потока сообщений
-    /// </summary>
-    static class ServerUpdateEventHandler
-    {
-        static private List<Action> subscribers = new List<Action>();
-        static private List<Action> permanentSubscribers = new List<Action>();
-
-        public static string currentMessage = "";
-
-        /// <summary>
-        /// Добавить подписку на 1 изменение
-        /// </summary>
-        public static void AddMethodToSubscribers(Action meth)
-        {
-            subscribers.Add(meth);
-        }
-        /// <summary>
-        /// Добавить подписку на [бесконечное количество] изменение
-        /// </summary>
-        public static void AddMethodToPermanentSubscribers(Action meth)
-        {
-            permanentSubscribers.Add(meth);
-        }
-
-        /// <summary>
-        /// ВЫЗЫВАТЬ ТОЛЬКО ИЗ ПОТОКА ЧТЕНИЯ
-        /// </summary>
-        public static void Invoke(string message)
-        {
-            currentMessage = message;
-            var s = subscribers.ToArray();
-            subscribers.Clear();
-            foreach (Action action in s)
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception ex)
-                {
-#if DEBUG
-                    throw ex;
-#endif
-                }
-            }
-            foreach (Action action in permanentSubscribers)
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception ex)
-                {
-#if DEBUG
-                    throw ex;
-#endif
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Позволяет получить уникальный аутентификатор пакета
-    /// </summary>
-    static class PackageNumerator
-    {
-        private static double currentId = 0;
-
-        public static double getPackageId()
-        {
-            currentId++;
-            return currentId; 
-        }
-    }
-
-    /// <summary>
-    /// Реквест к серверу
-    /// </summary>
-    class Request
-    {
-        string keyword;
-        double reqFlag;
-        string PORNO;
-        string msg;
-        int reqCounter = 0;
-        private SemaphoreSlim _signal = new SemaphoreSlim(0, 1);
-        public async  Task<string> SendRequest(string keyword, string package)
-        {
-            this.keyword = keyword;
-            reqFlag = PackageNumerator.getPackageId();
-            /// Запрос к серверу
-            /// reqFlag - уникальный номер реквеста
-            /// keyword - тип запроса к серверу
-            /// package - данные
-            /// В качестве разделителя использован символ 卐
-            msg = reqFlag.ToString() + "卐" + keyword + "卐" + package;
-            ClientConnectionHandler.SendMessage(msg);
-            ServerUpdateEventHandler.AddMethodToSubscribers(Subscriber);
-            await _signal.WaitAsync();
-            return PORNO;
-        }
-
-        public void Subscriber()
-        {
-            if (ServerUpdateEventHandler.currentMessage.Split('卐', 3)[0] == reqFlag.ToString())
-            {
-                PORNO = ServerUpdateEventHandler.currentMessage.Split('卐', 2)[1];
-                _signal.Release();
-            }
-            else { if (reqCounter < 25) { ServerUpdateEventHandler.AddMethodToSubscribers(Subscriber); reqCounter++; } else { reqCounter = 0; ClientConnectionHandler.SendMessage(msg); } }
-        }
     }
 }
