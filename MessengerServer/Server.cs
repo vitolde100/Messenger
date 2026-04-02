@@ -10,6 +10,7 @@ namespace MessengerServer
     {
         TcpListener _listener;
         ClientRegistry _registry = ClientRegistry.instance;
+        IClientStorage _sql = SQLStorage.instance;
         Logger _logger = Logger.instance;
 
         public bool _running = true;
@@ -57,7 +58,7 @@ namespace MessengerServer
                         stream = tcp.GetStream();
                     }
 
-                    ClientHandler handler = new ClientHandler(tcp, stream);
+                    ClientHandler handler = new ClientHandler(tcp, stream, _sql);
                     handler.OnClientConnected += OnClientConnected;
                     handler.OnMessageRecieved += OnMessageReceived;
                     handler.OnClientDead += OnClientDead;

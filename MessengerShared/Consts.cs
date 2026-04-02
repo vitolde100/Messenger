@@ -3,7 +3,9 @@
     public enum ServerCodes
     {
         None = 0,
-        NoTargetClient = 1,
+        HandshakeSuccess = 1,
+        HandshakeFailed = 2,
+        NoTargetClient = 3,
     }
 
     public static class Protocol

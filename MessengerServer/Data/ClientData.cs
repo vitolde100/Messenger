@@ -1,4 +1,4 @@
-﻿namespace MessengerShared
+﻿namespace MessengerServer.Data
 {
     public class ClientData
     {

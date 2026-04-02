@@ -1,16 +1,14 @@
-﻿using MessengerShared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using MessengerServer.Data;
 
 namespace MessengerServer
 {
     internal interface IClientStorage
     {
-        public ClientData GetClient(string UID);
+        public bool TryGetClientByID(string ID, out ClientData data);
+
+        public bool TryGetClientBySessionID(string ID, out ClientData data);
+
+        public bool TryGetClientByLogin(string Login, out ClientData data);
 
         public void SaveClient(ClientData user);
     }

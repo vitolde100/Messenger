@@ -42,8 +42,8 @@
                 return false;
 
             bool status;
-            if (data[0] == "reg") { status = true; }
-            else if (data[1] == "log") { status = false; }
+            if (data[0] == "reg") { status = false; }
+            else if (data[1] == "log") { status = true; } //Костыль, нужен enum для статуса, но не хочется его делать ради 2х значений.
             else return false;
 
             message = new HandshakeMessage(status, data[1], data[2]);

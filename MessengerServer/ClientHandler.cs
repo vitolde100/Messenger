@@ -1,4 +1,5 @@
-﻿using MessengerShared;
+﻿using MessengerServer.Data;
+using MessengerShared;
 using System.Net.Sockets;
 using System.Text;
 
@@ -44,12 +45,29 @@ namespace MessengerServer
                 else
                 {
                     HandshakeMessage message = new HandshakeMessage();
-
-                    if (HandshakeMessage.TryParse(Encoding.UTF8.GetString(buffer, 0, bytesRead), out message))
+                    string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    if (HandshakeMessage.TryParse(msg, out message))
                     {
-
+                        if (message.Status)
+                        {
+                            if (_storage.TryGetClientByLogin(message.Login,out User))
+                            {
+                                _logger.log("Client " + User.Login + " Handshake Success!", this.GetType().Name);
+                                SendSystemMsg(ServerCodes.HandshakeSuccess);
+                                return true;
+                            }
+                            else
+                            {
+                                SendSystemMsg(ServerCodes.HandshakeFailed);
+                            }
+                        }
                         return true;
                     }
+                    else
+                    {
+                        
+                    }
+
                     _logger.log("Client bad handshake!", this.GetType().Name);
                     return false;
                 }

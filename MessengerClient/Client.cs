@@ -82,9 +82,6 @@ namespace MessengerClient
             return Task.CompletedTask;
         }
 
-        public void SetName(string name)
-        { Program.NickName = name; } // <-- хуйня, переделать
-
         public void Disconnect() 
         {
             try
