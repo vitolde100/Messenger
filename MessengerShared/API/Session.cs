@@ -12,7 +12,7 @@ namespace MessengerShared.API
     /// <summary>
     /// Класс который содержит информацию о сессии
     /// </summary>
-    internal class Session
+    public class Session
     {
         public string openedKey;
         public string closedKey;

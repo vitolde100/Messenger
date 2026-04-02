@@ -1,8 +1,12 @@
-﻿using System;
+﻿using MessengerClient2.src.web.lowLevel;
+using MessengerShared.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MessengerClient2.src.web.highLevel
 {
@@ -16,9 +20,11 @@ namespace MessengerClient2.src.web.highLevel
         /// </summary>
         /// <param name="login">Логин</param>
         /// <param name="password">Пароль</param>
-        public static void Authentificate(string login, string password)
+        public static async Task<Session> Auth(string login, string password)
         {
-            
+            var Data = new { l = login, p = password };
+            Request request = new Request();
+            return new Session(request.SendRequest("auth", JsonSerializer.Serialize(Data)).Result);
         }
     }
 }
