@@ -11,7 +11,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace MessengerClient2.src.web.highLevel
 {
     /// <summary>
-    /// Основной класс для отправки данных на сервер
+    /// Основной класс для отправки данных на сервер и получения ответа
     /// </summary>
     internal static class ClientWebInterface
     {
@@ -25,6 +25,18 @@ namespace MessengerClient2.src.web.highLevel
             var Data = new { l = login, p = password };
             Request request = new Request();
             return new Session(request.SendRequest("auth", JsonSerializer.Serialize(Data)).Result);
+        }
+
+        /// <summary>
+        /// Запрос на создание аккаунта
+        /// </summary>
+        /// <param name="login"></param>
+        /// <param name="password"></param>
+        public static async Task<DataOperationStatus> Register(string login, string password)
+        {
+            var Data = new { l = login, p = password };
+            Request request = new Request();
+            return new DataOperationStatus(request.SendRequest("createAccount", JsonSerializer.Serialize(Data)).Result);
         }
     }
 }
