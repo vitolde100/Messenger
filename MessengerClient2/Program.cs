@@ -1,4 +1,6 @@
-﻿using MessengerClient2.src.web.lowLevel;
+﻿using MessengerClient2.src.clientDB;
+using MessengerClient2.src.web.lowLevel;
+using MessengerClient2.windows;
 
 namespace MessengerClient2
 {
@@ -7,19 +9,20 @@ namespace MessengerClient2
         [STAThread]
         static void Main()
         {
-            //ApplicationConfiguration.Initialize();
-            //Application.Run(new Client());
-            Test();
-        }
-
-        static async void Test()
-        {
-            Request r = new Request();
-            Task<string> t = r.SendRequest("huy", "pipo");
-            ServerUpdateEventHandler.Invoke("333卐heh");
-            ServerUpdateEventHandler.Invoke("1卐hah");
-            string msg = t.Result;
-            MessageBox.Show(msg);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            if (!ClientDBHandler.IsDBExists())
+            {
+                ClientDBHandler.data = new ClientDBHandler.HandledData();
+                //Ask to log in or register
+                Application.Run(new Hello());
+            }
+            else
+            {
+                ClientDBHandler.Load();
+            }
+            
         }
     }
 }

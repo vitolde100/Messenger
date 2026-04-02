@@ -138,6 +138,7 @@ namespace MessengerClient2.src.web.lowLevel
 #if DEBUG
                 throw ex;
 #endif
+                return Task.CompletedTask;
             }
         }
 
