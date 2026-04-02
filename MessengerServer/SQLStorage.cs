@@ -19,8 +19,12 @@ namespace MessengerServer
         SqliteConnection _clientsConnection = new SqliteConnection($"Data Source={ClientsPath}");
         SqliteConnection _sessionsConnection = new SqliteConnection($"Data Source={SessionsPath}");
 
-        private static SQLStorage _storage = new SQLStorage();
-        public static SQLStorage instance { get { return _storage; } }
+        private static readonly SQLStorage _storage = new SQLStorage();
+        public static SQLStorage instance { get 
+            { 
+                return _storage;
+            }
+        }
         private SQLStorage()
         {
             EnsureClientsTable();
@@ -34,21 +38,21 @@ namespace MessengerServer
 
             using var cmd = _clientsConnection.CreateCommand();
             cmd.CommandText = @"
-            CREATE TABLE IF NOT EXISTS Clients (
-               Id TEXT PRIMARY KEY,
+            CREATE TABLE IF NOT EXISTS Users (
+               Id UserId TEXT NOT NULL,
                Login TEXT,
                PasswordHash TEXT,
-               FriendID TEXT,
+               FriendID TEXT
             );";
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "CREATE INDEX IF NOT EXISTS idx_login ON Clients(Login);";
+            cmd.CommandText = "CREATE INDEX IF NOT EXISTS idx_login ON Users(Login);";
             cmd.ExecuteNonQuery();
         }
 
         private void EnsureSessionsTable()
         {
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ClientsPath));
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(SessionsPath));
             _sessionsConnection.Open();
 
             using var cmd = _sessionsConnection.CreateCommand();
@@ -71,7 +75,7 @@ namespace MessengerServer
             {
                 data = new ClientData();
                 var cmd = _clientsConnection.CreateCommand();
-                cmd.CommandText = "SELECT * FROM Clients WHERE Id = $id";
+                cmd.CommandText = "SELECT * FROM Users WHERE Id = $id";
                 cmd.Parameters.AddWithValue("$id", ID);
 
                 using var reader = cmd.ExecuteReader();
@@ -93,7 +97,7 @@ namespace MessengerServer
             {
                 data = new ClientData();
                 var cmd = _clientsConnection.CreateCommand();
-                cmd.CommandText = "SELECT * FROM Clients WHERE Login = $login";
+                cmd.CommandText = "SELECT * FROM Users WHERE Login = $login";
                 cmd.Parameters.AddWithValue("$login", Login);
 
                 using var reader = cmd.ExecuteReader();
@@ -115,8 +119,8 @@ namespace MessengerServer
             {
                 var cmd = _clientsConnection.CreateCommand();
                 cmd.CommandText = @"
-                INSERT INTO Clients (Id, Login, PasswordHash)
-                VALUES ($id, $login, $pass, $friID, $SessID);";
+                INSERT INTO Clients (Id, Login, PasswordHash, FriendID)
+                VALUES ($id, $login, $pass, $friID);";
 
                 cmd.Parameters.AddWithValue("$id", user.ID);
                 cmd.Parameters.AddWithValue("$login", user.Login);
@@ -149,7 +153,7 @@ namespace MessengerServer
         {
             lock (_lock)
             {
-                using var cmd = _clientsConnection.CreateCommand();
+                using var cmd = _sessionsConnection.CreateCommand();
                 cmd.CommandText = @"
                 INSERT INTO Sessions (UserId, OpenedKey, ClosedKey, Expires)
                 VALUES (@userId, @openedKey, @closedKey, @expires);
@@ -228,10 +232,13 @@ namespace MessengerServer
         {
             lock (_lock)
             {
-                using var cmd = _clientsConnection.CreateCommand();
-                cmd.CommandText = "DELETE FROM Sessions WHERE OpenedKey = @openedKey;";
-                cmd.Parameters.AddWithValue("@openedKey", openedKey);
-                cmd.ExecuteNonQuery();
+                if (openedKey != null)
+                {
+                    using var cmd = _sessionsConnection.CreateCommand();
+                    cmd.CommandText = "DELETE FROM Sessions WHERE OpenedKey = @openedKey;";
+                    cmd.Parameters.AddWithValue("@openedKey", openedKey);
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
     }
