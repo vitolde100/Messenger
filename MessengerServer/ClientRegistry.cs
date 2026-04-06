@@ -20,11 +20,11 @@ namespace MessengerServer
             m_logger.log("Added " + userID + "\r", this.GetType().Name);
         }
 
-        public ClientHandler GetClient(string name)
+        public ClientHandler GetClient(string userID)
         {
             try
             {
-                return m_clients[name];
+                return m_clients[userID];
             }
             catch
             {
@@ -32,12 +32,12 @@ namespace MessengerServer
             }
         }
 
-        public void Remove(string name)
+        public void Remove(string userID)
         {
             try
             {
-                m_clients.TryRemove(name,out _);
-                m_logger.log("Deleted " + name + "\r", this.GetType().Name);
+                m_clients.TryRemove(userID,out _);
+                m_logger.log("Deleted " + userID + "\r", this.GetType().Name);
             }
             catch (Exception e)
             {

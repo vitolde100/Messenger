@@ -14,24 +14,26 @@ namespace MessengerShared.API
     /// </summary>
     public class Session
     {
-        public string openedKey;
-        public string closedKey;
-        public DateTime expires { get; private set; } // for storage
+        public string accessToken;
+        public string refreshToken;
+        public DateTime access_expires;
+        public DateTime refresh_expires;
 
         //SERVER ONLY
-        public string userLogin;
+        public string userID;
 
         /// <summary>
         /// Инициализация на стороне сервера
         /// </summary>
-        /// <param name="openedKey"></param>
-        /// <param name="closedKey"></param>
-        public Session(string openedKey, string closedKey, string userLogin)
+        /// <param name="access"></param>
+        /// <param name="refresh"></param>
+        public Session(string access, string refresh, string ID)
         {
-            this.openedKey = openedKey;
-            this.closedKey = closedKey;
-            expires = DateTime.UtcNow.AddHours(24);
-            this.userLogin = userLogin;
+            accessToken = access;
+            refreshToken = refresh;
+            access_expires = DateTime.UtcNow.AddHours(1);
+            refresh_expires = DateTime.UtcNow.AddDays(7);
+            userID = ID;
         }
 
         /// <summary>
@@ -41,9 +43,10 @@ namespace MessengerShared.API
         public Session(string package)
         {
             var doc = JsonDocument.Parse(package);
-            openedKey = doc.RootElement.GetProperty("o").GetString();
-            closedKey = doc.RootElement.GetProperty("c").GetString();
-            expires = doc.RootElement.GetProperty("e").GetDateTime();
+            accessToken = doc.RootElement.GetProperty("o").GetString();
+            refreshToken = doc.RootElement.GetProperty("c").GetString();
+            access_expires = doc.RootElement.GetProperty("ae").GetDateTime();
+            refresh_expires = doc.RootElement.GetProperty("re").GetDateTime();
         }
         /// <summary>
         /// Упаковка для отправки по сети
@@ -51,27 +54,33 @@ namespace MessengerShared.API
         /// <returns>Пакет для отправки</returns>
         public string ConvertToPackage()
         {
-            if (openedKey != null)
+            if (accessToken != null)
             {
                 var data = new
                 {
-                    o = openedKey,
-                    c = closedKey,
-                    e = expires
+                    o = accessToken,
+                    c = refreshToken,
+                    ae = access_expires,
+                    re = refresh_expires
                 };
                 return JsonSerializer.Serialize(data);
             }
             return null;
         }
 
-        public bool isValid()
+        public bool isAccessValid()
         {
-            return expires.CompareTo(DateTime.UtcNow) > 0;
+            return access_expires.CompareTo(DateTime.UtcNow) > 0;
+        }
+
+        public bool isRefreshValid()
+        {
+            return access_expires.CompareTo(DateTime.UtcNow) > 0;
         }
 
         public bool isMathches(Session ses)
         {
-            return ses.openedKey.Equals(openedKey) && ses.closedKey.Equals(closedKey);
+            return ses.accessToken.Equals(accessToken) && ses.refreshToken.Equals(refreshToken);
         }
     }
 }

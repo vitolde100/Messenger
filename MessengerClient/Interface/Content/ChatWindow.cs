@@ -81,7 +81,7 @@ namespace MessengerClient.Interface
 
         public void AddMessage(ChatMessage message)
         {
-            if (message.Target != m_target && message.Target != Program.NickName) return;
+            if (message.TargetID != m_target && message.TargetID != Program.NickName) return;
 
             m_messages.Add(message);
 
@@ -89,8 +89,8 @@ namespace MessengerClient.Interface
             int YPos = (m_userBar.Height + m_messagesLength + (PADDING_Y * m_messages.Count) - offset);
             int XPos = 0;
 
-            if (message.Target == m_target) XPos = 0;
-            else if(message.Target == Program.NickName) XPos = m_size.Width - m_scrollBar.Width;
+            if (message.TargetID == m_target) XPos = 0;
+            else if(message.TargetID == Program.NickName) XPos = m_size.Width - m_scrollBar.Width;
          
             m_messagePanels.Add(new Elements.Message(message, new Point(XPos,YPos)));
             m_messagesLength += m_messagePanels.Last().Panel.Height;
@@ -155,8 +155,8 @@ namespace MessengerClient.Interface
                 DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
                 message.SendTime = utcNow - unixEpoch;
-                message.Target = m_target;
-                message.Sender = Program.NickName;
+                message.TargetID = m_target;
+                message.AccessToken = Program.NickName;
                 message.Text = m_inputBox.Text;
 
                 AddMessage(message);

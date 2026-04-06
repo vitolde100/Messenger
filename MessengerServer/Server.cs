@@ -10,7 +10,7 @@ namespace MessengerServer
     {
         TcpListener _listener;
         ClientRegistry _registry = ClientRegistry.instance;
-        IStorageStorage _sql = SQLStorage.instance;
+        IStorage _sql = SQLStorage.instance;
         Logger _logger = Logger.instance;
 
         public bool _running = true;
@@ -88,12 +88,12 @@ namespace MessengerServer
 
         private void OnMessageReceived(ClientHandler senderHandler, ChatMessage message)
         {
-            ClientHandler client = _registry.GetClient(message.Target);
+            ClientHandler client = _registry.GetClient(message.TargetID);
 
             if (client != null)
             {
                 client.Send(message);
-                senderHandler.SendSystemMsg(ServerCodes.None);
+                senderHandler.SendSystemMsg(ServerCodes.NoErrors);
             }
             else
             {

@@ -9,7 +9,7 @@ using Microsoft.Data.Sqlite;
 
 namespace MessengerServer
 {
-    internal class SQLStorage : IStorageStorage
+    internal class SQLStorage : IStorage
     {
         private static string ClientsPath = "Data\\Users\\clients.db";
         private static string SessionsPath = "Data\\Sessions\\sessions.db";
@@ -20,26 +20,24 @@ namespace MessengerServer
         SqliteConnection _sessionsConnection = new SqliteConnection($"Data Source={SessionsPath}");
 
         private static readonly SQLStorage _storage = new SQLStorage();
-        public static SQLStorage instance { get 
-            { 
-                return _storage;
-            }
-        }
+        public static SQLStorage instance => _storage;
+
         private SQLStorage()
         {
-            EnsureClientsTable();
+            EnsureUsersTable();
             EnsureSessionsTable();
+            m_Logger.log("SQL Storage initialized", this.GetType().Name);
         }
-
-        private void EnsureClientsTable()
+        
+        private void EnsureUsersTable()
         {
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(ClientsPath));
+            Directory.CreateDirectory(Path.GetDirectoryName(ClientsPath));
             _clientsConnection.Open();
 
             using var cmd = _clientsConnection.CreateCommand();
             cmd.CommandText = @"
             CREATE TABLE IF NOT EXISTS Users (
-               Id UserId TEXT NOT NULL,
+               Id TEXT NOT NULL UNIQUE,
                Login TEXT,
                PasswordHash TEXT,
                FriendID TEXT
@@ -52,64 +50,68 @@ namespace MessengerServer
 
         private void EnsureSessionsTable()
         {
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(SessionsPath));
+            Directory.CreateDirectory(Path.GetDirectoryName(SessionsPath));
             _sessionsConnection.Open();
 
             using var cmd = _sessionsConnection.CreateCommand();
             cmd.CommandText = @"
             CREATE TABLE IF NOT EXISTS Sessions (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                UserId INTEGER NOT NULL,
-                OpenedKey TEXT NOT NULL UNIQUE,
-                ClosedKey TEXT NOT NULL,
-                Expires TEXT NOT NULL,
+                Id TEXT PRIMARY KEY AUTOINCREMENT,
+                UserId TEXT NOT NULL,
+                AccessToken TEXT NOT NULL UNIQUE,
+                RefreshToken TEXT NOT NULL UNIQUE,
+                AccessExpires TEXT NOT NULL,
+                RefreshExpires TEXT NOT NULL,
                 FOREIGN KEY(UserId) REFERENCES Users(Id)
             );";
             cmd.ExecuteNonQuery();
         }
 
-
-        public bool TryGetClientByID(string ID, out ClientData data)
+        public ClientData GetClientByID(string ID)
         {
             lock (_lock)
             {
-                data = new ClientData();
                 var cmd = _clientsConnection.CreateCommand();
                 cmd.CommandText = "SELECT * FROM Users WHERE Id = $id";
                 cmd.Parameters.AddWithValue("$id", ID);
 
                 using var reader = cmd.ExecuteReader();
-
                 if (reader.Read())
                 {
-                    data.ID = reader.GetString(0);
-                    data.Login = reader.GetString(1);
-                    data.Password = reader.GetString(2);
-                    data.FriendID = reader.GetString(3);
+                    ClientData data = new ClientData
+                    {
+                        ID = reader.GetString(0),
+                        Login = reader.GetString(1),
+                        Password = reader.GetString(2),
+                        FriendID = reader.GetString(3)
+                    };
+                    return data;
                 }
-                return true;
+                return null;
             }
         }
 
-        public bool TryGetClientByLogin(string Login, out ClientData data)
+        public ClientData GetClientByLogin(string Login)
         {
             lock (_lock)
             {
-                data = new ClientData();
                 var cmd = _clientsConnection.CreateCommand();
                 cmd.CommandText = "SELECT * FROM Users WHERE Login = $login";
                 cmd.Parameters.AddWithValue("$login", Login);
 
                 using var reader = cmd.ExecuteReader();
-
                 if (reader.Read())
                 {
-                    data.ID = reader.GetString(0);
-                    data.Login = reader.GetString(1);
-                    data.Password = reader.GetString(2);
-                    data.FriendID = reader.GetString(3);
+                    ClientData data = new ClientData
+                    {
+                        ID = reader.GetString(0),
+                        Login = reader.GetString(1),
+                        Password = reader.GetString(2),
+                        FriendID = reader.GetString(3)
+                    };
+                    return data;
                 }
-                return true;
+                return null;
             }
         }
 
@@ -119,7 +121,7 @@ namespace MessengerServer
             {
                 var cmd = _clientsConnection.CreateCommand();
                 cmd.CommandText = @"
-                INSERT INTO Clients (Id, Login, PasswordHash, FriendID)
+                INSERT INTO Users (Id, Login, PasswordHash, FriendID)
                 VALUES ($id, $login, $pass, $friID);";
 
                 cmd.Parameters.AddWithValue("$id", user.ID);
@@ -128,117 +130,117 @@ namespace MessengerServer
                 cmd.Parameters.AddWithValue("$friID", user.FriendID);
 
                 cmd.ExecuteNonQuery();
+                m_Logger.log("Client saved: " + user.Login, this.GetType().Name);
             }
         }
-
-
-        public void SaveSession(int userId, string openedKey, string closedKey, DateTime expires)
+        
+        public void DeleteClient(string userID)
         {
             lock (_lock)
             {
-                using var cmd = _clientsConnection.CreateCommand();
-                cmd.CommandText = @"
-                INSERT INTO Sessions (UserId, OpenedKey, ClosedKey, Expires)
-                VALUES (@userId, @openedKey, @closedKey, @expires);
-            ";
-                cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@openedKey", openedKey);
-                cmd.Parameters.AddWithValue("@closedKey", closedKey);
-                cmd.Parameters.AddWithValue("@expires", expires.ToString("o")); 
+                using var cmd = _sessionsConnection.CreateCommand();
+                cmd.CommandText = "DELETE FROM Users WHERE UserId = @Id;";
+                cmd.Parameters.AddWithValue("@Id", userID);
                 cmd.ExecuteNonQuery();
+                m_Logger.log("Client deleted: " + userID, this.GetType().Name);
             }
         }
 
-        public void SaveSession(int userId, Session session)
+        public void SaveSession(string userId, string accessToken, string refreshToken, DateTime accessExpires, DateTime refreshExpires)
         {
             lock (_lock)
             {
                 using var cmd = _sessionsConnection.CreateCommand();
                 cmd.CommandText = @"
-                INSERT INTO Sessions (UserId, OpenedKey, ClosedKey, Expires)
-                VALUES (@userId, @openedKey, @closedKey, @expires);
-            ";
+                INSERT INTO Sessions (UserId, AccessToken, RefreshToken, AccessExpires, RefreshExpires)
+                VALUES (@userId, @access, @refresh, @aexp, @rexp);";
+
                 cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@openedKey", session.openedKey);
-                cmd.Parameters.AddWithValue("@closedKey", session.closedKey);
-                cmd.Parameters.AddWithValue("@expires", session.expires.ToString("o"));
+                cmd.Parameters.AddWithValue("@access", accessToken);
+                cmd.Parameters.AddWithValue("@refresh", refreshToken);
+                cmd.Parameters.AddWithValue("@aexp", accessExpires.ToString("o"));
+                cmd.Parameters.AddWithValue("@rexp", refreshExpires.ToString("o"));
+
                 cmd.ExecuteNonQuery();
+                m_Logger.log($"Session saved for user: " + userId, this.GetType().Name);
             }
         }
 
-        public Session GetSessionByOpenedKey(string openedKey)
+        public void SaveSession(Session session)
+        {
+            SaveSession(session.userID, session.accessToken, session.refreshToken, session.access_expires, session.refresh_expires);
+        }
+
+        public Session GetSessionByAccessToken(string accessToken)
         {
             lock (_lock)
             {
-                using var cmd = _clientsConnection.CreateCommand();
+                using var cmd = _sessionsConnection.CreateCommand();
                 cmd.CommandText = @"
-                SELECT s.OpenedKey, s.ClosedKey, s.Expires, u.Login
+                SELECT s.AccessToken, s.RefreshToken, s.AccessExpires, s.RefreshExpires, u.Login
                 FROM Sessions s
                 JOIN Users u ON u.Id = s.UserId
-                WHERE s.OpenedKey = @openedKey;
-            ";
-                cmd.Parameters.AddWithValue("@openedKey", openedKey);
+                WHERE s.AccessToken = @access;
+                ";
+                cmd.Parameters.AddWithValue("@access", accessToken);
 
                 using var reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
-                    var oKey = reader.GetString(0);
-                    var cKey = reader.GetString(1);
-                    var expires = DateTime.Parse(reader.GetString(2));
-                    var login = reader.GetString(3);
-
-                    var session = new Session(oKey, cKey, login);
-                    typeof(Session).GetField("expires", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                                    ?.SetValue(session, expires);
-                    return session;
+                    return new Session(
+                        reader.GetString(0),
+                        reader.GetString(1),
+                        reader.GetString(4)
+                    )
+                    {
+                        access_expires = DateTime.Parse(reader.GetString(2)),
+                        refresh_expires = DateTime.Parse(reader.GetString(3))
+                    };
                 }
                 return null;
             }
         }
 
-        public List<Session> GetSessionsById(int userId)
+        public List<Session> GetSessionsByUserId(string userId)
         {
             var list = new List<Session>();
             lock (_lock)
             {
-                using var cmd = _clientsConnection.CreateCommand();
+                using var cmd = _sessionsConnection.CreateCommand();
                 cmd.CommandText = @"
-                SELECT s.OpenedKey, s.ClosedKey, s.Expires, u.Login
+                SELECT s.AccessToken, s.RefreshToken, s.AccessExpires, s.RefreshExpires, u.Login
                 FROM Sessions s
                 JOIN Users u ON u.Id = s.UserId
                 WHERE s.UserId = @userId;
-            ";
+                ";
                 cmd.Parameters.AddWithValue("@userId", userId);
 
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    var oKey = reader.GetString(0);
-                    var cKey = reader.GetString(1);
-                    var expires = DateTime.Parse(reader.GetString(2));
-                    var login = reader.GetString(3);
-
-                    var session = new Session(oKey, cKey, login);
-                    typeof(Session).GetField("expires", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                                    ?.SetValue(session, expires);
-
-                    list.Add(session);
+                    list.Add(new Session(
+                        reader.GetString(0),
+                        reader.GetString(1),
+                        reader.GetString(4)
+                    )
+                    {
+                        access_expires = DateTime.Parse(reader.GetString(2)),
+                        refresh_expires = DateTime.Parse(reader.GetString(3))
+                    });
                 }
             }
             return list;
         }
 
-        public void DeleteSession(string openedKey)
+        public void DeleteSession(string userID)
         {
             lock (_lock)
             {
-                if (openedKey != null)
-                {
-                    using var cmd = _sessionsConnection.CreateCommand();
-                    cmd.CommandText = "DELETE FROM Sessions WHERE OpenedKey = @openedKey;";
-                    cmd.Parameters.AddWithValue("@openedKey", openedKey);
-                    cmd.ExecuteNonQuery();
-                }
+                using var cmd = _sessionsConnection.CreateCommand();
+                cmd.CommandText = "DELETE FROM Sessions WHERE UserId = @Id;";
+                cmd.Parameters.AddWithValue("@Id", userID);
+                cmd.ExecuteNonQuery();
+                m_Logger.log("Session deleted for user: " + userID, this.GetType().Name);
             }
         }
     }
