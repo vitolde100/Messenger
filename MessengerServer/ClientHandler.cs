@@ -2,7 +2,7 @@
 using MessengerShared;
 using MessengerShared.API;
 using Microsoft.Data.Sqlite;
-using System.Diagnostics.Contracts;
+using MessengerServer.RequestHandlers;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,6 +14,7 @@ namespace MessengerServer
     {
         TcpClient _client;
         Stream _stream;
+        RequestRouter _router;
         Logger _logger = Logger.instance;
         IStorage _storage;
 
@@ -24,17 +25,18 @@ namespace MessengerServer
         public event Action<ClientHandler, ChatMessage> OnMessageRecieved;
         public event Action<string> OnClientDead;
 
-        TimeSpan MSGCooldown = TimeSpan.FromSeconds(0f); // DO NOT FORGET TO SET
+        TimeSpan MSGCooldown = TimeSpan.FromSeconds(0.5f); // DO NOT FORGET TO SET
 
         DateTime LastMSGTime = DateTime.MinValue;
         const int MaxErrorCount = 10;
         int ErrorCount = 0;
 
-        public ClientHandler(TcpClient client, Stream stream, IStorage repository)
+        public ClientHandler(TcpClient client, Stream stream, IStorage repository, RequestRouter router)
         {
             _client = client;
             _stream = stream;
             _storage = repository;
+            _router = router;
             _isConnected = _stream.CanRead && _stream.CanWrite ? true : false;
         }
 

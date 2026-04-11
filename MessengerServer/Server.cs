@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
+using MessengerServer.RequestHandlers;
 
 namespace MessengerServer
 {
@@ -11,15 +12,18 @@ namespace MessengerServer
         TcpListener _listener;
         ClientRegistry _registry = ClientRegistry.instance;
         IStorage _sql = SQLStorage.instance;
+        RequestRouter _router = new RequestRouter();
         Logger _logger = Logger.instance;
 
         public bool _running = true;
         bool _useTls;
         X509Certificate2 _cert;
+
         public Server(IPAddress ip, int port, bool useTls)
         {
             _listener = new TcpListener(ip, port);
             _useTls = useTls; 
+            RequestRegistrar.RegiterAll(_router);
         }
 
         string certPath = Path.Combine(AppContext.BaseDirectory, "certs/server.pfx");
@@ -58,7 +62,7 @@ namespace MessengerServer
                         stream = tcp.GetStream();
                     }
 
-                    ClientHandler handler = new ClientHandler(tcp, stream, _sql);
+                    ClientHandler handler = new ClientHandler(tcp, stream, _sql, _router);
                     handler.OnClientConnected += OnClientConnected;
                     handler.OnMessageRecieved += OnMessageReceived;
                     handler.OnClientDead += OnClientDead;

@@ -49,7 +49,7 @@ namespace MessengerServer
         {
             foreach (var client in m_clients)
             {
-                client.Value.Disconnect("Ok Bye!!!1!");
+                client.Value.Disconnect(null, "Ok Bye!!!1!");
             }
         }
     }
