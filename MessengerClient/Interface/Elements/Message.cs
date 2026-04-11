@@ -14,14 +14,14 @@ namespace MessengerClient.Interface.Elements
         public RoundedPanel Panel = new RoundedPanel();
         Label m_label = new Label();
 
-        public ChatMessage message = new ChatMessage();
+        public ChatMessageData message = new ChatMessageData();
         Point m_location;
         Size m_size;
         Size m_textSize;
 
         Color m_backColor = Color.FromArgb(125, 125, 125);
 
-        public Message(ChatMessage msg, Point location)
+        public Message(ChatMessageData msg, Point location)
         {
             FormatMessage(msg.Text);
             m_size = new Size(

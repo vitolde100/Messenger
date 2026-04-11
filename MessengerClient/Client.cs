@@ -10,7 +10,7 @@ namespace MessengerClient
     {
         private TcpClient _client = new TcpClient();
         private Stream _stream;
-        public event Action<ChatMessage> MessageReceived;
+        public event Action<ChatMessageData> MessageReceived;
 
         static bool ValidateServerCertificate(
             object sender,
@@ -67,12 +67,12 @@ namespace MessengerClient
                 }
 
                 string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (ChatMessage.TryParse(msg, out var message))
+                if (ChatMessageData.TryParse(msg, out var message))
                     MessageReceived?.Invoke(message);
             }
         }
 
-        public Task SendMessage(ChatMessage message)
+        public Task SendMessage(ChatMessageData message)
         {
             if (Program.isConnected)
             {

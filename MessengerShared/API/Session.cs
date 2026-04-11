@@ -37,35 +37,20 @@ namespace MessengerShared.API
         }
 
         /// <summary>
-        /// Инициализация полученого по сети пакета сессии
-        /// </summary>
-        /// <param name="package"></param>
-        public Session(string package)
-        {
-            var doc = JsonDocument.Parse(package);
-            accessToken = doc.RootElement.GetProperty("o").GetString();
-            refreshToken = doc.RootElement.GetProperty("c").GetString();
-            access_expires = doc.RootElement.GetProperty("ae").GetDateTime();
-            refresh_expires = doc.RootElement.GetProperty("re").GetDateTime();
-        }
-        /// <summary>
         /// Упаковка для отправки по сети
         /// </summary>
         /// <returns>Пакет для отправки</returns>
-        public string ConvertToPackage()
+        public JsonElement ConvertToPackage()
         {
-            if (accessToken != null)
+            var data = new
             {
-                var data = new
-                {
-                    o = accessToken,
-                    c = refreshToken,
-                    ae = access_expires,
-                    re = refresh_expires
-                };
-                return JsonSerializer.Serialize(data);
-            }
-            return null;
+                accessToken,
+                refreshToken,
+                access_expires,
+                refresh_expires
+            };
+            var json = JsonSerializer.Serialize(data);
+            return JsonSerializer.Deserialize<JsonElement>(json);
         }
 
         public bool isAccessValid()

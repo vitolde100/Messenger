@@ -23,7 +23,6 @@
   <ItemGroup>
     <Folder Include="Data\Users\" />
     <Folder Include="Data\Sessions\" />
-    <Folder Include="RequestHandlers\Handlers\" />
   </ItemGroup>
 	
 

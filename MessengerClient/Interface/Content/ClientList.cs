@@ -108,7 +108,7 @@ namespace MessengerClient.Interface
             m_size = newSize;
         }
 
-        private void onMessageReceived(MessengerShared.ChatMessage obj)
+        private void onMessageReceived(MessengerShared.ChatMessageData obj)
         {
             //throw new NotImplementedException();
         }

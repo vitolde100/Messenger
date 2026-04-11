@@ -1,11 +1,9 @@
 ﻿using MessengerServer.Data;
 using MessengerShared;
-using MessengerShared.API;
-using Microsoft.Data.Sqlite;
 using MessengerServer.RequestHandlers;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
+using MessengerShared.Requests;
 using System.Text.Json;
 
 namespace MessengerServer
@@ -14,7 +12,7 @@ namespace MessengerServer
     {
         TcpClient _client;
         Stream _stream;
-        RequestRouter _router;
+        RequestRouter _requestRouter;
         Logger _logger = Logger.instance;
         IStorage _storage;
 
@@ -22,10 +20,10 @@ namespace MessengerServer
         public ClientData User = new ClientData();
 
         public event Action<string, ClientHandler> OnClientConnected;
-        public event Action<ClientHandler, ChatMessage> OnMessageRecieved;
+        public event Action<ClientHandler, ChatMessageData> OnMessageRecieved;
         public event Action<string> OnClientDead;
 
-        TimeSpan MSGCooldown = TimeSpan.FromSeconds(0.5f); // DO NOT FORGET TO SET
+        TimeSpan MSGCooldown = TimeSpan.FromSeconds(0.5f);
 
         DateTime LastMSGTime = DateTime.MinValue;
         const int MaxErrorCount = 10;
@@ -36,7 +34,7 @@ namespace MessengerServer
             _client = client;
             _stream = stream;
             _storage = repository;
-            _router = router;
+            _requestRouter = router;
             _isConnected = _stream.CanRead && _stream.CanWrite ? true : false;
         }
 
@@ -45,7 +43,7 @@ namespace MessengerServer
             try
             {
                 SendSystemMsg(ServerCodes.Hello);
-                _stream.ReadTimeout = 10000;
+                _stream.ReadTimeout = 5000;
                 byte[] buffer = new byte[MessagingConsts.MaxNameLength];
                 int bytesRead = _stream.Read(buffer, 0, buffer.Length);
 
@@ -54,58 +52,23 @@ namespace MessengerServer
                     _logger.log("Timeout!", this.GetType().Name);
                     return false;
                 }
-                else
+
+                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                var request = JsonSerializer.Deserialize<Request>(msg);
+
+                if (request != null)
                 {
-                    string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    HandshakeMessage handshake; 
-                    if(HandshakeMessage.TryParse(msg, out handshake))
-                    {
-                        User.ID = Guid.NewGuid().ToString();
-                        User.Login = handshake.Login;
-                        User.Password = handshake.Password;
-                        User.FriendID = null;
-
-                        while (true)
-                            try
-                            {
-                                _storage.SaveClient(User);
-                                break;
-                            }
-                            catch (SqliteException)
-                            {
-                                User.ID = Guid.NewGuid().ToString();
-                            }
-                        
-                        _storage.SaveClient(User);
-
-                        string accessToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
-                        string refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-
-                        var session = new Session(accessToken, refreshToken, User.ID);
-
-                        while (true)
-                            try
-                            {
-                                _storage.SaveSession(session);
-                                break;
-                            }
-                            catch (SqliteException)
-                            {
-                                accessToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
-                                refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-                            }
-
-                        string package = session.ConvertToPackage();
-                        SendSystemMsg(package);
-
-                        return true;
-                    }
-                    _logger.log("Client bad handshake!", this.GetType().Name);
-                    return false;
+                    var response = _requestRouter.ProcessRequest(request);
+                    SendSystemMsg(JsonSerializer.Serialize(response.Data));
+                    return response.Success;
                 }
+                _logger.log("Client bad handshake!", this.GetType().Name);
+                return false;
+
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                _logger.log(ex.Message, GetType().Name);
                 return false;
             }
         }
@@ -143,13 +106,15 @@ namespace MessengerServer
                         Disconnect(null);
                         return;
                     }
-                    else
+                    
+                    string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    var request = JsonSerializer.Deserialize<Request>(msg);
+                    
+                    if (request != null)
                     {
-
-                        string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        string reqCode = msg.Split(MessagingConsts.SplitChar)[0];
-
-                        ProcessMessage(msg);
+                        var response = _requestRouter.ProcessRequest(request);
+                        if (response != null) SendSystemMsg(JsonSerializer.Serialize(response.Data));
+                        else SendSystemMsg(ServerCodes.BadRequest);
                     }
                 }
                 Disconnect(null);
@@ -162,55 +127,53 @@ namespace MessengerServer
             }
         }
 
-        public async void ProcessMessage(string msg)
+        /*
+        try
         {
-            try
+            ChatMessageData request = new ChatMessageData();
+
+            if (DateTime.UtcNow - LastMSGTime < MSGCooldown)
             {
-                ChatMessage message = new ChatMessage();
+                ErrorCount++;
+                SendSystemMsg(ServerCodes.TooManyRequests);
+                _logger.log(User.Login + ":TooManyRequests " + ErrorCount, this.GetType().Name);
+            }
 
-                if (DateTime.UtcNow - LastMSGTime < MSGCooldown)
-                {
-                    ErrorCount++;
-                    SendSystemMsg(ServerCodes.TooManyRequests);
-                    _logger.log(User.Login + ":TooManyRequests " + ErrorCount, this.GetType().Name);
-                }
+            if (!ChatMessageData.TryParse(msg, out request))
+            {
+                SendSystemMsg(ServerCodes.BadRequest);
+                _logger.log("Client " + User.Login + " sent bad Request!", this.GetType().Name);
+                ErrorCount++;
+            }
 
-                if (!ChatMessage.TryParse(msg, out message))
-                {
-                    SendSystemMsg(ServerCodes.BadRequest);
-                    _logger.log("Client " + User.Login + " sent bad Request!", this.GetType().Name);
-                    ErrorCount++;
-                }
+            var session = _storage.GetSessionByAccessToken(request.AccessToken);
 
-                var session = _storage.GetSessionByAccessToken(message.AccessToken);
-
-                if (session == null && session.userID != User.ID)
-                {
-                    SendSystemMsg(ServerCodes.Unauthorized);
-                    _logger.log("Client " + User.Login + " now unauthorized!", this.GetType().Name);
-                    //Login()
+            if (session == null && session.userID != User.ID)
+            {
+                SendSystemMsg(ServerCodes.Unauthorized);
+                _logger.log("Client " + User.Login + " now unauthorized!", this.GetType().Name);
+                //Login()
                     
-                }
-
-                if (!session.isAccessValid())
-                {
-                    SendSystemMsg(ServerCodes.AccessTokenExpired);
-                    _logger.log("Client " + User.Login + " AccessToken expired!", this.GetType().Name);
-                    //Wait RefreshToken or Login()
-                }
-
-                OnMessageRecieved?.Invoke(this, message);
-                LastMSGTime = DateTime.UtcNow;
-
-
             }
-            catch (Exception ex)
+
+            if (!session.isAccessValid())
             {
-                _logger.log("Error while sending message: " + ex.Message, this.GetType().Name);
+                SendSystemMsg(ServerCodes.AccessTokenExpired);
+                _logger.log("Client " + User.Login + " AccessToken expired!", this.GetType().Name);
+                //Wait RefreshToken or Login()
             }
-        }
 
-        public async void Send(ChatMessage message)
+            OnMessageRecieved?.Invoke(this, request);
+            LastMSGTime = DateTime.UtcNow;
+
+
+        }
+        catch (Exception ex)
+        {
+            _logger.log("Error while sending message: " + ex.Message, this.GetType().Name);
+        }*/
+
+        public async void Send(ChatMessageData message)
         {
             Send(message.ToString());
         }

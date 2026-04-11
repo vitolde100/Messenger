@@ -90,7 +90,7 @@ namespace MessengerServer
             _registry.Add(id, client);
         }
 
-        private void OnMessageReceived(ClientHandler senderHandler, ChatMessage message)
+        private void OnMessageReceived(ClientHandler senderHandler, ChatMessageData message)
         {
             ClientHandler client = _registry.GetClient(message.TargetID);
 

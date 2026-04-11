@@ -4,7 +4,7 @@ namespace MessengerClient.Interface
 {
     internal partial class ChatWindow : ContentNode
     {
-        List<ChatMessage> m_messages = new List<ChatMessage>();
+        List<ChatMessageData> m_messages = new List<ChatMessageData>();
         List<Elements.Message> m_messagePanels = new List<Elements.Message>();
 
         Panel m_userBar;
@@ -79,7 +79,7 @@ namespace MessengerClient.Interface
             Controls.Add(m_sendButton);
         }
 
-        public void AddMessage(ChatMessage message)
+        public void AddMessage(ChatMessageData message)
         {
             if (message.TargetID != m_target && message.TargetID != Program.NickName) return;
 
@@ -150,7 +150,7 @@ namespace MessengerClient.Interface
         {
             if (!string.IsNullOrEmpty(m_inputBox.Text))
             {
-                ChatMessage message = new ChatMessage();
+                ChatMessageData message = new ChatMessageData();
                 DateTime utcNow = DateTime.UtcNow;
                 DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
