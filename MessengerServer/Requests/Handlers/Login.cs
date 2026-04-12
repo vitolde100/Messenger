@@ -1,50 +1,35 @@
-﻿using BCrypt.Net;
-using MessengerServer.Data;
-using MessengerShared.API;
+﻿using MessengerServer.Data;
 using MessengerShared.Requests;
-using Microsoft.Data.Sqlite;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 
 namespace MessengerServer.Requests.Handlers
 {
     internal class Login : IRequestHandler
     {
-        IStorage _storage;
-        public Login(IStorage storage) : base()
+        SessionService _sessionService;
+        ClientService _clientService;
+        public Login(SessionService seService, ClientService clService) : base()
         {
-            _storage = storage;
+            _sessionService = seService;
+            _clientService = clService;
         }
 
         public override Responce HandleRequest(JsonElement Data)
         {
             var handshake = JsonSerializer.Deserialize<ClientData>(Data);
             if (!Validate(Data)) return null;
-            var user = _storage.GetClientByLogin(handshake.Login);
 
-            if (user == null || 
-                BCrypt.Net.BCrypt.Verify(handshake.Password,user.Password))
+            var User = _clientService.GetClientByLogin(handshake.Login);
+
+            if (User == null || BCrypt.Net.BCrypt.Verify(handshake.Password,User.Password))
                 return null;
 
-            string accessToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
-            string refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-            Session session = new Session(accessToken, refreshToken, user.ID);
-            while (true) //Save Session
-                try
-                {
-                    _storage.SaveSession(session);
-                    break;
-                }
-                catch (SqliteException)
-                {
-                    session.accessToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
-                    session.refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-                }
+            var session = _sessionService.CreateSession(User.ID);
 
             return new Responce
             {
-                Type = "LoginResponce",
+                Type = GetType().Name,
+                Success = true,
                 Data = session.ConvertToPackage()
             };
         }

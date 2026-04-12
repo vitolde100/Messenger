@@ -14,9 +14,11 @@ namespace MessengerServer
         Stream _stream;
         RequestRouter _requestRouter;
         Logger _logger = Logger.instance;
-        IStorage _storage;
+        SessionService _sessionService;
+        ClientService _clientService;
 
-        bool _isConnected;
+        bool _isConnected = true;
+        bool _isLoggedIn = false;
         public ClientData User = new ClientData();
 
         public event Action<string, ClientHandler> OnClientConnected;
@@ -29,66 +31,18 @@ namespace MessengerServer
         const int MaxErrorCount = 10;
         int ErrorCount = 0;
 
-        public ClientHandler(TcpClient client, Stream stream, IStorage repository, RequestRouter router)
+        public ClientHandler(TcpClient client, Stream stream, IStorage repository, RequestRouter router, SessionService sessionService, ClientService clientService)
         {
             _client = client;
             _stream = stream;
-            _storage = repository;
+            _sessionService = sessionService;
+            _clientService = clientService;
             _requestRouter = router;
             _isConnected = _stream.CanRead && _stream.CanWrite ? true : false;
         }
 
-        private bool Handshake()
-        {
-            try
-            {
-                SendSystemMsg(ServerCodes.Hello);
-                _stream.ReadTimeout = 5000;
-                byte[] buffer = new byte[MessagingConsts.MaxNameLength];
-                int bytesRead = _stream.Read(buffer, 0, buffer.Length);
-
-                if (bytesRead <= 0)
-                {
-                    _logger.log("Timeout!", this.GetType().Name);
-                    return false;
-                }
-
-                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                var request = JsonSerializer.Deserialize<Request>(msg);
-
-                if (request != null)
-                {
-                    var response = _requestRouter.ProcessRequest(request);
-                    SendSystemMsg(JsonSerializer.Serialize(response.Data));
-                    return response.Success;
-                }
-                _logger.log("Client bad handshake!", this.GetType().Name);
-                return false;
-
-            }
-            catch (IOException ex)
-            {
-                _logger.log(ex.Message, GetType().Name);
-                return false;
-            }
-        }
-
         public async Task Run()
         {
-            _isConnected = Handshake();
-
-            if (_isConnected)
-            {
-                _stream.ReadTimeout = Timeout.Infinite;
-                _logger.log("Client Connected " + User.ID, this.GetType().Name);
-                OnClientConnected?.Invoke(User.ID, this);
-            }
-            else 
-            {
-                Disconnect(ServerCodes.HandshakeFailed);
-                return; 
-            }
-            
             try
             {
                 while (_isConnected)
@@ -109,13 +63,28 @@ namespace MessengerServer
                     
                     string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     var request = JsonSerializer.Deserialize<Request>(msg);
-                    
+
+                    if (DateTime.UtcNow - LastMSGTime < MSGCooldown)
+                    {
+                        ErrorCount++;
+                        SendSystemMsg(ServerCodes.TooManyRequests);
+                        _logger.log(User.Login + ":TooManyRequests " + ErrorCount, this.GetType().Name);
+                    }
+
                     if (request != null)
                     {
+                        if(!_sessionService.isSessionValid(request.AccessToken))
+                        {
+                            SendSystemMsg(ServerCodes.Unauthorized);
+                            _logger.log("Client " + User.Login + " now unauthorized!", this.GetType().Name);
+                            //Login()
+                        }
+                        
                         var response = _requestRouter.ProcessRequest(request);
-                        if (response != null) SendSystemMsg(JsonSerializer.Serialize(response.Data));
-                        else SendSystemMsg(ServerCodes.BadRequest);
+                        SendSystemMsg(JsonSerializer.Serialize(response));
                     }
+
+                    LastMSGTime = DateTime.UtcNow;
                 }
                 Disconnect(null);
                 return;

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace MessengerShared.API
 {
@@ -53,19 +49,9 @@ namespace MessengerShared.API
             return JsonSerializer.Deserialize<JsonElement>(json);
         }
 
-        public bool isAccessValid()
+        public bool IsExpired()
         {
-            return access_expires.CompareTo(DateTime.UtcNow) > 0;
-        }
-
-        public bool isRefreshValid()
-        {
-            return access_expires.CompareTo(DateTime.UtcNow) > 0;
-        }
-
-        public bool isMathches(Session ses)
-        {
-            return ses.accessToken.Equals(accessToken) && ses.refreshToken.Equals(refreshToken);
+            return access_expires.CompareTo(DateTime.UtcNow) > 0 && refresh_expires.CompareTo(DateTime.UtcNow) > 0 ;
         }
     }
 }

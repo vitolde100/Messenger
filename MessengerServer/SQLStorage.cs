@@ -201,7 +201,7 @@ namespace MessengerServer
             }
         }
 
-        public List<Session> GetSessionsByUserId(string userId)
+        public List<Session> GetSessionsById(string userId)
         {
             var list = new List<Session>();
             lock (_lock)

@@ -12,8 +12,8 @@ namespace MessengerServer
         TcpListener _listener;
         ClientRegistry _registry = ClientRegistry.instance;
         IStorage _sql = SQLStorage.instance;
-        RequestRouter _router = new RequestRouter();
         Logger _logger = Logger.instance;
+        RequestRouter _router = new RequestRouter();
 
         public bool _running = true;
         bool _useTls;
@@ -23,7 +23,7 @@ namespace MessengerServer
         {
             _listener = new TcpListener(ip, port);
             _useTls = useTls; 
-            RequestRegistrar.RegiterAll(_router);
+            RequestRegistrar.RegiterAll(_router, _sql);
         }
 
         string certPath = Path.Combine(AppContext.BaseDirectory, "certs/server.pfx");
