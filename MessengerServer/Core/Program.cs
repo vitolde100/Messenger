@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using MessengerShared;
 
-namespace MessengerServer
+namespace MessengerServer.Core
 {
     class Program
     {

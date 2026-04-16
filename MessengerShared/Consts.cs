@@ -14,9 +14,10 @@
         //Only requests and responses are in JSON format,
         //but I'll leave it here for now,
         //I don't want too many errors.
-        //vvv
+        /*
         public const int PartsCount = 4; 
         public const int HandshakeCount = 3;
         public const char SplitChar = '|'; 
+        */
     }
 }

@@ -1,4 +1,4 @@
-using MessengerShared;
+using MessengerShared.Requests.Data;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -59,16 +59,7 @@ namespace MessengerClient
             byte[] buffer = new byte[1024];
             while (Program.isConnected && _stream != null)
             {
-                int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
-                if (bytesRead <= 0)
-                {
-                    Disconnect();
-                    break;
-                }
 
-                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                if (ChatMessageData.TryParse(msg, out var message))
-                    MessageReceived?.Invoke(message);
             }
         }
 

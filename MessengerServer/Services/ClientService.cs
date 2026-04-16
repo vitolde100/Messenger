@@ -1,7 +1,7 @@
 ﻿using MessengerServer.Data;
 using Microsoft.Data.Sqlite;
 
-namespace MessengerServer
+namespace MessengerServer.Services
 {
     internal class ClientService
     {

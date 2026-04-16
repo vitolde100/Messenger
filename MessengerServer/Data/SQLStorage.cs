@@ -3,11 +3,11 @@
 //I don`t want to deal with SQL queries and connections!
 //So if you are change smth there please don`t let me know.
 
-using MessengerServer.Data;
+using MessengerServer.Core;
 using MessengerShared.API;
 using Microsoft.Data.Sqlite;
 
-namespace MessengerServer
+namespace MessengerServer.Data
 {
     internal class SQLStorage : IStorage
     {
@@ -19,10 +19,7 @@ namespace MessengerServer
         SqliteConnection _clientsConnection = new SqliteConnection($"Data Source={ClientsPath}");
         SqliteConnection _sessionsConnection = new SqliteConnection($"Data Source={SessionsPath}");
 
-        private static readonly SQLStorage _storage = new SQLStorage();
-        public static SQLStorage instance => _storage;
-
-        private SQLStorage()
+        public SQLStorage()
         {
             EnsureUsersTable();
             EnsureSessionsTable();

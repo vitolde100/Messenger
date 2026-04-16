@@ -36,7 +36,7 @@ namespace MessengerShared.API
         /// Упаковка для отправки по сети
         /// </summary>
         /// <returns>Пакет для отправки</returns>
-        public JsonElement ConvertToPackage()
+        public JsonElement ConvertToElement()
         {
             var data = new
             {

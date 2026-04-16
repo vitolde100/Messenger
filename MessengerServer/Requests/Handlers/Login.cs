@@ -1,5 +1,6 @@
-﻿using MessengerServer.Data;
+﻿using MessengerServer.Services;
 using MessengerShared.Requests;
+using MessengerShared.Requests.Data;
 using System.Text.Json;
 
 namespace MessengerServer.Requests.Handlers
@@ -12,26 +13,29 @@ namespace MessengerServer.Requests.Handlers
         {
             _sessionService = seService;
             _clientService = clService;
+
+            ShouldBeAutorised = false;
         }
 
-        public override Responce HandleRequest(JsonElement Data)
+        public override Responce HandleRequest(JsonElement json, ClientContext context)
         {
-            var handshake = JsonSerializer.Deserialize<ClientData>(Data);
-            if (!Validate(Data)) return null;
+            var Data = JsonSerializer.Deserialize<UserData>(json);
+            if (!Validate(json)) return BuildResponce(ServerCodes.BadRequest);
 
-            var User = _clientService.GetClientByLogin(handshake.Login);
+            var User = _clientService.GetClientByLogin(Data.Login);
 
-            if (User == null || BCrypt.Net.BCrypt.Verify(handshake.Password,User.Password))
-                return null;
+            if (User == null)
+                return BuildResponce(ServerCodes.NoTargetUser);
+            
+            if (!BCrypt.Net.BCrypt.Verify(Data.Password, User.Password))
+                return BuildResponce(ServerCodes.WrongPassword);
 
             var session = _sessionService.CreateSession(User.ID);
 
-            return new Responce
-            {
-                Type = GetType().Name,
-                Success = true,
-                Data = session.ConvertToPackage()
-            };
+            context.UserID = User.ID;
+            context.AccessToken = session.accessToken;
+
+            return BuildResponce(session.ConvertToElement());
         }
     }
 }

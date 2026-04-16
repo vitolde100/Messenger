@@ -2,18 +2,39 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
-namespace MessengerServer.Requests
+namespace MessengerServer.Requests.Handlers
 {
     internal abstract class IRequestHandler
     {
         public string Type;
-  
+        public bool ShouldBeAutorised = false;
         public IRequestHandler()
         {
             Type = GetType().Name;
         }
 
-        public abstract Responce HandleRequest(JsonElement data);
+        public abstract Responce HandleRequest(JsonElement data, ClientContext context);
+
+        protected Responce BuildResponce(ServerCodes code = ServerCodes.NoErrors)
+        {
+            var responce = new Responce
+            {
+                Type = GetType().Name,
+                Error = code
+            };
+            responce.Success = code == ServerCodes.NoErrors;
+            return responce;
+        }
+
+        protected Responce BuildResponce(JsonElement Data)
+        {
+            return new Responce
+            {
+                Type = GetType().Name,
+                Success = true,
+                Data = Data
+            };
+        }
 
         public bool Validate(object obj)
         {

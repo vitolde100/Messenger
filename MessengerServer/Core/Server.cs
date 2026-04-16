@@ -1,33 +1,44 @@
-﻿using MessengerShared;
-using System.Net;
+﻿using System.Net;
+using System.Text.Json;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using MessengerServer.RequestHandlers;
+using MessengerServer.Services;
+using MessengerShared.Requests;
+using MessengerShared.Requests.Data;
+using MessengerServer.Data;
 
-namespace MessengerServer
+namespace MessengerServer.Core
 {
     internal class Server
     {
         TcpListener _listener;
         ClientRegistry _registry = ClientRegistry.instance;
-        IStorage _sql = SQLStorage.instance;
         Logger _logger = Logger.instance;
-        RequestRouter _router = new RequestRouter();
-
+        SessionService _sessionService;
+        ClientService _clientService;
+        MessagingService _messagingService;
+        RequestRouter _router;
         public bool _running = true;
         bool _useTls;
         X509Certificate2 _cert;
 
-        public Server(IPAddress ip, int port, bool useTls)
-        {
-            _listener = new TcpListener(ip, port);
-            _useTls = useTls; 
-            RequestRegistrar.RegiterAll(_router, _sql);
-        }
-
         string certPath = Path.Combine(AppContext.BaseDirectory, "certs/server.pfx");
         string certPassword = "123456";
+
+        public Server(IPAddress ip, int port, bool useTls)
+        {
+            IStorage _sql = new SQLStorage();
+            _sessionService = new SessionService(_sql);
+            _clientService = new ClientService(_sql);
+            _messagingService = new MessagingService(_registry, _clientService, _sessionService);
+            _router = new RequestRouter(_sessionService); 
+            RequestRegistrar.RegiterAll(_router, _sessionService, _clientService, _messagingService);
+
+            _listener = new TcpListener(ip, port);
+            _useTls = useTls;
+        }
 
         public async Task Run()
         {
@@ -40,8 +51,8 @@ namespace MessengerServer
             {
                 _logger.log("Failed to load cert: " + ex.Message, this.GetType().Name);
             }
+            
             _logger.log("Server Started\n", this.GetType().Name);
-
             _listener.Start();
 
             while (_running)
@@ -62,9 +73,8 @@ namespace MessengerServer
                         stream = tcp.GetStream();
                     }
 
-                    ClientHandler handler = new ClientHandler(tcp, stream, _sql, _router);
+                    ClientHandler handler = new ClientHandler(tcp, stream, _router);
                     handler.OnClientConnected += OnClientConnected;
-                    handler.OnMessageRecieved += OnMessageReceived;
                     handler.OnClientDead += OnClientDead;
                     _ = Task.Run(async () =>
                     {
@@ -87,28 +97,12 @@ namespace MessengerServer
 
         private void OnClientConnected(string id, ClientHandler client)
         {
-            _registry.Add(id, client);
+            _registry.Add(client);
         }
 
-        private void OnMessageReceived(ClientHandler senderHandler, ChatMessageData message)
+        private void OnClientDead(ClientHandler handler)
         {
-            ClientHandler client = _registry.GetClient(message.TargetID);
-
-            if (client != null)
-            {
-                client.Send(message);
-                senderHandler.SendSystemMsg(ServerCodes.NoErrors);
-            }
-            else
-            {
-                senderHandler.SendSystemMsg(ServerCodes.NoTargetClient);
-                _logger.log("No Target Client", this.GetType().Name);
-            }
-        } 
-
-        private void OnClientDead(string id)
-        {
-            _registry.Remove(id);
+            _registry.Remove(handler.Context);
         }
 
         public void Stop()

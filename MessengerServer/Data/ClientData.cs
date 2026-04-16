@@ -1,16 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace MessengerServer.Data
+﻿namespace MessengerServer.Data
 {
     public class ClientData
     {
         
         public string ID { get; set; }
-        [Required]
         public string Login { get; set; }
-        [Required]
-        public string Password { get; set; } //Потом hash
-        public string FriendID { get; set; }
+        public string Password { get; set; } //По факту hash
+        public string FriendID { get; set; } //ДАДАДА КОГДА-НИБУДЬ БУДЕТ (⊙_⊙;)
 
         public ClientData() { }
     }

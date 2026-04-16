@@ -1,8 +1,6 @@
-﻿using MessengerServer.Data;
-using MessengerShared.API;
+﻿using MessengerServer.Services;
 using MessengerShared.Requests;
-using Microsoft.Data.Sqlite;
-using System.Security.Cryptography;
+using MessengerShared.Requests.Data;
 using System.Text.Json;
 
 namespace MessengerServer.Requests.Handlers
@@ -15,22 +13,21 @@ namespace MessengerServer.Requests.Handlers
         { 
             _sessionService = seService;
             _clientService = clService;
+
+            ShouldBeAutorised = false;
         }
 
-        public override Responce HandleRequest(JsonElement Data)
+        public override Responce HandleRequest(JsonElement json, ClientContext context)
         {
-            var handshake = JsonSerializer.Deserialize<ClientData>(Data);
-            if (!Validate(Data)) return null;
+            var Data = JsonSerializer.Deserialize<UserData>(json);
+            if (!Validate(json)) return BuildResponce(ServerCodes.BadRequest);
 
-            var User = _clientService.CreateClient(handshake.Login, handshake.Password);
+            var User = _clientService.CreateClient(Data.Login, Data.Password);
             var session = _sessionService.CreateSession(User.ID);
 
-            return new Responce
-            {
-                Type = GetType().Name,
-                Success = true,
-                Data = session.ConvertToPackage()
-            };
+            context.UserID = User.ID;
+
+            return BuildResponce(session.ConvertToElement());
         }
     }
 }

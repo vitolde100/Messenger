@@ -1,4 +1,4 @@
-﻿namespace MessengerServer
+﻿namespace MessengerServer.Core
 {
     public class Logger
     {

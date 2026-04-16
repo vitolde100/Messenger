@@ -1,14 +1,15 @@
-﻿using MessengerShared.API;
+﻿using MessengerServer.Data;
+using MessengerShared.API;
 using Microsoft.Data.Sqlite;
 using System.Security.Cryptography;
 
-namespace MessengerServer
+namespace MessengerServer.Services
 {
     internal class SessionService
     {
         private IStorage _storage;
 
-        SessionService(IStorage storage)
+        public SessionService(IStorage storage)
         {
             _storage = storage;
         }
@@ -39,6 +40,11 @@ namespace MessengerServer
             if (session == null || session.IsExpired())
                 return false;
             return true;
+        }
+
+        public void RemoveSession(string accessToken)
+        {
+            _storage.DeleteSession(accessToken);
         }
     }
 }

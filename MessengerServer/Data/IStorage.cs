@@ -1,7 +1,6 @@
-﻿using MessengerServer.Data;
-using MessengerShared.API;
+﻿using MessengerShared.API;
 
-namespace MessengerServer
+namespace MessengerServer.Data
 {
     internal interface IStorage
     {
