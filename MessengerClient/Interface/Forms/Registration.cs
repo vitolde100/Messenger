@@ -1,3 +1,4 @@
+using MessengerClient.Client;
 namespace MessengerClient
 {
     public partial class Registration : Form
@@ -9,65 +10,7 @@ namespace MessengerClient
 
         async void ConnectButton_Click(object sender, EventArgs e)
         {
-            string[] Adressfragments = IPBox.Text.Split(':', 2);
-            if (string.IsNullOrEmpty(NameBox.Text))
-            {
-                ConnectionExLable.Text = "Invalid Nickname";
-                ConnectionExLable.Visible = true;
-                return;
-            }
-            else
-            {
-                Program.NickName = NameBox.Text;
-            }
-
-            if (Adressfragments.Length != 2)
-            {
-                ConnectionExLable.Text = "Invalid IP Adress";
-                ConnectionExLable.Visible = true;
-                return;
-            }
-            else
-            {
-                Program.IP = Adressfragments[0];
-                try
-                {
-                    Program.Port = Convert.ToInt32(Adressfragments[1]);
-                }
-                catch
-                {
-                    ConnectionExLable.Text = "Invalid IP Adress";
-                    return;
-                }
-            }
-
-            Exception ex = null;
-            Thread ConnectThread = new Thread(() =>
-            {
-                try
-                {
-                    Program.client.ConnectAsync(Program.IP, Program.Port);
-                }
-                catch (Exception e)
-                {
-                    ex = e;
-                }
-            });
-            ConnectThread.Start();
-
-            if (!ConnectThread.Join(5000))
-                ex = new TimeoutException("Connection timed out");
-            if (ex != null)
-            {
-                ConnectionExLable.Text = ex.Message;
-                ConnectionExLable.Visible = true;
-                return;
-            }
-            else
-            {
-                Program.isConnected = true;
-                Close();
-            }
+            
         }
     }
 }

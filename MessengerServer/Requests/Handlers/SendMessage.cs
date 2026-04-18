@@ -15,10 +15,10 @@ namespace MessengerServer.Requests.Handlers
             ShouldBeAutorised = true;
         }
 
-        public override Responce HandleRequest(JsonElement json, ClientContext context)
+        public override Responce HandleRequest(Request request, ClientContext context)
         {
-            var Data = JsonSerializer.Deserialize<ChatMessageData>(json);
-            if (Data == null) return BuildResponce(ServerCodes.BadRequest);
+            var Data = JsonSerializer.Deserialize<ChatMessageData>((JsonElement)request.Data);
+            if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
 
             try
             {

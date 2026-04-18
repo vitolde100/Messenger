@@ -1,26 +1,25 @@
-﻿using MessengerServer.Services;
+﻿using MessengerServer.Core;
+using MessengerServer.Services;
 using MessengerShared.Requests;
-using MessengerShared.Requests.Data;
-using System.Text.Json;
 
 namespace MessengerServer.Requests.Handlers
 {
     internal class Logout : IRequestHandler
     {
         SessionService _sessionService;
-        public Logout(SessionService sessionService)
+        ClientRegistry _clientRegistry;
+        public Logout(SessionService sessionService, ClientRegistry registry)
         {
             _sessionService = sessionService;
-            ShouldBeAutorised = true;
+            _clientRegistry = registry;
+            ShouldBeAutorised = false;
         }
 
-        public override Responce HandleRequest(JsonElement json, ClientContext context)
+        public override Responce HandleRequest(Request request, ClientContext context)
         {
-            var Data = JsonSerializer.Deserialize<LogoutData>(json);
-            if (Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
+            _sessionService.Remove(request.AccessToken);
+            _clientRegistry.Remove(context);
 
-            _sessionService.RemoveSession(Data.AccessToken);
-            
             return BuildResponce();
         }
     }

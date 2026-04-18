@@ -31,6 +31,8 @@ namespace MessengerServer.RequestHandlers
                 var responce = new Responce();
                 if (!_sessionService.isSessionValid(request.AccessToken) && handler.ShouldBeAutorised)
                 {
+                    _handlers.TryGetValue("Logout", out handler);
+                    handler.HandleRequest(request, context);
                     responce = new Responce
                     {
                         Type = request.Type,
@@ -39,7 +41,7 @@ namespace MessengerServer.RequestHandlers
                         Data = JsonDocument.Parse("{}").RootElement
                     };
                 }
-                else responce = handler.HandleRequest(request.Data, context);
+                else responce = handler.HandleRequest(request, context);
 
                 responce.Number = request.Number;
                 return responce;

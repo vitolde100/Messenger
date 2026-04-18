@@ -28,25 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
-            NameBox = new TextBox();
+            LoginBox = new TextBox();
             IPBox = new TextBox();
             ConnectButton = new Button();
             NameLable = new Label();
             label1 = new Label();
             ConnectionExLable = new Label();
+            PasswordBox = new TextBox();
+            label2 = new Label();
             SuspendLayout();
             // 
-            // NameBox
+            // LoginBox
             // 
-            NameBox.BorderStyle = BorderStyle.FixedSingle;
-            NameBox.Location = new Point(23, 28);
-            NameBox.Name = "NameBox";
-            NameBox.Size = new Size(165, 23);
-            NameBox.TabIndex = 1;
+            LoginBox.BorderStyle = BorderStyle.FixedSingle;
+            LoginBox.Location = new Point(23, 28);
+            LoginBox.Name = "LoginBox";
+            LoginBox.Size = new Size(165, 23);
+            LoginBox.TabIndex = 1;
             // 
             // IPBox
             // 
-            IPBox.Location = new Point(23, 92);
+            IPBox.Location = new Point(23, 123);
             IPBox.Name = "IPBox";
             IPBox.Size = new Size(165, 23);
             IPBox.TabIndex = 2;
@@ -67,14 +69,14 @@
             NameLable.AutoSize = true;
             NameLable.Location = new Point(23, 12);
             NameLable.Name = "NameLable";
-            NameLable.Size = new Size(39, 15);
+            NameLable.Size = new Size(37, 15);
             NameLable.TabIndex = 3;
-            NameLable.Text = "Name";
+            NameLable.Text = "Login";
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(23, 74);
+            label1.Location = new Point(23, 105);
             label1.Name = "label1";
             label1.Size = new Size(48, 15);
             label1.TabIndex = 4;
@@ -92,16 +94,34 @@
             ConnectionExLable.TextAlign = ContentAlignment.MiddleCenter;
             ConnectionExLable.Visible = false;
             // 
+            // PasswordBox
+            // 
+            PasswordBox.Location = new Point(23, 79);
+            PasswordBox.Name = "PasswordBox";
+            PasswordBox.Size = new Size(165, 23);
+            PasswordBox.TabIndex = 6;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(23, 61);
+            label2.Name = "label2";
+            label2.Size = new Size(57, 15);
+            label2.TabIndex = 7;
+            label2.Text = "Password";
+            // 
             // Registration
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(215, 256);
+            Controls.Add(label2);
+            Controls.Add(PasswordBox);
             Controls.Add(ConnectionExLable);
             Controls.Add(label1);
             Controls.Add(NameLable);
             Controls.Add(IPBox);
-            Controls.Add(NameBox);
+            Controls.Add(LoginBox);
             Controls.Add(ConnectButton);
             Name = "Registration";
             Text = "Registration";
@@ -111,11 +131,13 @@
 
         #endregion
 
-        private TextBox NameBox;
+        private TextBox LoginBox;
         private TextBox IPBox;
         private Button ConnectButton;
         private Label NameLable;
         private Label label1;
         private Label ConnectionExLable;
+        private TextBox PasswordBox;
+        private Label label2;
     }
 }

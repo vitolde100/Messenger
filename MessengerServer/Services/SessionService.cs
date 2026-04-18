@@ -1,4 +1,5 @@
-﻿using MessengerServer.Data;
+﻿using MessengerServer.Core;
+using MessengerServer.Data;
 using MessengerShared.API;
 using Microsoft.Data.Sqlite;
 using System.Security.Cryptography;
@@ -8,6 +9,7 @@ namespace MessengerServer.Services
     internal class SessionService
     {
         private IStorage _storage;
+        private Logger _logger = Logger.instance;
 
         public SessionService(IStorage storage)
         {
@@ -42,9 +44,16 @@ namespace MessengerServer.Services
             return true;
         }
 
-        public void RemoveSession(string accessToken)
+        public void Remove(string accessToken)
         {
-            _storage.DeleteSession(accessToken);
+            try
+            {
+                _storage.DeleteSession(accessToken);
+            }
+            catch (Exception ex) 
+            {
+                _logger.log(ex.Message, GetType().Name);
+            }
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace MessengerClient
+﻿namespace MessengerClient.Data
 {
     internal class ClientData
     {

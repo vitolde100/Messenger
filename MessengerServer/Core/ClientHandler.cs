@@ -94,13 +94,22 @@ namespace MessengerServer.Core
         {
             try
             {
-                byte[] msg = UnicodeEncoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+                byte[] msg = UnicodeEncoding.UTF8.GetBytes(JsonSerializer.Serialize(BuildEnvelope(message)));
                 await _stream.WriteAsync(msg, 0, msg.Length);
             }
             catch (Exception ex)
             {
                 _logger.log("Error while sending system message: " + ex.Message, this.GetType().Name);
             }
+        }
+
+        private Envelope BuildEnvelope(object payload) 
+        {
+            return new Envelope
+            {
+                Type = payload.GetType().Name.ToLower(),
+                Payload = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(payload))
+            };
         }
 
         public async void Disconnect(ServerCodes? code, string? Ex = null)

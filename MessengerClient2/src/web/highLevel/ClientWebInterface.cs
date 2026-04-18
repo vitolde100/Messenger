@@ -20,12 +20,12 @@ namespace MessengerClient2.src.web.highLevel
         /// </summary>
         /// <param name="login">Логин</param>
         /// <param name="password">Пароль</param>
-        public static async Task<Session> Auth(string login, string password)
+        /*public static async Task<Session> Auth(string login, string password)
         {
             var Data = new { l = login, p = password };
             Request request = new Request();
             return new Session(request.SendRequest("auth", JsonSerializer.Serialize(Data)).Result);
-        }
+        }*/
 
         /// <summary>
         /// Запрос на создание аккаунта

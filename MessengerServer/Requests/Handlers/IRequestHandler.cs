@@ -13,7 +13,7 @@ namespace MessengerServer.Requests.Handlers
             Type = GetType().Name;
         }
 
-        public abstract Responce HandleRequest(JsonElement data, ClientContext context);
+        public abstract Responce HandleRequest(Request request, ClientContext context);
 
         protected Responce BuildResponce(ServerCodes code = ServerCodes.NoErrors)
         {
@@ -36,8 +36,9 @@ namespace MessengerServer.Requests.Handlers
             };
         }
 
-        public bool Validate(object obj)
+        public bool Validate(object? obj)
         {
+            if (obj == null) return false;
             var props = obj.GetType().GetProperties();
 
             foreach (var prop in props)

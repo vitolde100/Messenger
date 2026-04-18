@@ -17,10 +17,10 @@ namespace MessengerServer.Requests.Handlers
             ShouldBeAutorised = false;
         }
 
-        public override Responce HandleRequest(JsonElement json, ClientContext context)
+        public override Responce HandleRequest(Request request, ClientContext context)
         {
-            var Data = JsonSerializer.Deserialize<UserData>(json);
-            if (!Validate(json)) return BuildResponce(ServerCodes.BadRequest);
+            var Data = JsonSerializer.Deserialize<UserData>((JsonElement)request.Data);
+            if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
 
             var User = _clientService.CreateClient(Data.Login, Data.Password);
             var session = _sessionService.CreateSession(User.ID);

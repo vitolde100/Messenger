@@ -1,16 +1,18 @@
-using MessengerShared.Requests.Data;
+﻿using MessengerShared.Requests.Data;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace MessengerClient
+namespace MessengerClient.Client.Transport
 {
-    public class Client //CHANGE EXCEPTIONS LATER
+    public class TCPTransport : ITransport
     {
-        private TcpClient _client = new TcpClient();
-        private Stream _stream;
-        public event Action<ChatMessageData> MessageReceived;
+        public bool isConnected { get; private set; }
+        TcpClient _client;
+        Stream _stream;
+
+        public TCPTransport() { }
 
         static bool ValidateServerCertificate(
             object sender,
@@ -18,19 +20,10 @@ namespace MessengerClient
             X509Chain chain,
             SslPolicyErrors errors)
         {
-            return true;
+            return true; //I know, it`s useless ¯\_(ツ)_/¯
         }
 
-        public Client() { }
-
-        private void SendHandshake()
-        {
-            if (string.IsNullOrEmpty(Program.NickName) || _stream == null) return;
-            byte[] data = Encoding.UTF8.GetBytes(Program.NickName);
-            _stream.Write(data, 0, data.Length);
-        }
-
-        public async void ConnectAsync(string host, int port)
+        public async Task ConnectAsync(string host, int port)
         {
             try
             {
@@ -44,9 +37,6 @@ namespace MessengerClient
                 await ssl.AuthenticateAsClientAsync(host);
 
                 _stream = ssl;
-                SendHandshake();
-                Program.isConnected = _stream.CanRead && _stream.CanWrite ? true : false;
-                await ReadAsync();
             }
             catch (Exception ex)
             {
@@ -54,30 +44,26 @@ namespace MessengerClient
             }
         }
 
-        public async Task ReadAsync()
+        public async Task<string> ReceiveAsync()
         {
             byte[] buffer = new byte[1024];
-            while (Program.isConnected && _stream != null)
-            {
-
-            }
+            return string.Empty;
         }
 
-        public Task SendMessage(ChatMessageData message)
+        public async Task SendAsync(string message)
         {
-            if (Program.isConnected)
+            if (isConnected)
             {
                 byte[] buffer = UTF8Encoding.UTF8.GetBytes(message.ToString());
-                _stream.Write(buffer, 0, buffer.Length);
+                await _stream.WriteAsync(buffer, 0, buffer.Length);
             }
-            return Task.CompletedTask;
         }
 
-        public void Disconnect() 
+        public void Disconnect()
         {
             try
             {
-                Program.isConnected = false;
+                isConnected = false;
                 _stream.Dispose();
                 _client.Dispose();
             }

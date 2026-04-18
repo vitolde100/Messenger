@@ -1,4 +1,5 @@
-﻿using MessengerShared;
+﻿using MessengerClient.Data;
+using MessengerShared;
 
 namespace MessengerClient.Interface
 {
@@ -81,7 +82,7 @@ namespace MessengerClient.Interface
 
         public void AddMessage(ChatMessageData message)
         {
-            if (message.TargetID != m_target && message.TargetID != Program.NickName) return;
+            if (message.TargetID != m_target && message.TargetID != Program.Login) return;
 
             m_messages.Add(message);
 
@@ -90,7 +91,7 @@ namespace MessengerClient.Interface
             int XPos = 0;
 
             if (message.TargetID == m_target) XPos = 0;
-            else if(message.TargetID == Program.NickName) XPos = m_size.Width - m_scrollBar.Width;
+            else if(message.TargetID == Program.Login) XPos = m_size.Width - m_scrollBar.Width;
          
             m_messagePanels.Add(new Elements.Message(message, new Point(XPos,YPos)));
             m_messagesLength += m_messagePanels.Last().Panel.Height;
@@ -156,7 +157,7 @@ namespace MessengerClient.Interface
 
                 message.SendTime = utcNow - unixEpoch;
                 message.TargetID = m_target;
-                message.AccessToken = Program.NickName;
+                message.AccessToken = Program.Login;
                 message.Text = m_inputBox.Text;
 
                 AddMessage(message);

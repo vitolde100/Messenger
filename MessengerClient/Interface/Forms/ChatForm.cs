@@ -1,4 +1,5 @@
-﻿using MessengerClient.Interface;
+﻿using MessengerClient.Data;
+using MessengerClient.Interface;
 using MessengerShared;
 
 namespace MessengerClient

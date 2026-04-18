@@ -1,5 +1,6 @@
 ﻿using MessengerShared;
 using MessengerClient.Interface.Elements;
+using MessengerClient.Data;
 
 namespace MessengerClient.Interface
 {
