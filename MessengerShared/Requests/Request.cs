@@ -6,10 +6,10 @@ namespace MessengerShared.Requests
 {
     public class Request
     {
-        public int Number; //. . .
-        public string AccessToken;
-        public string Type;
-        public JsonElement? Data;
+        public int Number { get; set; }
+        public string AccessToken { get; set; }
+        public string Type { get; set; }
+        public JsonElement? Data { get; set; }
 
         public Request(string accessToken, string type, JsonElement? data)
         {

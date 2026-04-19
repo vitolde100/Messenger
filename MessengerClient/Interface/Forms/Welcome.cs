@@ -1,20 +1,47 @@
-﻿namespace MessengerClient
+﻿using MessengerClient.Client;
+using MessengerClient.Client.Services;
+using MessengerClient.Client.Transport;
+
+namespace MessengerClient
 {
     public partial class WelcomeForm : Form
     {
-        public WelcomeForm()
+        ITransport _transport;
+        NetworkService _networkService;
+
+        public WelcomeForm(NetworkService networkService, ITransport transport)
         {
             InitializeComponent();
+            _transport = transport;
+            _networkService = networkService;
         }
 
         private void SingUp_Click(object sender, EventArgs e)
         {
-            Form Registration = new Registration();
-            this.Hide();
-            Registration.ShowDialog();
-            if (Program.isConnected) 
-                this.Close();
-            else this.Show();
+            OpenEnterForm(true);
+        }
+
+        private void SingIn_Click(object sender, EventArgs e)
+        {
+            OpenEnterForm(false);
+        }
+
+        private void OpenEnterForm(bool isSignUp)
+        {
+            using (var form = new Enter(_networkService, _transport, isSignUp))
+            {
+                this.Hide();
+
+                var result = form.ShowDialog();
+
+                if (result == DialogResult.OK && _transport.isConnected && State.isLoggedIn)
+                {
+                    this.Close();
+                    return;
+                }
+
+                this.Show();
+            }
         }
     }
 }

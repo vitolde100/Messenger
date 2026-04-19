@@ -1,5 +1,8 @@
-﻿using MessengerClient.Data;
-using MessengerShared;
+﻿using MessengerClient.Client;
+using MessengerClient.Client.Protocol;
+using MessengerClient.Client.Services;
+using MessengerClient.Data;
+using MessengerShared.Requests.Data;
 
 namespace MessengerClient.Interface
 {
@@ -21,13 +24,16 @@ namespace MessengerClient.Interface
 
         string m_target = "Test";
 
-        private Client m_client;
+        private IProtocol _protocol;
+        private NetworkService _networkService;
+
         private Size m_size = new Size(0,0);
         
-        public ChatWindow(Client client) : base()
+        public ChatWindow(IProtocol protocol, NetworkService service) : base()
         {
-            m_client = client;
-            m_client.MessageReceived += AddMessage;
+            _protocol = protocol;
+            _protocol.MessageReceived += AddMessage;
+            _networkService = service;
         }
 
         protected override void InitializeComponents()
@@ -82,7 +88,7 @@ namespace MessengerClient.Interface
 
         public void AddMessage(ChatMessageData message)
         {
-            if (message.TargetID != m_target && message.TargetID != Program.Login) return;
+            if (message.TargetID != m_target && message.TargetID != State.Login) return;
 
             m_messages.Add(message);
 
@@ -91,7 +97,7 @@ namespace MessengerClient.Interface
             int XPos = 0;
 
             if (message.TargetID == m_target) XPos = 0;
-            else if(message.TargetID == Program.Login) XPos = m_size.Width - m_scrollBar.Width;
+            else if(message.TargetID == State.Login) XPos = m_size.Width - m_scrollBar.Width;
          
             m_messagePanels.Add(new Elements.Message(message, new Point(XPos,YPos)));
             m_messagesLength += m_messagePanels.Last().Panel.Height;
@@ -157,12 +163,11 @@ namespace MessengerClient.Interface
 
                 message.SendTime = utcNow - unixEpoch;
                 message.TargetID = m_target;
-                message.AccessToken = Program.Login;
                 message.Text = m_inputBox.Text;
 
                 AddMessage(message);
                 
-                await m_client.SendMessage(message);
+                var Responce = _networkService.SendMessage(message);
                 m_inputBox.Clear();
             }
         }

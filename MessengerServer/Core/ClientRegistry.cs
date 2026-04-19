@@ -84,7 +84,7 @@ namespace MessengerServer.Core
             }
             catch (Exception e)
             {
-                m_logger.log(e.Message, this.GetType().Name);
+                m_logger.log("Can't Delete: " + e.Message, this.GetType().Name);
             }
         }
 

@@ -1,132 +1,162 @@
-﻿using MessengerShared.Requests.Data;
+﻿using MessengerServer.Core;
 using MessengerServer.RequestHandlers;
 using MessengerServer.Requests;
 using MessengerShared;
 using MessengerShared.Requests;
+using MessengerShared.Requests.Data;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 
-namespace MessengerServer.Core
+internal class ClientHandler
 {
-    internal class ClientHandler
+    TcpClient _client;
+    Stream _stream;
+    RequestRouter _requestRouter;
+    Logger _logger = Logger.instance;
+
+    public ClientContext Context { get; private set; }
+
+    bool _isConnected = true;
+
+    public event Action<ClientHandler> OnClientDead;
+
+    TimeSpan MSGCooldown = TimeSpan.FromSeconds(0.5f);
+
+    DateTime LastMSGTime = DateTime.MinValue;
+    const int MaxErrorCount = 10;
+    int ErrorCount = 0;
+
+    public ClientHandler(TcpClient client, Stream stream, RequestRouter router)
     {
-        TcpClient _client;
-        Stream _stream;
-        RequestRouter _requestRouter;
-        Logger _logger = Logger.instance;
+        _client = client;
+        _stream = stream;
+        _requestRouter = router;
+        _isConnected = _stream.CanRead && _stream.CanWrite;
+        Context = new ClientContext();
+    }
 
-        public ClientContext Context { get; private set; }
-
-        bool _isConnected = true;
-
-        public event Action<string, ClientHandler> OnClientConnected;
-        public event Action<ClientHandler> OnClientDead;
-
-        TimeSpan MSGCooldown = TimeSpan.FromSeconds(0.5f);
-
-        DateTime LastMSGTime = DateTime.MinValue;
-        const int MaxErrorCount = 10;
-        int ErrorCount = 0;
-
-        public ClientHandler(TcpClient client, Stream stream, RequestRouter router)
+    public async Task Run()
+    {
+        try
         {
-            _client = client;
-            _stream = stream;
-            _requestRouter = router;
-            _isConnected = _stream.CanRead && _stream.CanWrite ? true : false;
-            Context = new ClientContext();
-        }
-
-        public async Task Run()
-        {
-            try
+            while (_isConnected)
             {
-                while (_isConnected)
+                if (ErrorCount > MaxErrorCount)
                 {
-                    if (ErrorCount > MaxErrorCount)
-                    {
-                        Disconnect(ServerCodes.TooManyErrors);
-                        return;
-                    }
-
-                    byte[] buffer = new byte[MessagingConsts.MaxLength + MessagingConsts.MaxNameLength];
-                    int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
-                    if (bytesRead <= 0)
-                    {
-                        Disconnect(null);
-                        return;
-                    }
-                    
-                    if (DateTime.UtcNow - LastMSGTime < MSGCooldown)
-                    {
-                        ErrorCount++;
-                        Send(ServerCodes.TooManyRequests);
-                        _logger.log(Context.UserID + ":TooManyRequests " + ErrorCount, this.GetType().Name);
-                    }
-                    
-                    LastMSGTime = DateTime.UtcNow;
-
-                    string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    var request = JsonSerializer.Deserialize<Request>(msg);
-
-                    if (request == null)
-                    {
-                        Send(ServerCodes.BadRequest);
-                        ErrorCount++;
-                        continue;
-                    }
-                        
-                    var response = _requestRouter.ProcessRequest(request, Context);
-                    Send(response);
+                    await Disconnect(ServerCodes.TooManyErrors);
+                    return;
                 }
-                Disconnect(null);
-                return;
-            }
-            catch (Exception ex)
-            {
-                Disconnect(null, ex.Message);
-                return;
-            }
-        }
 
-        public async void Send(object message)
-        {
-            try
-            {
-                byte[] msg = UnicodeEncoding.UTF8.GetBytes(JsonSerializer.Serialize(BuildEnvelope(message)));
-                await _stream.WriteAsync(msg, 0, msg.Length);
-            }
-            catch (Exception ex)
-            {
-                _logger.log("Error while sending system message: " + ex.Message, this.GetType().Name);
-            }
-        }
+                byte[] buffer = new byte[MessagingConsts.MaxLength + MessagingConsts.MaxNameLength];
+                int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
 
-        private Envelope BuildEnvelope(object payload) 
-        {
-            return new Envelope
-            {
-                Type = payload.GetType().Name.ToLower(),
-                Payload = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(payload))
-            };
-        }
+                if (bytesRead <= 0)
+                {
+                    await Disconnect(ServerCodes.Disconnected);
+                    return;
+                }
 
-        public async void Disconnect(ServerCodes? code, string? Ex = null)
+                var now = DateTime.UtcNow;
+                if (now - LastMSGTime < MSGCooldown)
+                {
+                    ErrorCount++;
+                    await Send(ServerCodes.TooManyRequests);
+                    _logger.log($"{Context.UserID}: TooManyRequests {ErrorCount}", GetType().Name);
+                }
+                LastMSGTime = now;
+
+                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                _logger.log(msg, GetType().Name);
+
+                Request? request = null;
+                try
+                {
+                    request = JsonSerializer.Deserialize<Request>(msg);
+                }
+                catch
+                {
+                    await Send(ServerCodes.BadRequest);
+                    ErrorCount++;
+                    continue;
+                }
+
+                if (request == null)
+                {
+                    await Send(ServerCodes.BadRequest);
+                    ErrorCount++;
+                    continue;
+                }
+
+                var response = _requestRouter.ProcessRequest(request, this);
+
+                if (response.Error == ServerCodes.BadRequest) ErrorCount++;
+
+                await Send(response);
+            }
+
+            await Disconnect(ServerCodes.Disconnected);
+        }
+        catch (Exception ex)
         {
-            if (code == null) code = ServerCodes.Disconnected;
-            byte[] msg = UnicodeEncoding.UTF8.GetBytes(code.ToString());
-            
+            await Disconnect(ServerCodes.Disconnected, ex.Message);
+        }
+    }
+
+    public async Task Send(object obj)
+    {
+        if (!_isConnected || !_stream.CanWrite)
+            return;
+
+        var envelope = BuildEnvelope(obj);
+
+        try
+        {
+            byte[] msg = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(envelope));
             await _stream.WriteAsync(msg, 0, msg.Length);
-
-            _isConnected = false;
-            await _stream.DisposeAsync();
-            _client.Dispose();
-
-            if (Ex != null) _logger.log($"Client {Context.UserID} disconnected with error: {Ex}", this.GetType().Name);
-            else _logger.log($"Client {Context.UserID} Disconnected", this.GetType().Name);
-
-            OnClientDead?.Invoke(this);
+            _logger.log(JsonSerializer.Serialize(envelope), GetType().Name);
         }
+        catch (Exception ex)
+        {
+            _logger.log($"Send error: {ex.Message}", GetType().Name);
+        }
+    }
+
+    private Envelope BuildEnvelope(object payload)
+    {
+        return new Envelope
+        {
+            Type = payload switch
+            {
+                Responce => "response",
+                ChatMessageData => "chat",
+                ServerCodes => "server",
+                _ => "unknown"
+            },
+            Payload = payload
+        };
+    }
+
+    public async Task Disconnect(ServerCodes? code, string? ex = null)
+    {
+        code ??= ServerCodes.Disconnected;
+
+        try
+        {
+            await Send(code);
+        }
+        catch { }
+
+        _isConnected = false;
+
+        try { await _stream.DisposeAsync(); } catch { }
+        try { _client.Dispose(); } catch { }
+
+        if (ex != null)
+            _logger.log($"Client {Context.UserID} error: {ex}", GetType().Name);
+        else
+            _logger.log($"Client {Context.UserID} disconnected", GetType().Name);
+
+        OnClientDead?.Invoke(this);
     }
 }

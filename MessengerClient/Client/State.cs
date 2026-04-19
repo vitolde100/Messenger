@@ -6,8 +6,10 @@ namespace MessengerClient.Client
     {
         public static string Login;
         public static string Password;
+        public static string IP;
+        public static int Port;
         public static string UserID;
-        public static Session session;
+        public static Session Session;
         public static bool isLoggedIn;
     }
 }

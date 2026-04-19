@@ -1,6 +1,6 @@
 ﻿namespace MessengerClient
 {
-    partial class Registration
+    partial class Enter
     {
         /// <summary>
         ///  Required designer variable.
@@ -33,7 +33,7 @@
             ConnectButton = new Button();
             NameLable = new Label();
             label1 = new Label();
-            ConnectionExLable = new Label();
+            ErrorLable = new Label();
             PasswordBox = new TextBox();
             label2 = new Label();
             SuspendLayout();
@@ -82,21 +82,21 @@
             label1.TabIndex = 4;
             label1.Text = "IP : Port";
             // 
-            // ConnectionExLable
+            // ErrorLable
             // 
-            ConnectionExLable.AutoSize = true;
-            ConnectionExLable.ForeColor = Color.Red;
-            ConnectionExLable.Location = new Point(23, 172);
-            ConnectionExLable.Name = "ConnectionExLable";
-            ConnectionExLable.Size = new Size(26, 15);
-            ConnectionExLable.TabIndex = 5;
-            ConnectionExLable.Text = "test";
-            ConnectionExLable.TextAlign = ContentAlignment.MiddleCenter;
-            ConnectionExLable.Visible = false;
+            ErrorLable.AutoSize = true;
+            ErrorLable.ForeColor = Color.Red;
+            ErrorLable.Location = new Point(23, 172);
+            ErrorLable.Name = "ErrorLable";
+            ErrorLable.Size = new Size(26, 15);
+            ErrorLable.TabIndex = 5;
+            ErrorLable.Text = "test";
+            ErrorLable.TextAlign = ContentAlignment.MiddleCenter;
+            ErrorLable.Visible = false;
             // 
             // PasswordBox
             // 
-            PasswordBox.Location = new Point(23, 79);
+            PasswordBox.Location = new Point(23, 76);
             PasswordBox.Name = "PasswordBox";
             PasswordBox.Size = new Size(165, 23);
             PasswordBox.TabIndex = 6;
@@ -104,7 +104,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(23, 61);
+            label2.Location = new Point(23, 58);
             label2.Name = "label2";
             label2.Size = new Size(57, 15);
             label2.TabIndex = 7;
@@ -117,7 +117,7 @@
             ClientSize = new Size(215, 256);
             Controls.Add(label2);
             Controls.Add(PasswordBox);
-            Controls.Add(ConnectionExLable);
+            Controls.Add(ErrorLable);
             Controls.Add(label1);
             Controls.Add(NameLable);
             Controls.Add(IPBox);
@@ -136,7 +136,7 @@
         private Button ConnectButton;
         private Label NameLable;
         private Label label1;
-        private Label ConnectionExLable;
+        private Label ErrorLable;
         private TextBox PasswordBox;
         private Label label2;
     }

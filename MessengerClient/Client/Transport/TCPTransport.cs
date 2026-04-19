@@ -25,8 +25,10 @@ namespace MessengerClient.Client.Transport
 
         public async Task ConnectAsync(string host, int port)
         {
+            if (isConnected) Disconnect();
             try
             {
+                _client = new TcpClient();
                 await _client.ConnectAsync(host, port);
 
                 var ssl = new SslStream(
@@ -42,6 +44,7 @@ namespace MessengerClient.Client.Transport
             {
                 throw ex;
             }
+            isConnected = true;
         }
 
         public async Task<string> ReceiveAsync()

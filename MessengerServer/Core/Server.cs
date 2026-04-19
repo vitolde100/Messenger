@@ -34,7 +34,7 @@ namespace MessengerServer.Core
             _clientService = new ClientService(_sql);
             _messagingService = new MessagingService(_registry, _clientService, _sessionService);
             _router = new RequestRouter(_sessionService); 
-            RequestRegistrar.RegiterAll(_router, _sessionService, _clientService, _messagingService);
+            RequestRegistrar.RegiterAll(_router, _sessionService, _clientService, _messagingService, _registry);
 
             _listener = new TcpListener(ip, port);
             _useTls = useTls;
@@ -74,7 +74,6 @@ namespace MessengerServer.Core
                     }
 
                     ClientHandler handler = new ClientHandler(tcp, stream, _router);
-                    handler.OnClientConnected += OnClientConnected;
                     handler.OnClientDead += OnClientDead;
                     _ = Task.Run(async () =>
                     {
@@ -93,11 +92,6 @@ namespace MessengerServer.Core
                     _logger.log(ex.Message, this.GetType().Name);
                 }
             }
-        }
-
-        private void OnClientConnected(string id, ClientHandler client)
-        {
-            _registry.Add(client);
         }
 
         private void OnClientDead(ClientHandler handler)

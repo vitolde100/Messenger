@@ -4,11 +4,11 @@ namespace MessengerShared.Requests
 { 
     public class Responce
     {
-        public int Number; //. . .
+        public int Number { get; set; }
         public ServerCodes Error = ServerCodes.NoErrors;
-        public string Type;
-        public bool Success;
-        public JsonElement Data; 
+        public string Type { get; set; }
+        public bool Success { get; set; }
+        public JsonElement Data { get; set; }
         
     }
 }

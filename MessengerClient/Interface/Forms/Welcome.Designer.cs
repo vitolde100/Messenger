@@ -30,6 +30,7 @@
         {
             Welcome = new Label();
             SingUp = new Label();
+            SingIn = new Label();
             SuspendLayout();
             // 
             // Welcome
@@ -57,17 +58,32 @@
             SingUp.TextAlign = ContentAlignment.MiddleCenter;
             SingUp.Click += SingUp_Click;
             // 
-            // Welcome_window
+            // SingIn
+            // 
+            SingIn.AutoSize = true;
+            SingIn.BackColor = SystemColors.Control;
+            SingIn.Cursor = Cursors.Hand;
+            SingIn.Font = new Font("Segoe UI", 14F);
+            SingIn.Location = new Point(109, 212);
+            SingIn.Name = "SingIn";
+            SingIn.Size = new Size(70, 25);
+            SingIn.TabIndex = 2;
+            SingIn.Text = "Sing In";
+            SingIn.TextAlign = ContentAlignment.MiddleCenter;
+            SingIn.Click += SingIn_Click;
+            // 
+            // WelcomeForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
             ClientSize = new Size(309, 332);
+            Controls.Add(SingIn);
             Controls.Add(SingUp);
             Controls.Add(Welcome);
             FormBorderStyle = FormBorderStyle.None;
             Margin = new Padding(3, 2, 3, 2);
-            Name = "Welcome_window";
+            Name = "WelcomeForm";
             Text = "Welcome_window";
             ResumeLayout(false);
             PerformLayout();
@@ -77,5 +93,6 @@
 
         private Label Welcome;
         private Label SingUp;
+        private Label SingIn;
     }
 }

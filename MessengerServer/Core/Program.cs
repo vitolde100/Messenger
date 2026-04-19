@@ -11,8 +11,8 @@ namespace MessengerServer.Core
             IPAddress ip = IPAddress.Any;
             Server server = new Server(ip, Protocol.DefaultPort, true);
             server.Run();
-            Console.ReadKey();
-            server.Stop();
+            while(true)
+                Console.ReadKey();
         }
     }
 }

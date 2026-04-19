@@ -49,9 +49,14 @@ namespace MessengerShared.API
             return JsonSerializer.Deserialize<JsonElement>(json);
         }
 
-        public bool IsExpired()
+        public bool IsAccessExpired() 
         {
-            return access_expires.CompareTo(DateTime.UtcNow) > 0 && refresh_expires.CompareTo(DateTime.UtcNow) > 0 ;
+            return access_expires.CompareTo(DateTime.UtcNow) > 0;
+        }
+
+        public bool IsRefreshExpired()
+        {
+            return refresh_expires.CompareTo(DateTime.UtcNow) > 0;
         }
     }
 }

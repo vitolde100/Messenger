@@ -1,4 +1,4 @@
-﻿using MessengerShared;
+﻿using MessengerShared.Requests.Data;
 using System.Text;
 
 namespace MessengerClient.Interface.Elements

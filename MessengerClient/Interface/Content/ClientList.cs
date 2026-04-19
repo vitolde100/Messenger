@@ -1,6 +1,8 @@
-﻿using MessengerShared;
+﻿using MessengerShared.Requests.Data;
 using MessengerClient.Interface.Elements;
 using MessengerClient.Data;
+using MessengerClient.Client.Transport;
+using MessengerClient.Client.Protocol;
 
 namespace MessengerClient.Interface
 {
@@ -19,17 +21,17 @@ namespace MessengerClient.Interface
         int lastOffset = 0;
         int offset = 0;
 
-        private Client _client;
+        private IProtocol _client;
 
         public event Action<ClientData> onUserChanged;
 
-        public ClientList(Client client) : base() 
+        public ClientList(IProtocol client) : base() 
         {
             _client = client;
             client.MessageReceived += onMessageReceived;
         }
 
-        public ClientList(Client client, List<ClientData> users) : base()
+        public ClientList(IProtocol client, List<ClientData> users) : base()
         {
             _client = client;
             client.MessageReceived += onMessageReceived;
@@ -109,7 +111,7 @@ namespace MessengerClient.Interface
             m_size = newSize;
         }
 
-        private void onMessageReceived(MessengerShared.ChatMessageData obj)
+        private void onMessageReceived(ChatMessageData obj)
         {
             //throw new NotImplementedException();
         }

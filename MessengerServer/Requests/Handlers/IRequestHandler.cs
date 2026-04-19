@@ -1,4 +1,5 @@
-﻿using MessengerShared.Requests;
+﻿using MessengerServer.Core;
+using MessengerShared.Requests;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
@@ -13,7 +14,7 @@ namespace MessengerServer.Requests.Handlers
             Type = GetType().Name;
         }
 
-        public abstract Responce HandleRequest(Request request, ClientContext context);
+        public abstract Responce HandleRequest(Request request, ClientHandler handler);
 
         protected Responce BuildResponce(ServerCodes code = ServerCodes.NoErrors)
         {

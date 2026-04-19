@@ -15,10 +15,10 @@ namespace MessengerServer.Requests.Handlers
             ShouldBeAutorised = false;
         }
 
-        public override Responce HandleRequest(Request request, ClientContext context)
+        public override Responce HandleRequest(Request request, ClientHandler client)
         {
             _sessionService.Remove(request.AccessToken);
-            _clientRegistry.Remove(context);
+            _clientRegistry.Remove(client.Context);
 
             return BuildResponce();
         }

@@ -1,4 +1,5 @@
 ﻿using MessengerServer.Services;
+using MessengerServer.Core;
 using MessengerShared.Requests;
 using MessengerShared.Requests.Data;
 using System.Text.Json;
@@ -9,15 +10,17 @@ namespace MessengerServer.Requests.Handlers
     {
         SessionService _sessionService;
         ClientService _clientService;
-        public Login(SessionService seService, ClientService clService) : base()
+        ClientRegistry _clientRegistry;
+        public Login(SessionService seService, ClientService clService, ClientRegistry registry) : base()
         {
             _sessionService = seService;
             _clientService = clService;
+            _clientRegistry = registry;
 
             ShouldBeAutorised = false;
         }
 
-        public override Responce HandleRequest(Request request, ClientContext context)
+        public override Responce HandleRequest(Request request, ClientHandler client)
         {
             var Data = JsonSerializer.Deserialize<UserData>((JsonElement)request.Data);
             if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
@@ -32,8 +35,9 @@ namespace MessengerServer.Requests.Handlers
 
             var session = _sessionService.CreateSession(User.ID);
 
-            context.UserID = User.ID;
-            context.AccessToken = session.accessToken;
+            client.Context.UserID = User.ID;
+            client.Context.AccessToken = session.accessToken;
+            _clientRegistry.Add(client);
 
             return BuildResponce(session.ConvertToElement());
         }

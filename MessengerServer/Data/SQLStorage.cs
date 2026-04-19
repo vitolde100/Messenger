@@ -1,9 +1,4 @@
-﻿//Attention, if you accidentally opened this file, then RUN AWAY AND SHOUT AS YOU CAN! THIS IS SQL STORAGE, IT IS VERY SCARY!
-//I don`t want to know what is going on here, I just want to get out of here, I want to go back to my safe and cozy JSON storage,
-//I don`t want to deal with SQL queries and connections!
-//So if you are change smth there please don`t let me know.
-
-using MessengerServer.Core;
+﻿using MessengerServer.Core;
 using MessengerShared.API;
 using Microsoft.Data.Sqlite;
 
@@ -11,49 +6,43 @@ namespace MessengerServer.Data
 {
     internal class SQLStorage : IStorage
     {
-        private static string ClientsPath = "Data\\Users\\clients.db";
-        private static string SessionsPath = "Data\\Sessions\\sessions.db";
+        private static string DbPath = "Data/app.db";
         private object _lock = new object();
         private Logger m_Logger = Logger.instance;
 
-        SqliteConnection _clientsConnection = new SqliteConnection($"Data Source={ClientsPath}");
-        SqliteConnection _sessionsConnection = new SqliteConnection($"Data Source={SessionsPath}");
+        SqliteConnection _connection = new SqliteConnection($"Data Source={DbPath}");
 
         public SQLStorage()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(DbPath));
+
+            _connection.Open();
+
             EnsureUsersTable();
             EnsureSessionsTable();
+
             m_Logger.log("SQL Storage initialized", this.GetType().Name);
         }
-        
+
         private void EnsureUsersTable()
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(ClientsPath));
-            _clientsConnection.Open();
-
-            using var cmd = _clientsConnection.CreateCommand();
+            using var cmd = _connection.CreateCommand();
             cmd.CommandText = @"
             CREATE TABLE IF NOT EXISTS Users (
-               Id TEXT NOT NULL UNIQUE,
-               Login TEXT,
-               PasswordHash TEXT,
-               FriendID TEXT
+               Id TEXT PRIMARY KEY,
+               Login TEXT NOT NULL UNIQUE,
+               PasswordHash TEXT NOT NULL,
+               FriendID TEXT NULL
             );";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "CREATE INDEX IF NOT EXISTS idx_login ON Users(Login);";
             cmd.ExecuteNonQuery();
         }
 
         private void EnsureSessionsTable()
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(SessionsPath));
-            _sessionsConnection.Open();
-
-            using var cmd = _sessionsConnection.CreateCommand();
+            using var cmd = _connection.CreateCommand();
             cmd.CommandText = @"
             CREATE TABLE IF NOT EXISTS Sessions (
-                Id TEXT PRIMARY KEY AUTOINCREMENT,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 UserId TEXT NOT NULL,
                 AccessToken TEXT NOT NULL UNIQUE,
                 RefreshToken TEXT NOT NULL UNIQUE,
@@ -68,47 +57,41 @@ namespace MessengerServer.Data
         {
             lock (_lock)
             {
-                var cmd = _clientsConnection.CreateCommand();
+                using var cmd = _connection.CreateCommand();
                 cmd.CommandText = "SELECT * FROM Users WHERE Id = $id";
                 cmd.Parameters.AddWithValue("$id", ID);
 
                 using var reader = cmd.ExecuteReader();
-                if (reader.Read())
+                if (!reader.Read()) return null;
+
+                return new ClientData
                 {
-                    ClientData data = new ClientData
-                    {
-                        ID = reader.GetString(0),
-                        Login = reader.GetString(1),
-                        Password = reader.GetString(2),
-                        FriendID = reader.GetString(3)
-                    };
-                    return data;
-                }
-                return null;
+                    ID = reader.GetString(0),
+                    Login = reader.GetString(1),
+                    Password = reader.GetString(2),
+                    FriendID = reader.IsDBNull(3) ? null : reader.GetString(3)
+                };
             }
         }
 
-        public ClientData GetClientByLogin(string Login)
+        public ClientData GetClientByLogin(string login)
         {
             lock (_lock)
             {
-                var cmd = _clientsConnection.CreateCommand();
+                using var cmd = _connection.CreateCommand();
                 cmd.CommandText = "SELECT * FROM Users WHERE Login = $login";
-                cmd.Parameters.AddWithValue("$login", Login);
+                cmd.Parameters.AddWithValue("$login", login);
 
                 using var reader = cmd.ExecuteReader();
-                if (reader.Read())
+                if (!reader.Read()) return null;
+
+                return new ClientData
                 {
-                    ClientData data = new ClientData
-                    {
-                        ID = reader.GetString(0),
-                        Login = reader.GetString(1),
-                        Password = reader.GetString(2),
-                        FriendID = reader.GetString(3)
-                    };
-                    return data;
-                }
-                return null;
+                    ID = reader.GetString(0),
+                    Login = reader.GetString(1),
+                    Password = reader.GetString(2),
+                    FriendID = reader.IsDBNull(3) ? null : reader.GetString(3)
+                };
             }
         }
 
@@ -116,7 +99,7 @@ namespace MessengerServer.Data
         {
             lock (_lock)
             {
-                var cmd = _clientsConnection.CreateCommand();
+                using var cmd = _connection.CreateCommand();
                 cmd.CommandText = @"
                 INSERT INTO Users (Id, Login, PasswordHash, FriendID)
                 VALUES ($id, $login, $pass, $friID);";
@@ -124,21 +107,22 @@ namespace MessengerServer.Data
                 cmd.Parameters.AddWithValue("$id", user.ID);
                 cmd.Parameters.AddWithValue("$login", user.Login);
                 cmd.Parameters.AddWithValue("$pass", user.Password);
-                cmd.Parameters.AddWithValue("$friID", user.FriendID);
+                cmd.Parameters.AddWithValue("$friID", (object?)user.FriendID ?? DBNull.Value);
 
                 cmd.ExecuteNonQuery();
                 m_Logger.log("Client saved: " + user.Login, this.GetType().Name);
             }
         }
-        
+
         public void DeleteClient(string userID)
         {
             lock (_lock)
             {
-                using var cmd = _sessionsConnection.CreateCommand();
-                cmd.CommandText = "DELETE FROM Users WHERE UserId = @Id;";
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = "DELETE FROM Users WHERE Id = @Id;";
                 cmd.Parameters.AddWithValue("@Id", userID);
                 cmd.ExecuteNonQuery();
+
                 m_Logger.log("Client deleted: " + userID, this.GetType().Name);
             }
         }
@@ -147,7 +131,7 @@ namespace MessengerServer.Data
         {
             lock (_lock)
             {
-                using var cmd = _sessionsConnection.CreateCommand();
+                using var cmd = _connection.CreateCommand();
                 cmd.CommandText = @"
                 INSERT INTO Sessions (UserId, AccessToken, RefreshToken, AccessExpires, RefreshExpires)
                 VALUES (@userId, @access, @refresh, @aexp, @rexp);";
@@ -159,7 +143,7 @@ namespace MessengerServer.Data
                 cmd.Parameters.AddWithValue("@rexp", refreshExpires.ToString("o"));
 
                 cmd.ExecuteNonQuery();
-                m_Logger.log($"Session saved for user: " + userId, this.GetType().Name);
+                m_Logger.log("Session saved for user: " + userId, this.GetType().Name);
             }
         }
 
@@ -172,44 +156,44 @@ namespace MessengerServer.Data
         {
             lock (_lock)
             {
-                using var cmd = _sessionsConnection.CreateCommand();
+                using var cmd = _connection.CreateCommand();
                 cmd.CommandText = @"
                 SELECT s.AccessToken, s.RefreshToken, s.AccessExpires, s.RefreshExpires, u.Login
                 FROM Sessions s
                 JOIN Users u ON u.Id = s.UserId
                 WHERE s.AccessToken = @access;
                 ";
+
                 cmd.Parameters.AddWithValue("@access", accessToken);
 
                 using var reader = cmd.ExecuteReader();
-                if (reader.Read())
+                if (!reader.Read()) return null;
+
+                return new Session(
+                    reader.GetString(0),
+                    reader.GetString(1),
+                    reader.GetString(4)
+                )
                 {
-                    return new Session(
-                        reader.GetString(0),
-                        reader.GetString(1),
-                        reader.GetString(4)
-                    )
-                    {
-                        access_expires = DateTime.Parse(reader.GetString(2)),
-                        refresh_expires = DateTime.Parse(reader.GetString(3))
-                    };
-                }
-                return null;
+                    access_expires = DateTime.Parse(reader.GetString(2)),
+                    refresh_expires = DateTime.Parse(reader.GetString(3))
+                };
             }
         }
 
         public List<Session> GetSessionsById(string userId)
         {
             var list = new List<Session>();
+
             lock (_lock)
             {
-                using var cmd = _sessionsConnection.CreateCommand();
+                using var cmd = _connection.CreateCommand();
                 cmd.CommandText = @"
-                SELECT s.AccessToken, s.RefreshToken, s.AccessExpires, s.RefreshExpires, u.Login
-                FROM Sessions s
-                JOIN Users u ON u.Id = s.UserId
-                WHERE s.UserId = @userId;
+                SELECT AccessToken, RefreshToken, AccessExpires, RefreshExpires
+                FROM Sessions
+                WHERE UserId = @userId;
                 ";
+
                 cmd.Parameters.AddWithValue("@userId", userId);
 
                 using var reader = cmd.ExecuteReader();
@@ -218,7 +202,7 @@ namespace MessengerServer.Data
                     list.Add(new Session(
                         reader.GetString(0),
                         reader.GetString(1),
-                        reader.GetString(4)
+                        userId
                     )
                     {
                         access_expires = DateTime.Parse(reader.GetString(2)),
@@ -226,18 +210,20 @@ namespace MessengerServer.Data
                     });
                 }
             }
+
             return list;
         }
 
-        public void DeleteSession(string userID)
+        public void DeleteSession(string accessToken)
         {
             lock (_lock)
             {
-                using var cmd = _sessionsConnection.CreateCommand();
-                cmd.CommandText = "DELETE FROM Sessions WHERE UserId = @Id;";
-                cmd.Parameters.AddWithValue("@Id", userID);
+                using var cmd = _connection.CreateCommand();
+                cmd.CommandText = "DELETE FROM Sessions WHERE AccessToken = @token;";
+                cmd.Parameters.AddWithValue("@token", accessToken);
                 cmd.ExecuteNonQuery();
-                m_Logger.log("Session deleted for user: " + userID, this.GetType().Name);
+
+                m_Logger.log("Session deleted: " + accessToken, this.GetType().Name);
             }
         }
     }
