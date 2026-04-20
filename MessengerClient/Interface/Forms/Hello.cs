@@ -4,6 +4,7 @@ using MessengerClient.Client;
 using MessengerShared.Requests;
 using MessengerShared.API;
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace MessengerClient
 {
@@ -23,6 +24,13 @@ namespace MessengerClient
 
         private void Hello_Load(object sender, EventArgs e)
         {
+            //var c = new AutoCompleteStringCollection();
+            //c.Add("localhost");
+            //var c2 = new AutoCompleteStringCollection();
+            //c2.Add("5000");
+            //ipBox.AutoCompleteCustomSource = c;
+            //portBox.AutoCompleteCustomSource = c2;
+
 
         }
 
@@ -50,7 +58,7 @@ namespace MessengerClient
             catch (Exception ex) { ServF(); }
         }
 
-        public void ServS() { ServerDone = true; sErrLable.Hide(); sel1.TabPages[1].Focus(); }
+        public void ServS() { ServerDone = true; sErrLable.Hide(); sel1.SelectTab(1); }
 
         public void ServF() { sErrLable.Show(); }
 
@@ -60,7 +68,7 @@ namespace MessengerClient
             {
                 LogInErr.Text = "Login and password cannot be empty.";
                 LogInErr.Show();
-                throw new Exception("Empty");
+                //throw new Exception("Empty");
             }
 
             State.Login = LoginBox.Text;
@@ -70,11 +78,7 @@ namespace MessengerClient
 
         private async void SingInBut_Click(object sender, EventArgs e)
         {
-            try
-            {
-                ApplyData();
-            }
-            catch { return; }
+            ApplyData();
 
             Responce responce = await _networkService.Login();
 
@@ -96,13 +100,12 @@ namespace MessengerClient
 
         private async void SingUpBut_Click(object sender, EventArgs e)
         {
-            try
-            {
-                ApplyData();
-            }
-            catch { return; }
+            ApplyData();
+            //Debug.Print(">>>");
 
             Responce responce = await _networkService.Registrate();
+
+            Debug.Print(responce.Success.ToString());
 
             if (responce.Success)
             {

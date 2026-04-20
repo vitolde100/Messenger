@@ -132,6 +132,8 @@
             // 
             // ipBox
             // 
+            ipBox.AutoCompleteCustomSource.AddRange(new string[] { "localhost" });
+            ipBox.AutoCompleteMode = AutoCompleteMode.Suggest;
             ipBox.Location = new Point(15, 160);
             ipBox.Name = "ipBox";
             ipBox.PlaceholderText = "IP";
