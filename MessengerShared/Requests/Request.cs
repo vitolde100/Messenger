@@ -9,9 +9,9 @@ namespace MessengerShared.Requests
         public int Number { get; set; }
         public string AccessToken { get; set; }
         public string Type { get; set; }
-        public JsonElement? Data { get; set; }
+        public object? Data { get; set; }
 
-        public Request(string accessToken, string type, JsonElement? data)
+        public Request(string accessToken, string type, object? data)
         {
             AccessToken = accessToken;
             Type = type;

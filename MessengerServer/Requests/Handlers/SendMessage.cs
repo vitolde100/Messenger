@@ -18,7 +18,7 @@ namespace MessengerServer.Requests.Handlers
 
         public override Responce HandleRequest(Request request, ClientHandler client)
         {
-            var Data = JsonSerializer.Deserialize<ChatMessageData>((JsonElement)request.Data);
+            var Data = JsonSerializer.Deserialize<ChatMessageData>(JsonSerializer.Serialize(request.Data));
             if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
 
             try

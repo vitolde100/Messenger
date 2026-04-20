@@ -21,13 +21,14 @@ namespace MessengerServer.Requests.Handlers
             var responce = new Responce
             {
                 Type = GetType().Name,
-                Error = code
+                Error = code,
+                Data = null
             };
             responce.Success = code == ServerCodes.NoErrors;
             return responce;
         }
 
-        protected Responce BuildResponce(JsonElement Data)
+        protected Responce BuildResponce(object Data)
         {
             return new Responce
             {

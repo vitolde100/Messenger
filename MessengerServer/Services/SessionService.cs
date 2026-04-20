@@ -22,7 +22,8 @@ namespace MessengerServer.Services
             string refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
             Session session = new Session(accessToken, refreshToken, userID);
 
-            while (true) //Save Session
+            while (true) 
+            {
                 try
                 {
                     _storage.SaveSession(session);
@@ -33,6 +34,7 @@ namespace MessengerServer.Services
                     session.accessToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
                     session.refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
                 }
+            }
             return session;
         }
 

@@ -8,7 +8,6 @@ namespace MessengerShared.Requests
         public ServerCodes Error = ServerCodes.NoErrors;
         public string Type { get; set; }
         public bool Success { get; set; }
-        public JsonElement Data { get; set; }
-        
+        public object Data { get; set; }
     }
 }

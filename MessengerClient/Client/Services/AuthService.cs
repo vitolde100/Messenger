@@ -31,19 +31,10 @@ namespace MessengerClient.Client.Services
 
         private async Task<bool> TryRefresh()
         {
-            var refreshRequest = new Request(State.Session.accessToken, "Refresh", BuildJsonElement(new RefreshData { RefreshToken = State.Session.refreshToken }));
+            var refreshRequest = new Request(State.Session.accessToken, "Refresh", new RefreshData { RefreshToken = State.Session.refreshToken });
             Responce response = await _protocol.SendAndReciveAsync(refreshRequest);
 
             return response.Success;
-        }
-
-        private JsonElement BuildJsonElement(object? data)
-        {
-            if (data == null)
-                return default;
-
-            var json = JsonSerializer.Serialize(data);
-            return JsonSerializer.Deserialize<JsonElement>(json);
         }
     }
 }

@@ -5,6 +5,7 @@ using MessengerShared;
 using MessengerShared.Requests;
 using MessengerShared.Requests.Data;
 using System.Net.Sockets;
+using System.Runtime.Remoting;
 using System.Text;
 using System.Text.Json;
 
@@ -40,6 +41,7 @@ internal class ClientHandler
     {
         try
         {
+            _logger.log($"Client connected", GetType().Name);
             while (_isConnected)
             {
                 if (ErrorCount > MaxErrorCount)
@@ -99,6 +101,7 @@ internal class ClientHandler
         }
         catch (Exception ex)
         {
+            _logger.log(ex.ToString(), GetType().Name);
             await Disconnect(ServerCodes.Disconnected, ex.Message);
         }
     }
@@ -114,17 +117,17 @@ internal class ClientHandler
         {
             byte[] msg = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(envelope));
             await _stream.WriteAsync(msg, 0, msg.Length);
-            _logger.log(JsonSerializer.Serialize(envelope), GetType().Name);
+            _logger.log($"Sended: {JsonSerializer.Serialize(envelope)}", GetType().Name);
         }
         catch (Exception ex)
         {
-            _logger.log($"Send error: {ex.Message}", GetType().Name);
+            _logger.log($"Send error : {ex.Message}", GetType().Name);
         }
     }
 
     private Envelope BuildEnvelope(object payload)
     {
-        return new Envelope
+        var envelope = new Envelope
         {
             Type = payload switch
             {
@@ -135,6 +138,7 @@ internal class ClientHandler
             },
             Payload = payload
         };
+        return envelope;
     }
 
     public async Task Disconnect(ServerCodes? code, string? ex = null)
@@ -153,7 +157,7 @@ internal class ClientHandler
         try { _client.Dispose(); } catch { }
 
         if (ex != null)
-            _logger.log($"Client {Context.UserID} error: {ex}", GetType().Name);
+            _logger.log($"Client {Context.UserID} disconnected with error: {ex}", GetType().Name);
         else
             _logger.log($"Client {Context.UserID} disconnected", GetType().Name);
 

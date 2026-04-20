@@ -76,7 +76,7 @@ namespace MessengerClient
 
             try
             {
-                session = JsonSerializer.Deserialize<Session>(response.Data);
+                session = JsonSerializer.Deserialize<Session>(JsonSerializer.Serialize(response.Data));
             }
             catch
             {
@@ -95,7 +95,7 @@ namespace MessengerClient
             State.isLoggedIn = true;
 
             DialogResult = DialogResult.OK;
-            Close();
+            this.Close();
         }
         catch (Exception ex)
         {

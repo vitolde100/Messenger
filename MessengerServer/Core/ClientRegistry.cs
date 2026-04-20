@@ -29,7 +29,7 @@ namespace MessengerServer.Core
             return null;
         }
 
-        public void Remove(int id)
+        public void Remove(int? id)
         {
             foreach (ClientHandler handler in ClientHandlers)
             {

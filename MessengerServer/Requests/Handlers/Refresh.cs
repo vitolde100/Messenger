@@ -19,7 +19,7 @@ namespace MessengerServer.Requests.Handlers
         {
             if (request.AccessToken == null) return BuildResponce(ServerCodes.Unauthorized);
 
-            var Data = JsonSerializer.Deserialize<RefreshData>((JsonElement)request.Data);
+            var Data = JsonSerializer.Deserialize<RefreshData>(JsonSerializer.Serialize(request.Data));
             if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
 
             var session = _sessionService.GetSessionByAccessToken(request.AccessToken);
@@ -29,7 +29,7 @@ namespace MessengerServer.Requests.Handlers
 
             _sessionService.Remove(session.accessToken);
 
-            return BuildResponce(_sessionService.CreateSession(session.userID).ConvertToElement());
+            return BuildResponce(_sessionService.CreateSession(session.userID));
         }
     }
 }

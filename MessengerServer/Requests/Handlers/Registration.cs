@@ -1,7 +1,7 @@
 ﻿using MessengerServer.Core;
+using MessengerServer.Data;
 using MessengerServer.Services;
 using MessengerShared.Requests;
-using MessengerShared.Requests.Data;
 using System.Text.Json;
 
 namespace MessengerServer.Requests.Handlers
@@ -22,7 +22,7 @@ namespace MessengerServer.Requests.Handlers
 
         public override Responce HandleRequest(Request request, ClientHandler client)
         {
-            var Data = JsonSerializer.Deserialize<UserData>((JsonElement)request.Data);
+            var Data = JsonSerializer.Deserialize<ClientData>(JsonSerializer.Serialize(request.Data));
             if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
 
             if (_clientService.GetClientByLogin(Data.Login) != null) return BuildResponce(ServerCodes.ClientAlreadyExist);
@@ -32,7 +32,7 @@ namespace MessengerServer.Requests.Handlers
             client.Context.UserID = User.ID;
             _clientRegistry.Add(client);
 
-            return BuildResponce(session.ConvertToElement());
+            return BuildResponce(session);
         }
     }
 }

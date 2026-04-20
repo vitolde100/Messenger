@@ -96,7 +96,8 @@ namespace MessengerServer.Core
 
         private void OnClientDead(ClientHandler handler)
         {
-            _registry.Remove(handler.Context);
+            if (!(handler.Context.RegistryID == null || handler.Context.UserID == null))
+                _registry.Remove(handler.Context);
         }
 
         public void Stop()

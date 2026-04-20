@@ -10,13 +10,11 @@ namespace MessengerShared.API
     /// </summary>
     public class Session
     {
-        public string accessToken;
-        public string refreshToken;
-        public DateTime access_expires;
-        public DateTime refresh_expires;
-
-        //SERVER ONLY
-        public string userID;
+        public string accessToken { get; set; }
+        public string refreshToken { get; set; }
+        public DateTime access_expires {  get; set; }
+        public DateTime refresh_expires { get; set; }
+        public string userID { get; set; }
 
         /// <summary>
         /// Инициализация на стороне сервера
