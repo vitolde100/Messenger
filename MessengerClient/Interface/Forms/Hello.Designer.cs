@@ -221,9 +221,11 @@
             // 
             PasswordBox.Location = new Point(120, 96);
             PasswordBox.Name = "PasswordBox";
+            PasswordBox.PasswordChar = '*';
             PasswordBox.PlaceholderText = "Password";
             PasswordBox.Size = new Size(214, 23);
             PasswordBox.TabIndex = 9;
+            PasswordBox.UseSystemPasswordChar = true;
             // 
             // LoginBox
             // 
