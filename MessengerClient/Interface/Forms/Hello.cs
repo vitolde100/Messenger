@@ -5,6 +5,8 @@ using MessengerClient.Client;
 using MessengerShared.Requests;
 using MessengerShared.API;
 using System.Text.Json;
+using MessengerClient.Interface.Forms;
+using MessengerClient.Properties;
 
 namespace MessengerClient
 {
@@ -54,7 +56,7 @@ namespace MessengerClient
             catch (Exception ex) { ServF(); }
         }
 
-        public void ServS() { ServerDone = true; sErrLable.Hide(); sel1.TabPages[1].Focus(); }
+        public void ServS() { ServerDone = true; sErrLable.Hide(); sel1.SelectTab(1); }
 
         public void ServF() { sErrLable.Show(); }
 
@@ -121,6 +123,27 @@ namespace MessengerClient
                 if (responce.Error == ServerCodes.ClientAlreadyExist)
                     LogInErr.Text = "Registration failed. User already exists.";
                 LogInErr.Show();
+            }
+        }
+
+        private void ipBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            var r = new RobotCheck().ShowDialog();
+            if (r == DialogResult.OK)
+            {
+                pictureBox3.Enabled = false;
+                SingInBut.Enabled = true;
+                SingUpBut.Enabled = true;
+                pictureBox3.Image = Resources.cS;
+            }
+            else
+            {
+                pictureBox3.Image = Resources.cF;
             }
         }
     }

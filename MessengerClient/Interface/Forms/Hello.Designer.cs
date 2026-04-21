@@ -39,6 +39,7 @@
             ipBox = new TextBox();
             label1 = new Label();
             Account = new TabPage();
+            pictureBox3 = new PictureBox();
             SingInBut = new Button();
             LogInErr = new Label();
             SingUpBut = new Button();
@@ -51,6 +52,7 @@
             Server.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             Account.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             SuspendLayout();
             // 
@@ -139,6 +141,7 @@
             ipBox.PlaceholderText = "IP";
             ipBox.Size = new Size(217, 23);
             ipBox.TabIndex = 1;
+            ipBox.TextChanged += ipBox_TextChanged;
             // 
             // label1
             // 
@@ -152,6 +155,7 @@
             // 
             // Account
             // 
+            Account.Controls.Add(pictureBox3);
             Account.Controls.Add(SingInBut);
             Account.Controls.Add(LogInErr);
             Account.Controls.Add(SingUpBut);
@@ -168,8 +172,20 @@
             Account.Text = "Account";
             Account.UseVisualStyleBackColor = true;
             // 
+            // pictureBox3
+            // 
+            pictureBox3.Image = Properties.Resources.cU;
+            pictureBox3.Location = new Point(14, 131);
+            pictureBox3.Name = "pictureBox3";
+            pictureBox3.Size = new Size(164, 46);
+            pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox3.TabIndex = 15;
+            pictureBox3.TabStop = false;
+            pictureBox3.Click += pictureBox3_Click;
+            // 
             // SingInBut
             // 
+            SingInBut.Enabled = false;
             SingInBut.Location = new Point(14, 183);
             SingInBut.Name = "SingInBut";
             SingInBut.Size = new Size(138, 30);
@@ -191,6 +207,7 @@
             // 
             // SingUpBut
             // 
+            SingUpBut.Enabled = false;
             SingUpBut.Location = new Point(196, 183);
             SingUpBut.Name = "SingUpBut";
             SingUpBut.Size = new Size(138, 30);
@@ -251,6 +268,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(376, 289);
             Controls.Add(sel1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "Hello";
@@ -263,6 +281,7 @@
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             Account.ResumeLayout(false);
             Account.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);
         }
@@ -287,5 +306,6 @@
         private TextBox PasswordBox;
         private TextBox LoginBox;
         private Label label5;
+        private PictureBox pictureBox3;
     }
 }
