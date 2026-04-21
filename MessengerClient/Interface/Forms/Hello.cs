@@ -1,4 +1,5 @@
 ﻿using MessengerClient.Client.Services;
+using MessengerClient.Client.Protocol;
 using MessengerClient.Client.Transport;
 using MessengerClient.Client;
 using MessengerShared.Requests;
@@ -13,11 +14,13 @@ namespace MessengerClient
         public bool ClientDone = false;
         public bool Registrating = true;
         private ITransport _transport;
+        private IProtocol _protocol;
         private NetworkService _networkService;
-        public Hello(NetworkService network, ITransport transport)
+        public Hello(NetworkService network, ITransport transport, IProtocol protocol)
         {
             _transport = transport;
             _networkService = network;
+            _protocol = protocol;
             InitializeComponent();
         }
 
@@ -45,6 +48,7 @@ namespace MessengerClient
                 State.IP = ipBox.Text;
                 State.Port = int.Parse(portBox.Text);
                 await _transport.ConnectAsync(State.IP, State.Port);
+                new Thread(() => _protocol.RunRecieveloop()).Start();
                 ServS();
             }
             catch (Exception ex) { ServF(); }
@@ -81,7 +85,8 @@ namespace MessengerClient
             if (responce.Success)
             {
                 ClientDone = true;
-                State.Session = JsonSerializer.Deserialize<Session>(JsonSerializer.Serialize(responce.Data));
+                State.Session = (Session)responce.Data;
+                State.isLoggedIn = true;
                 this.Close();
             }
             else
@@ -107,7 +112,8 @@ namespace MessengerClient
             if (responce.Success)
             {
                 ClientDone = true;
-                State.Session = JsonSerializer.Deserialize<Session>(JsonSerializer.Serialize(responce.Data));
+                State.Session = (Session)responce.Data;
+                State.isLoggedIn = true;
                 this.Close();
             }
             else

@@ -50,14 +50,14 @@ namespace MessengerClient
                 {
                     if (State.Session == null || !State.isLoggedIn)
                     {
-                        Application.Run(new Hello(networkService, transport));
+                        Application.Run(new Hello(networkService, transport, protocol));
                     }
                     else
                     {
                         Application.Run(new ChatForm(protocol, networkService));
                     }
 
-                    break;
+
                 }
                 catch (Exception ex)
                 {
@@ -70,9 +70,8 @@ namespace MessengerClient
 
                     throw;
                 }
+                SaveConfig(path);
             }
-
-            SaveConfig(path);
         }
 
         private static void LoadConfig(string path)

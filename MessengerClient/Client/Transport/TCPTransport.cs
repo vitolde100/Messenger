@@ -49,13 +49,38 @@ namespace MessengerClient.Client.Transport
 
         public async Task<string> ReceiveAsync()
         {
-            byte[] buffer = new byte[1024];
-            return string.Empty;
+            try
+            {
+                if (_client != null || _client.Connected)
+                { 
+                    byte[] buffer = new byte[4096];
+                    string message = _stream.ReadAsync(buffer, 0, buffer.Length).ContinueWith(t =>
+                    {
+                        if (t.IsCompletedSuccessfully)
+                        {
+                            int bytesRead = t.Result;
+                            return Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                        }
+                        else
+                        {
+                            return string.Empty;
+                        }
+                    }).Result;
+                    return message;
+                }
+                isConnected = false;
+                return string.Empty;
+            }
+            catch
+            {
+                isConnected = false;
+                return string.Empty;
+            }
         }
 
         public async Task SendAsync(string message)
         {
-            if (isConnected)
+            if (_client != null || isConnected)
             {
                 byte[] buffer = UTF8Encoding.UTF8.GetBytes(message.ToString());
                 await _stream.WriteAsync(buffer, 0, buffer.Length);
