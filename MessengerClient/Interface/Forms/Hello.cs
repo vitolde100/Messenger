@@ -5,6 +5,8 @@ using MessengerShared.Requests;
 using MessengerShared.API;
 using System.Text.Json;
 using System.Diagnostics;
+using MessengerShared;
+using MessengerClient.Client.Protocol;
 
 namespace MessengerClient
 {
@@ -15,10 +17,12 @@ namespace MessengerClient
         public bool Registrating = true;
         private ITransport _transport;
         private NetworkService _networkService;
-        public Hello(NetworkService network, ITransport transport)
+        private IProtocol _protocol;
+        public Hello(NetworkService network, ITransport transport, IProtocol protocol)
         {
             _transport = transport;
             _networkService = network;
+            _protocol = protocol;
             InitializeComponent();
         }
 
@@ -53,7 +57,9 @@ namespace MessengerClient
                 State.IP = ipBox.Text;
                 State.Port = int.Parse(portBox.Text);
                 await _transport.ConnectAsync(State.IP, State.Port);
+                new Thread(() => { _protocol.RunRecieveloop(); });
                 ServS();
+                
             }
             catch (Exception ex) { ServF(); }
         }
@@ -105,7 +111,7 @@ namespace MessengerClient
 
             Responce responce = await _networkService.Registrate();
 
-            Debug.Print(responce.Success.ToString());
+            Debug.Print(">>>>" + responce.Success.ToString());
 
             if (responce.Success)
             {

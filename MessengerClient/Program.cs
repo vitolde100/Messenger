@@ -50,7 +50,7 @@ namespace MessengerClient
                 {
                     if (State.Session == null || !State.isLoggedIn)
                     {
-                        Application.Run(new Hello(networkService, transport));
+                        Application.Run(new Hello(networkService, transport, protocol));
                     }
                     else
                     {
