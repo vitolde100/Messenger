@@ -175,9 +175,9 @@
             // pictureBox3
             // 
             pictureBox3.Image = Properties.Resources.cU;
-            pictureBox3.Location = new Point(14, 131);
+            pictureBox3.Location = new Point(-4, 131);
             pictureBox3.Name = "pictureBox3";
-            pictureBox3.Size = new Size(164, 46);
+            pictureBox3.Size = new Size(182, 46);
             pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox3.TabIndex = 15;
             pictureBox3.TabStop = false;
