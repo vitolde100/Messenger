@@ -1,12 +1,10 @@
 ﻿using MessengerClient.Client.Services;
+using MessengerClient.Client.Protocol;
 using MessengerClient.Client.Transport;
 using MessengerClient.Client;
 using MessengerShared.Requests;
 using MessengerShared.API;
 using System.Text.Json;
-using System.Diagnostics;
-using MessengerShared;
-using MessengerClient.Client.Protocol;
 
 namespace MessengerClient
 {
@@ -16,8 +14,8 @@ namespace MessengerClient
         public bool ClientDone = false;
         public bool Registrating = true;
         private ITransport _transport;
-        private NetworkService _networkService;
         private IProtocol _protocol;
+        private NetworkService _networkService;
         public Hello(NetworkService network, ITransport transport, IProtocol protocol)
         {
             _transport = transport;
@@ -28,13 +26,6 @@ namespace MessengerClient
 
         private void Hello_Load(object sender, EventArgs e)
         {
-            //var c = new AutoCompleteStringCollection();
-            //c.Add("localhost");
-            //var c2 = new AutoCompleteStringCollection();
-            //c2.Add("5000");
-            //ipBox.AutoCompleteCustomSource = c;
-            //portBox.AutoCompleteCustomSource = c2;
-
 
         }
 
@@ -57,14 +48,13 @@ namespace MessengerClient
                 State.IP = ipBox.Text;
                 State.Port = int.Parse(portBox.Text);
                 await _transport.ConnectAsync(State.IP, State.Port);
-                new Thread(() => { _protocol.RunRecieveloop(); });
+                new Thread(() => _protocol.RunRecieveloop()).Start();
                 ServS();
-                
             }
             catch (Exception ex) { ServF(); }
         }
 
-        public void ServS() { ServerDone = true; sErrLable.Hide(); sel1.SelectTab(1); }
+        public void ServS() { ServerDone = true; sErrLable.Hide(); sel1.TabPages[1].Focus(); }
 
         public void ServF() { sErrLable.Show(); }
 
@@ -74,7 +64,7 @@ namespace MessengerClient
             {
                 LogInErr.Text = "Login and password cannot be empty.";
                 LogInErr.Show();
-                //throw new Exception("Empty");
+                throw new Exception("Empty");
             }
 
             State.Login = LoginBox.Text;
@@ -84,14 +74,19 @@ namespace MessengerClient
 
         private async void SingInBut_Click(object sender, EventArgs e)
         {
-            ApplyData();
+            try
+            {
+                ApplyData();
+            }
+            catch { return; }
 
             Responce responce = await _networkService.Login();
 
             if (responce.Success)
             {
                 ClientDone = true;
-                State.Session = JsonSerializer.Deserialize<Session>(JsonSerializer.Serialize(responce.Data));
+                State.Session = (Session)responce.Data;
+                State.isLoggedIn = true;
                 this.Close();
             }
             else
@@ -106,17 +101,19 @@ namespace MessengerClient
 
         private async void SingUpBut_Click(object sender, EventArgs e)
         {
-            ApplyData();
-            //Debug.Print(">>>");
+            try
+            {
+                ApplyData();
+            }
+            catch { return; }
 
             Responce responce = await _networkService.Registrate();
-
-            Debug.Print(">>>>" + responce.Success.ToString());
 
             if (responce.Success)
             {
                 ClientDone = true;
-                State.Session = JsonSerializer.Deserialize<Session>(JsonSerializer.Serialize(responce.Data));
+                State.Session = (Session)responce.Data;
+                State.isLoggedIn = true;
                 this.Close();
             }
             else

@@ -2,6 +2,7 @@
 using MessengerShared.Requests;
 using MessengerShared.Requests.Data;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace MessengerClient.Client.Protocol
@@ -37,7 +38,7 @@ namespace MessengerClient.Client.Protocol
             var json = JsonSerializer.Serialize(request);
             await _transport.SendAsync(json);
 
-            return await tcs.Task;
+            return await tcs.Task; 
         }
 
         public async Task RunRecieveloop()
@@ -69,7 +70,7 @@ namespace MessengerClient.Client.Protocol
                     {
                         case "response":
                             {
-                                var response = ((JsonElement)envelope.Payload).Deserialize<Responce>();
+                                Responce response = ((JsonElement)envelope.Payload).Deserialize<Responce>();
                                 if (response != null)
                                     HandleResponse(response);
                                 break;
@@ -77,7 +78,7 @@ namespace MessengerClient.Client.Protocol
 
                         case "chat":
                             {
-                                var chat = ((JsonElement)envelope.Payload).Deserialize<ChatMessageData>();
+                                ChatMessageData chat = ((JsonElement)envelope.Payload).Deserialize<ChatMessageData>();
                                 if (chat != null)
                                     MessageReceived?.Invoke(chat);
                                 break;
@@ -85,21 +86,18 @@ namespace MessengerClient.Client.Protocol
 
                         case "server":
                             {
-                                var code = ((JsonElement)envelope.Payload).Deserialize<ServerCodes>();
+                                ServerCodes code = ((JsonElement)envelope.Payload).Deserialize<ServerCodes>();
                                 HandleServerCode(code);
                                 break;
                             }
                     }
                 }
             }
-            catch
+            catch (Exception ex) 
             {
-                foreach (var tcs in _pendingTasks.Values)
-                {
-                    tcs.TrySetException(new Exception("Disconnected"));
-                }
-                _pendingTasks.Clear();
+                Debug.Print($">>> {ex.Message}");
             }
+            DropAllHandlers();
         }
 
         private void HandleResponse(Responce response)
@@ -113,9 +111,22 @@ namespace MessengerClient.Client.Protocol
         private void HandleServerCode(ServerCodes code)
         {
             if (code == ServerCodes.Disconnected)
+            {
+                DropAllHandlers() ;
                 _transport.Disconnect();
+            }
 
             Console.WriteLine(code.ToString());
         }
+
+        private void DropAllHandlers()
+        {
+            foreach (var tcs in _pendingTasks.Values)
+            {
+                tcs.TrySetException(new Exception("Disconnected"));
+            }
+            _pendingTasks.Clear();
+        }
+
     }
 }
