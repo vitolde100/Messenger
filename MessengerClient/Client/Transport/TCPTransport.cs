@@ -1,4 +1,5 @@
 ﻿using MessengerShared.Requests.Data;
+using System.Diagnostics;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -8,7 +9,7 @@ namespace MessengerClient.Client.Transport
 {
     public class TCPTransport : ITransport
     {
-        public bool isConnected { get; private set; }
+        public bool IsConnected { get; private set; }
         TcpClient _client;
         Stream _stream;
 
@@ -25,7 +26,7 @@ namespace MessengerClient.Client.Transport
 
         public async Task ConnectAsync(string host, int port)
         {
-            if (isConnected) Disconnect();
+            if (IsConnected) Disconnect();
             try
             {
                 _client = new TcpClient();
@@ -42,9 +43,10 @@ namespace MessengerClient.Client.Transport
             }
             catch (Exception ex)
             {
+                Debug.Print($">>>>>>>>>>>>>{ex.Message}");
                 throw ex;
             }
-            isConnected = true;
+            IsConnected = true;
         }
 
         public async Task<string> ReceiveAsync()
@@ -68,19 +70,19 @@ namespace MessengerClient.Client.Transport
                     }).Result;
                     return message;
                 }
-                isConnected = false;
+                IsConnected = false;
                 return string.Empty;
             }
             catch
             {
-                isConnected = false;
+                IsConnected = false;
                 return string.Empty;
             }
         }
 
         public async Task SendAsync(string message)
         {
-            if (_client != null || isConnected)
+            if (_client != null || IsConnected)
             {
                 byte[] buffer = UTF8Encoding.UTF8.GetBytes(message.ToString());
                 await _stream.WriteAsync(buffer, 0, buffer.Length);
@@ -91,7 +93,7 @@ namespace MessengerClient.Client.Transport
         {
             try
             {
-                isConnected = false;
+                IsConnected = false;
                 _stream.Dispose();
                 _client.Dispose();
             }

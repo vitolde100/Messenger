@@ -24,6 +24,10 @@ namespace MessengerClient
             _networkService = network;
             _protocol = protocol;
             InitializeComponent();
+            if (_transport.IsConnected)
+            {
+                ServS();
+            }
         }
 
         private void Hello_Load(object sender, EventArgs e)
@@ -47,9 +51,9 @@ namespace MessengerClient
         {
             try
             {
-                State.IP = ipBox.Text;
-                State.Port = int.Parse(portBox.Text);
-                await _transport.ConnectAsync(State.IP, State.Port);
+                Program.state.IP = ipBox.Text;
+                Program.state.Port = int.Parse(portBox.Text);
+                await _transport.ConnectAsync(Program.state.IP, Program.state.Port);
                 new Thread(() => _protocol.RunRecieveloop()).Start();
                 ServS();
             }
@@ -69,8 +73,8 @@ namespace MessengerClient
                 throw new Exception("Empty");
             }
 
-            State.Login = LoginBox.Text;
-            State.Password = PasswordBox.Text;
+            Program.state.Login = LoginBox.Text;
+            Program.state.Password = PasswordBox.Text;
             LogInErr.Hide();
         }
 
@@ -87,8 +91,7 @@ namespace MessengerClient
             if (responce.Success)
             {
                 ClientDone = true;
-                State.Session = (Session)responce.Data;
-                State.isLoggedIn = true;
+                Program.state.Session = (Session)responce.Data;
                 this.Close();
             }
             else
@@ -114,8 +117,10 @@ namespace MessengerClient
             if (responce.Success)
             {
                 ClientDone = true;
-                State.Session = (Session)responce.Data;
-                State.isLoggedIn = true;
+
+                var session = (Session)responce.Data;
+                Program.state.UserID = session.userID;
+                Program.state.Session = session;
                 this.Close();
             }
             else

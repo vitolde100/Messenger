@@ -88,7 +88,7 @@ namespace MessengerClient.Interface
 
         public void AddMessage(ChatMessageData message)
         {
-            if (message.TargetID != m_target && message.TargetID != State.Login) return;
+            if (message.TargetID != m_target && message.TargetID != Program.state.Login) return;
 
             m_messages.Add(message);
 
@@ -97,7 +97,7 @@ namespace MessengerClient.Interface
             int XPos = 0;
 
             if (message.TargetID == m_target) XPos = 0;
-            else if(message.TargetID == State.Login) XPos = m_size.Width - m_scrollBar.Width;
+            else if(message.TargetID == Program.state.Login) XPos = m_size.Width - m_scrollBar.Width;
          
             m_messagePanels.Add(new Elements.Message(message, new Point(XPos,YPos)));
             m_messagesLength += m_messagePanels.Last().Panel.Height;

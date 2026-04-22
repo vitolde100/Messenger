@@ -31,7 +31,7 @@ namespace MessengerClient.Client.Services
 
         private async Task<bool> TryRefresh()
         {
-            var refreshRequest = new Request(State.Session.accessToken, "Refresh", new RefreshData { RefreshToken = State.Session.refreshToken });
+            var refreshRequest = new Request(Program.state.Session.accessToken, "Refresh", new RefreshData { RefreshToken = Program.state.Session.refreshToken });
             Responce response = await _protocol.SendAndReciveAsync(refreshRequest);
 
             return response.Success;

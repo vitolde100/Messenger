@@ -19,7 +19,7 @@ namespace MessengerClient.Client.Services
 
         public async Task<Responce> Login() 
         {
-            var Data = new UserData { Login = State.Login, Password = State.Password };
+            var Data = new UserData { Login = Program.state.Login, Password = Program.state.Password };
             var Request = new Request(null, "Login", Data);
             var Responce = await _protocol.SendAndReciveAsync(Request);
             Responce.Data = GetData<Session>(Responce);
@@ -28,7 +28,7 @@ namespace MessengerClient.Client.Services
 
         public async Task<Responce> Registrate() 
         {
-            var Data = new UserData { Login = State.Login, Password = State.Password };
+            var Data = new UserData { Login = Program.state.Login, Password = Program.state.Password };
             var Request = new Request(null, "Registration", Data);
             var Responce = await _protocol.SendAndReciveAsync(Request);
             Responce.Data = GetData<Session>(Responce);
@@ -37,13 +37,13 @@ namespace MessengerClient.Client.Services
 
         public async Task Logout() 
         {
-            var Request = new Request(State.Session.accessToken, "Logout", null);
+            var Request = new Request(Program.state.Session.accessToken, "Logout", null);
             await _protocol.SendAsync(Request);
         }
 
         public async Task<Responce> SendMessage(ChatMessageData data) 
         { 
-            var Request = new Request(State.Session.accessToken, "SendMessage",data);
+            var Request = new Request(Program.state.Session.accessToken, "SendMessage",data);
             return await _protocol.SendAndReciveAsync(Request);
         } 
 

@@ -2,7 +2,7 @@
 {
     public interface ITransport
     {
-        bool isConnected { get; }
+        bool IsConnected { get; }
         Task ConnectAsync(string host, int port);
         Task SendAsync(string data);
         Task<string> ReceiveAsync();

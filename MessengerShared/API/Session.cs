@@ -16,18 +16,23 @@ namespace MessengerShared.API
         public DateTime refresh_expires { get; set; }
         public string userID { get; set; }
 
+        public Session()
+        {
+
+        }
+
         /// <summary>
         /// Инициализация на стороне сервера
         /// </summary>
         /// <param name="access"></param>
         /// <param name="refresh"></param>
-        public Session(string access, string refresh, string ID)
+        public Session(string accesstoken, string refreshtoken, string userid)
         {
-            accessToken = access;
-            refreshToken = refresh;
+            accessToken = accesstoken;
+            refreshToken = accesstoken;
             access_expires = DateTime.UtcNow.AddHours(1);
             refresh_expires = DateTime.UtcNow.AddDays(7);
-            userID = ID;
+            userID = userid;
         }
 
         /// <summary>
@@ -49,12 +54,12 @@ namespace MessengerShared.API
 
         public bool IsAccessExpired() 
         {
-            return access_expires.CompareTo(DateTime.UtcNow) > 0;
+            return access_expires.CompareTo(DateTime.UtcNow) <= 0;
         }
 
         public bool IsRefreshExpired()
         {
-            return refresh_expires.CompareTo(DateTime.UtcNow) > 0;
+            return refresh_expires.CompareTo(DateTime.UtcNow) <= 0;
         }
     }
 }

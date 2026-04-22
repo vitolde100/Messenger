@@ -2,14 +2,34 @@
 
 namespace MessengerClient.Client
 {
-    internal static class State
+    internal class State
     {
-        public static string Login;
-        public static string Password;
-        public static string IP;
-        public static int Port;
-        public static string UserID;
-        public static Session Session;
-        public static bool isLoggedIn;
+        public string Login { get; set; }
+        public string Password { get; set; }
+        public string IP { get; set; } = "192.168.1.2";
+        public int Port { get; set; } = 5000;
+        public string UserID { get; set; }
+        public Session Session { get; set; }
+        public bool isLoggedIn { get
+            {
+                return Session != null && !Session.IsAccessExpired();
+            }
+        }
+
+
+        public State()
+        {
+            
+        }
+
+        public void Clear()
+        {
+            Login = null;
+            Password = null;
+            IP = null;
+            Port = 0;
+            UserID = null;
+            Session = null;
+        }   
     }
 }
