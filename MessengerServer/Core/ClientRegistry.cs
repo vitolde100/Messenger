@@ -1,5 +1,4 @@
 ﻿using MessengerServer.Requests;
-using Microsoft.Win32;
 using System.Collections.Concurrent;
 
 namespace MessengerServer.Core
@@ -33,7 +32,11 @@ namespace MessengerServer.Core
         {
             foreach (ClientHandler handler in ClientHandlers)
             {
-                if (handler.Context.RegistryID == id) ClientHandlers.Remove(handler);
+                if (handler.Context.RegistryID == id)
+                {
+                    handler.Context.RegistryID = default;
+                    ClientHandlers.Remove(handler);
+                }
             }
         }
     }
@@ -82,15 +85,15 @@ namespace MessengerServer.Core
                     
                 m_logger.log("Deleted " + context.UserID + "\r", this.GetType().Name);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                m_logger.log("Can't Delete: " + e.Message, this.GetType().Name);
+                m_logger.log("Can't Delete: " + ex.Message, this.GetType().Name);
             }
         }
 
         public void DisconnectAll()
         {
-            throw new NotImplementedException(); //Я silly глюпий не знаю что и как тут делать у меня ключ и 2 раза значение
+            throw new NotImplementedException();
         }
     }
 }

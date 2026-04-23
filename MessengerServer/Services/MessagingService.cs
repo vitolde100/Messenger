@@ -16,14 +16,15 @@ namespace MessengerServer.Services
             _sessionService = sessionService;
         }
 
-        public void SendMessage(ChatMessageData message)
+        public bool SendMessage(ChatMessageData message)
         {
             var Clients = _clientRegistry.GetClient(message.TargetID);
             if (Clients != null)
             {
                 foreach (var Client in Clients) Client.Send(message);
+                return true;
             }
-            else throw new Exception(); //ХЕХЕ ничего лучше не придумал kek
+            return false;
         }
     }
 }

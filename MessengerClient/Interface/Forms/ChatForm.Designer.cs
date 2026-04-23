@@ -28,14 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
+            MainPanel = new Panel();
             SuspendLayout();
+            // 
+            // MainPanel
+            // 
+            MainPanel.BackColor = SystemColors.ButtonFace;
+            MainPanel.Location = new Point(0, 0);
+            MainPanel.Name = "MainPanel";
+            MainPanel.Size = new Size(200, 100);
+            MainPanel.TabIndex = 0;
             // 
             // ChatForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Black;
+            BackColor = SystemColors.AppWorkspace;
             ClientSize = new Size(878, 521);
+            Controls.Add(MainPanel);
+            ForeColor = SystemColors.ActiveCaption;
             Name = "ChatForm";
             Text = "Work window";
             Load += ChatForm_Load;
@@ -44,5 +55,7 @@
         }
 
         #endregion
+
+        private Panel MainPanel;
     }
 }

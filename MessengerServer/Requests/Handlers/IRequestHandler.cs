@@ -14,11 +14,11 @@ namespace MessengerServer.Requests.Handlers
             Type = GetType().Name;
         }
 
-        public abstract Responce HandleRequest(Request request, ClientHandler handler);
+        public abstract Response HandleRequest(Request request, ClientHandler handler);
 
-        protected Responce BuildResponce(ServerCodes code = ServerCodes.NoErrors)
+        protected Response BuildResponce(ServerCodes code = ServerCodes.NoErrors)
         {
-            var responce = new Responce
+            var responce = new Response
             {
                 Type = GetType().Name,
                 Error = code,
@@ -28,9 +28,9 @@ namespace MessengerServer.Requests.Handlers
             return responce;
         }
 
-        protected Responce BuildResponce(object Data)
+        protected Response BuildResponce(object Data)
         {
-            return new Responce
+            return new Response
             {
                 Type = GetType().Name,
                 Success = true,

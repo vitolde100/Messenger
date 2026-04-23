@@ -2,7 +2,7 @@
 {
     public enum ServerCodes
     {
-        NoErrors = 200, //All right, go ahead!
+        NoErrors = 0, //All right, go ahead!
         Hello = 1, //Server is ready for handshake
         Disconnected = 2, //Touch grass bro, you are disconnected kekb
         
@@ -11,7 +11,7 @@
         TooManyErrors = 1024, //Too many errors, you are so fucking silly, disconnecting you ¯\_(ツ)_/¯
 
         AccessTokenExpired = 406, //Access token expired
-        SessionExpired = 406, //Session expired
+        SessionExpired = 408, //Session expired
         SessionNotExist = 407, //Session not exist
         Unauthorized = 401, //User Unauthorized
 

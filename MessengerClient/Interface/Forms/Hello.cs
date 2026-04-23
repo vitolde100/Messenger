@@ -1,10 +1,8 @@
 ﻿using MessengerClient.Client.Services;
 using MessengerClient.Client.Protocol;
 using MessengerClient.Client.Transport;
-using MessengerClient.Client;
 using MessengerShared.Requests;
 using MessengerShared.API;
-using System.Text.Json;
 using MessengerClient.Interface.Forms;
 using MessengerClient.Properties;
 
@@ -12,16 +10,17 @@ namespace MessengerClient
 {
     public partial class Hello : Form
     {
+        private string Password;
+
         public bool ServerDone = false;
         public bool ClientDone = false;
         public bool Registrating = true;
         private ITransport _transport;
         private IProtocol _protocol;
-        private NetworkService _networkService;
-        public Hello(NetworkService network, ITransport transport, IProtocol protocol)
+        private NetworkService _networkService = Program.AppContext.NetworkService;
+        public Hello(ITransport transport, IProtocol protocol)
         {
             _transport = transport;
-            _networkService = network;
             _protocol = protocol;
             InitializeComponent();
             if (_transport.IsConnected)
@@ -74,7 +73,7 @@ namespace MessengerClient
             }
 
             Program.state.Login = LoginBox.Text;
-            Program.state.Password = PasswordBox.Text;
+            Password = PasswordBox.Text;
             LogInErr.Hide();
         }
 
@@ -86,12 +85,14 @@ namespace MessengerClient
             }
             catch { return; }
 
-            Responce responce = await _networkService.Login();
+            Response responce = await _networkService.Login(Program.state.Login, Password);
 
             if (responce.Success)
             {
                 ClientDone = true;
-                Program.state.Session = (Session)responce.Data;
+                var session = (Session)responce.Data;
+                Program.state.UserID = session.userID;
+                Program.state.Session = session;
                 this.Close();
             }
             else
@@ -112,7 +113,7 @@ namespace MessengerClient
             }
             catch { return; }
 
-            Responce responce = await _networkService.Registrate();
+            Response responce = await _networkService.Registrate(Program.state.Login, Password);
 
             if (responce.Success)
             {

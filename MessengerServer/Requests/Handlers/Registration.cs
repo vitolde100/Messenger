@@ -20,7 +20,7 @@ namespace MessengerServer.Requests.Handlers
             ShouldBeAutorised = false;
         }
 
-        public override Responce HandleRequest(Request request, ClientHandler client)
+        public override Response HandleRequest(Request request, ClientHandler client)
         {
             var Data = JsonSerializer.Deserialize<ClientData>(JsonSerializer.Serialize(request.Data));
             if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);

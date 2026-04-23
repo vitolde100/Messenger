@@ -10,7 +10,7 @@ namespace MessengerClient.Client.Protocol
     internal class JsonProtocol : IProtocol
     {
         private readonly Transport.ITransport _transport;
-        private ConcurrentDictionary<int, TaskCompletionSource<Responce>> _pendingTasks;
+        private ConcurrentDictionary<int, TaskCompletionSource<Response>> _pendingTasks;
         private int packageCounter = 0;
 
         public event Action<ChatMessageData> MessageReceived;
@@ -18,21 +18,14 @@ namespace MessengerClient.Client.Protocol
         public JsonProtocol(Transport.ITransport transport)
         {
             _transport = transport;
-            _pendingTasks = new ConcurrentDictionary<int, TaskCompletionSource<Responce>>();
+            _pendingTasks = new ConcurrentDictionary<int, TaskCompletionSource<Response>>();
         }
 
-        public async Task SendAsync(Request request)
-        {
-            request.Number = Interlocked.Increment(ref packageCounter);
-            var json = JsonSerializer.Serialize(request);
-            await _transport.SendAsync(json);
-        }
-
-        public async Task<Responce> SendAndReciveAsync(Request request)
+        public async Task<Response> SendAndReciveAsync(Request request)
         {
             request.Number = Interlocked.Increment(ref packageCounter);
 
-            var tcs = new TaskCompletionSource<Responce>();
+            var tcs = new TaskCompletionSource<Response>(TaskCreationOptions.RunContinuationsAsynchronously); 
             _pendingTasks.TryAdd(request.Number, tcs);
 
             var json = JsonSerializer.Serialize(request);
@@ -70,7 +63,7 @@ namespace MessengerClient.Client.Protocol
                     {
                         case "response":
                             {
-                                Responce response = ((JsonElement)envelope.Payload).Deserialize<Responce>();
+                                Response response = ((JsonElement)envelope.Payload).Deserialize<Response>();
                                 if (response != null)
                                     HandleResponse(response);
                                 break;
@@ -97,10 +90,10 @@ namespace MessengerClient.Client.Protocol
             {
                 Debug.Print($">>> {ex.Message}");
             }
-            DropAllHandlers();
+            Disconnect();
         }
 
-        private void HandleResponse(Responce response)
+        private void HandleResponse(Response response)
         {
             if (_pendingTasks.TryRemove(response.Number, out var tcs))
             {
@@ -110,22 +103,29 @@ namespace MessengerClient.Client.Protocol
 
         private void HandleServerCode(ServerCodes code)
         {
-            if (code == ServerCodes.Disconnected)
+            switch (code)
             {
-                DropAllHandlers() ;
-                _transport.Disconnect();
+                case ServerCodes.Disconnected:
+                    Disconnect();
+                    break;
+                    
+                case ServerCodes.TooManyErrors:
+                    Disconnect();
+                    break;
             }
+
 
             Console.WriteLine(code.ToString());
         }
 
-        private void DropAllHandlers()
+        private void Disconnect()
         {
             foreach (var tcs in _pendingTasks.Values)
             {
                 tcs.TrySetException(new Exception("Disconnected"));
             }
             _pendingTasks.Clear();
+            _transport.Disconnect();
         }
 
     }

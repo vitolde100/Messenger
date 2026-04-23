@@ -1,5 +1,4 @@
-﻿using MessengerClient.Client;
-using MessengerClient.Client.Protocol;
+﻿/*using MessengerClient.Client.Protocol;
 using MessengerClient.Client.Services;
 using MessengerClient.Data;
 using MessengerShared.Requests.Data;
@@ -192,4 +191,4 @@ namespace MessengerClient.Interface
             m_lastOffset = offset;
         }
     }
-}
+}*/

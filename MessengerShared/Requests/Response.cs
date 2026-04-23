@@ -2,10 +2,10 @@
 
 namespace MessengerShared.Requests 
 { 
-    public class Responce
+    public class Response
     {
         public int Number { get; set; }
-        public ServerCodes Error = ServerCodes.NoErrors;
+        public ServerCodes Error { get; set; } = ServerCodes.NoErrors;
         public string Type { get; set; }
         public bool Success { get; set; }
         public object Data { get; set; }

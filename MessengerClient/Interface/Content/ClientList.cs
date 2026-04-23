@@ -1,4 +1,4 @@
-﻿using MessengerShared.Requests.Data;
+﻿/*using MessengerShared.Requests.Data;
 using MessengerClient.Interface.Elements;
 using MessengerClient.Data;
 using MessengerClient.Client.Transport;
@@ -89,11 +89,6 @@ namespace MessengerClient.Interface
 
         }
 
-        public void FindOrAdd(ClientData user)
-        {
-            AddUser(user);
-        }
-
         public void AddUser(ClientData user)
         {
             m_users.Add(user);
@@ -136,4 +131,4 @@ namespace MessengerClient.Interface
                 m_scrollBar.Value += offset;
         }
     }
-}
+}*/

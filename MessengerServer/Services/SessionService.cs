@@ -44,6 +44,13 @@ namespace MessengerServer.Services
             var session = _storage.GetSessionByAccessToken(accessToken);
             if (session == null || session.IsAccessExpired())
                 return false;
+
+            if (session.IsRefreshExpired())
+            {
+                _storage.RemoveSession(accessToken);
+                return false;
+            }
+
             return true;
         }
 
@@ -51,22 +58,39 @@ namespace MessengerServer.Services
         {
             if (accessToken == null) return false;
             var session = _storage.GetSessionByAccessToken(accessToken);
-            if (session == null || session.IsRefreshExpired())
+            if (session == null)
                 return false;
+
+            if (session.IsRefreshExpired())
+            {
+                _storage.RemoveSession(accessToken);
+                return false;
+            }
+
             return true;
         }
 
         public Session? GetSessionByAccessToken(string? accessToken)
         {
             if (accessToken == null) return null;
-            return _storage.GetSessionByAccessToken(accessToken);
+            var session = _storage.GetSessionByAccessToken(accessToken);
+
+            if (session == null) return null;
+
+            if (session.IsRefreshExpired())
+            {
+                _storage.RemoveSession(accessToken);
+                return null;
+            }
+
+            return session;
         }
 
         public void Remove(string accessToken)
         {
             try
             {
-                _storage.DeleteSession(accessToken);
+                _storage.RemoveSession(accessToken);
             }
             catch (Exception ex) 
             {

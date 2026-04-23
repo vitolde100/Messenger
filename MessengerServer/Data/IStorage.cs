@@ -20,6 +20,6 @@ namespace MessengerServer.Data
         
         void SaveSession(string userId, string accessToken, string refreshToken, DateTime accessExpires, DateTime refreshExpires);
 
-        void DeleteSession(string accessToken);
+        void RemoveSession(string accessToken);
     }
 }

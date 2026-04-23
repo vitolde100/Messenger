@@ -5,7 +5,6 @@ using MessengerShared;
 using MessengerShared.Requests;
 using MessengerShared.Requests.Data;
 using System.Net.Sockets;
-using System.Runtime.Remoting;
 using System.Text;
 using System.Text.Json;
 
@@ -22,7 +21,7 @@ internal class ClientHandler
 
     public event Action<ClientHandler> OnClientDead;
 
-    TimeSpan MSGCooldown = TimeSpan.FromSeconds(0.5f);
+    TimeSpan MSGCooldown = TimeSpan.FromSeconds(0f);
 
     DateTime LastMSGTime = DateTime.MinValue;
     const int MaxErrorCount = 10;
@@ -131,7 +130,7 @@ internal class ClientHandler
         {
             Type = payload switch
             {
-                Responce => "response",
+                Response => "response",
                 ChatMessageData => "chat",
                 ServerCodes => "server",
                 _ => "unknown"
@@ -139,6 +138,12 @@ internal class ClientHandler
             Payload = payload
         };
         return envelope;
+    }
+
+    public void Deauthenticate()
+    {
+        Context.UserID = null;
+        Context.AccessToken = null;
     }
 
     public async Task Disconnect(ServerCodes? code, string? ex = null)

@@ -198,7 +198,7 @@
             // 
             LogInErr.AutoSize = true;
             LogInErr.ForeColor = Color.Red;
-            LogInErr.Location = new Point(207, 132);
+            LogInErr.Location = new Point(184, 131);
             LogInErr.Name = "LogInErr";
             LogInErr.Size = new Size(125, 15);
             LogInErr.TabIndex = 13;

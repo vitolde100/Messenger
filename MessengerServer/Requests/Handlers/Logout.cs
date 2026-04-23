@@ -12,11 +12,13 @@ namespace MessengerServer.Requests.Handlers
         {
             _sessionService = sessionService;
             _clientRegistry = registry;
-            ShouldBeAutorised = false;
+            ShouldBeAutorised = true;
         }
 
-        public override Responce HandleRequest(Request request, ClientHandler client)
+        public override Response HandleRequest(Request request, ClientHandler client)
         {
+            client.Deauthenticate();
+
             _sessionService.Remove(request.AccessToken);
             _clientRegistry.Remove(client.Context);
 

@@ -2,6 +2,7 @@ using MessengerClient.Client;
 using MessengerClient.Client.Protocol;
 using MessengerClient.Client.Services;
 using MessengerClient.Client.Transport;
+using MessengerClient.Interface.Forms;
 using MessengerShared;
 using MessengerShared.API;
 using System.Configuration;
@@ -14,6 +15,13 @@ namespace MessengerClient
 {
     internal static class Program
     {
+        public static class AppContext
+        {
+            public static AuthService AuthService {  get; set; }
+            public static NetworkService NetworkService { get; set; }
+            public static IProtocol Protocol { get; set; }
+            public static ITransport Transport { get; set; }
+        }
 
         public class Config 
         {
@@ -79,8 +87,8 @@ namespace MessengerClient
             Directory.CreateDirectory(dir);
             ITransport transport = new TCPTransport();
             IProtocol protocol = new JsonProtocol(transport);
-            AuthService authService = new AuthService(protocol);
-            NetworkService networkService = new NetworkService(protocol, authService);
+            AppContext.AuthService = new AuthService(protocol);
+            AppContext.NetworkService = new NetworkService(protocol, AppContext.AuthService);
 
             ApplicationConfiguration.Initialize();
 
@@ -96,42 +104,34 @@ namespace MessengerClient
                 }
                 catch (Exception ex)
                 {
-#if DEBUG
                     Debug.Print($">>>>>>>>>>>>Connection error: {ex}");
-#endif
                 }
             }
 
-                while (true)
+            while (true)
+            {
+                try
                 {
-                    try
+                    if (!(state.isLoggedIn && transport.IsConnected))
                     {
-                        if (!state.isLoggedIn)
-                        {
-                            Application.Run(new Hello(networkService, transport, protocol));
-                            continue;
-                        }
-                        else
-                        {
-                            Application.Run(new ChatForm(protocol, networkService));
-                            break;
-                        }
-
+                        Application.Run(new Hello( transport, protocol));
+                        continue;
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        if (ex.Message == "Need relogin")
-                        {
-                            state.Clear();
-                            continue;
-                        }
-
-                        throw;
+                        Application.Run(new TestForm());
+                        SaveConfig(path);
+                        state.Clear();
+                        break;
                     }
+
                 }
-                SaveConfig(path);
-                transport.Disconnect();
-            
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            transport.Disconnect();
         }
 
         private static void LoadConfig(string path)
@@ -167,6 +167,7 @@ namespace MessengerClient
         {
             try
             {
+                var conf = new Config(state);
                 File.WriteAllText(path, JsonSerializer.Serialize(new Config(state)));
             }
             catch (Exception ex)

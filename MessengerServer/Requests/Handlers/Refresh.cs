@@ -15,17 +15,17 @@ namespace MessengerServer.Requests.Handlers
             ShouldBeAutorised = false;
         }
 
-        public override Responce HandleRequest(Request request, ClientHandler client)
+        public override Response HandleRequest(Request request, ClientHandler client)
         {
             if (request.AccessToken == null) return BuildResponce(ServerCodes.Unauthorized);
 
-            var Data = JsonSerializer.Deserialize<RefreshData>(JsonSerializer.Serialize(request.Data));
+            var Data = JsonSerializer.Deserialize<StringData>(JsonSerializer.Serialize(request.Data));
             if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
 
             var session = _sessionService.GetSessionByAccessToken(request.AccessToken);
             if (session == null) return BuildResponce(ServerCodes.NoTargetSession);
 
-            if(session.refreshToken != Data.RefreshToken) return BuildResponce(ServerCodes.WrongRefreshToken);
+            if(session.refreshToken != Data.StringStr) return BuildResponce(ServerCodes.WrongRefreshToken);
 
             _sessionService.Remove(session.accessToken);
 

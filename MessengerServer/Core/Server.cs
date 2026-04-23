@@ -40,7 +40,7 @@ namespace MessengerServer.Core
             _useTls = useTls;
         }
 
-        public async Task Run()
+        public async Task Run() 
         {
             try
             {

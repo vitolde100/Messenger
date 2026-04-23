@@ -214,7 +214,7 @@ namespace MessengerServer.Data
             return list;
         }
 
-        public void DeleteSession(string accessToken)
+        public void RemoveSession(string accessToken)
         {
             lock (_lock)
             {
@@ -223,7 +223,16 @@ namespace MessengerServer.Data
                 cmd.Parameters.AddWithValue("@token", accessToken);
                 cmd.ExecuteNonQuery();
 
-                m_Logger.log("Session deleted: " + accessToken, this.GetType().Name);
+                int rows = cmd.ExecuteNonQuery();
+
+                if (rows > 0)
+                {
+                    m_Logger.log("Session deleted: " + accessToken, this.GetType().Name);
+                }
+                else
+                {
+                    m_Logger.log("Session not found: " + accessToken, this.GetType().Name);
+                }
             }
         }
     }

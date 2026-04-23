@@ -1,4 +1,4 @@
-﻿namespace MessengerClient.Interface
+﻿/*namespace MessengerClient.Interface
 {
     internal abstract class ContentNode
     {
@@ -29,4 +29,4 @@
 
         public abstract void SetSize(Size Size);
     }
-}
+}*/

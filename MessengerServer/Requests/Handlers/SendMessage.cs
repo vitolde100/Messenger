@@ -16,20 +16,15 @@ namespace MessengerServer.Requests.Handlers
             ShouldBeAutorised = true;
         }
 
-        public override Responce HandleRequest(Request request, ClientHandler client)
+        public override Response HandleRequest(Request request, ClientHandler client)
         {
             var Data = JsonSerializer.Deserialize<ChatMessageData>(JsonSerializer.Serialize(request.Data));
             if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
 
-            try
-            {
-                _messagingService.SendMessage(Data);
+            if(_messagingService.SendMessage(Data))
                 return BuildResponce();
-            }
-            catch
-            {
-                return BuildResponce(ServerCodes.NoTargetUser);
-            }
+          
+            return BuildResponce(ServerCodes.NoTargetUser);
         }
     }
 }

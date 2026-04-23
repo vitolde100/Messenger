@@ -12,6 +12,7 @@ namespace MessengerServer.RequestHandlers
     {
         public static void RegiterAll(RequestRouter router, SessionService sessionServise, ClientService clientService, MessagingService messagingService,ClientRegistry registry)
         {
+            router.RegisterHandler(new Hello(sessionServise, registry));
             router.RegisterHandler(new Login(sessionServise, clientService, registry));
             router.RegisterHandler(new Registration(sessionServise, clientService, registry));
             router.RegisterHandler(new Logout(sessionServise,registry));
