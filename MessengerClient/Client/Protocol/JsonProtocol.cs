@@ -1,6 +1,7 @@
 ﻿
 using MessengerShared.Requests;
 using MessengerShared.Requests.Data;
+using MessengerShared.Requests.Enums;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.Json;
@@ -9,16 +10,22 @@ namespace MessengerClient.Client.Protocol
 {
     internal class JsonProtocol : IProtocol
     {
-        private readonly Transport.ITransport _transport;
+        private readonly ConcurrentDictionary<EnvelopeTypes, Func<JsonElement, Task>> _handlers;
+        private readonly Transport.ITransport _transport = Program.AppContext.Transport;
         private ConcurrentDictionary<int, TaskCompletionSource<Response>> _pendingTasks;
         private int packageCounter = 0;
 
-        public event Action<ChatMessageData> MessageReceived;
+        public event Action<ChatMessageData>? OnMessageReceived;
 
-        public JsonProtocol(Transport.ITransport transport)
+        public JsonProtocol()
         {
-            _transport = transport;
             _pendingTasks = new ConcurrentDictionary<int, TaskCompletionSource<Response>>();
+            _handlers = new()
+            {
+                [EnvelopeTypes.Response] = HandleResponse,
+                [EnvelopeTypes.Message] = HandleMessage,
+                [EnvelopeTypes.Code] = HandleServerCode
+            };
         }
 
         public async Task<Response> SendAndReciveAsync(Request request)
@@ -51,39 +58,16 @@ namespace MessengerClient.Client.Protocol
                     {
                         envelope = JsonSerializer.Deserialize<Envelope>(msg);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Debug.WriteLine($">>>>>>>>>>>>>>>>>{ex.Message}");
                         continue;
                     }
 
-                    if (envelope == null)
-                        continue;
+                    if (envelope == null) continue;
 
-                    switch (envelope.Type)
-                    {
-                        case "response":
-                            {
-                                Response response = ((JsonElement)envelope.Payload).Deserialize<Response>();
-                                if (response != null)
-                                    HandleResponse(response);
-                                break;
-                            }
-
-                        case "chat":
-                            {
-                                ChatMessageData chat = ((JsonElement)envelope.Payload).Deserialize<ChatMessageData>();
-                                if (chat != null)
-                                    MessageReceived?.Invoke(chat);
-                                break;
-                            }
-
-                        case "server":
-                            {
-                                ServerCodes code = ((JsonElement)envelope.Payload).Deserialize<ServerCodes>();
-                                HandleServerCode(code);
-                                break;
-                            }
-                    }
+                    if (_handlers.TryGetValue(envelope.Type, out var handler))
+                        await handler((JsonElement)envelope.Payload);
                 }
             }
             catch (Exception ex) 
@@ -93,16 +77,33 @@ namespace MessengerClient.Client.Protocol
             Disconnect();
         }
 
-        private void HandleResponse(Response response)
+        private async Task HandleResponse(JsonElement payload)
         {
-            if (_pendingTasks.TryRemove(response.Number, out var tcs))
+            var response = JsonSerializer.Deserialize<Response>(payload);
+            if (response != null)
             {
-                tcs.TrySetResult(response);
+                if (_pendingTasks.TryRemove(response.Number, out var tcs))
+                {
+                    tcs.TrySetResult(response);
+                }
             }
         }
 
-        private void HandleServerCode(ServerCodes code)
+        private async Task HandleMessage(JsonElement payload)
         {
+            var message = JsonSerializer.Deserialize<ChatMessageData>(payload);
+            OnMessageReceived?.Invoke(message);
+        }
+
+        private async Task HandleGroupEvent(JsonElement payload)
+        {
+            //var Data = JsonSerializer.Deserialize<>(payload);
+            //
+        }
+
+        private async Task HandleServerCode(JsonElement payload)
+        {
+            var code = JsonSerializer.Deserialize<ServerCodes>(payload);
             switch (code)
             {
                 case ServerCodes.Disconnected:
@@ -113,9 +114,6 @@ namespace MessengerClient.Client.Protocol
                     Disconnect();
                     break;
             }
-
-
-            Console.WriteLine(code.ToString());
         }
 
         private void Disconnect()

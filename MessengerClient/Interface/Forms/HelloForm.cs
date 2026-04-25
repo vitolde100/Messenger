@@ -1,27 +1,26 @@
 ﻿using MessengerClient.Client.Services;
 using MessengerClient.Client.Protocol;
 using MessengerClient.Client.Transport;
-using MessengerShared.Requests;
 using MessengerShared.API;
 using MessengerClient.Interface.Forms;
 using MessengerClient.Properties;
+using MessengerShared.Requests.Enums;
+using MessengerShared.Requests;
 
 namespace MessengerClient
 {
-    public partial class Hello : Form
+    public partial class HelloForm : Form
     {
         private string Password;
 
         public bool ServerDone = false;
         public bool ClientDone = false;
         public bool Registrating = true;
-        private ITransport _transport;
-        private IProtocol _protocol;
+        private ITransport _transport = Program.AppContext.Transport;
+        private IProtocol _protocol = Program.AppContext.Protocol;
         private NetworkService _networkService = Program.AppContext.NetworkService;
-        public Hello(ITransport transport, IProtocol protocol)
+        public HelloForm()
         {
-            _transport = transport;
-            _protocol = protocol;
             InitializeComponent();
             if (_transport.IsConnected)
             {

@@ -1,4 +1,6 @@
 ﻿using MessengerServer.Core;
+using MessengerShared.Requests.
+
 using MessengerShared.Requests.Data;
 
 namespace MessengerServer.Services
@@ -16,15 +18,20 @@ namespace MessengerServer.Services
             _sessionService = sessionService;
         }
 
-        public bool SendMessage(ChatMessageData message)
+        public bool SendMessage(IEnvelopePayload message, string TargetID)
         {
-            var Clients = _clientRegistry.GetClient(message.TargetID);
+            var Clients = _clientRegistry.Get(TargetID);
             if (Clients != null)
             {
                 foreach (var Client in Clients) Client.Send(message);
                 return true;
             }
             return false;
+        }
+
+        public bool SendMessageToChat(IEnvelopePayload message, string ChatID)
+        {
+
         }
     }
 }

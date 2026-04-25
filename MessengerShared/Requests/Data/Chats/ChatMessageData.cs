@@ -1,9 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MessengerShared.Requests.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MessengerShared.Requests.Data
 {
-    public class ChatMessageData
+    public class ChatMessageData : IEnvelopePayload
     {
+        [JsonIgnore]
+        public EnvelopeTypes EnvelopeType => EnvelopeTypes.Message;
+
         [Required]
         public TimeSpan SendTime { get; set; }
         [Required]

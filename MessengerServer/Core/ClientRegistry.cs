@@ -1,4 +1,4 @@
-﻿using MessengerServer.Requests;
+﻿using MessengerServer.Data;
 using System.Collections.Concurrent;
 
 namespace MessengerServer.Core
@@ -43,11 +43,10 @@ namespace MessengerServer.Core
 
     internal class ClientRegistry
     {
-        public static readonly ClientRegistry instance = new ClientRegistry();
         ConcurrentDictionary<string, ClientGroup> m_clients;
         Logger m_logger = Logger.instance;
 
-        ClientRegistry()
+        public ClientRegistry()
         {
             m_clients = new ConcurrentDictionary<string, ClientGroup>();
             m_logger.log("Registry Initialized",this.GetType().Name);
@@ -62,10 +61,10 @@ namespace MessengerServer.Core
                 m_clients.TryAdd(handler.Context.UserID, group);
             }
             else m_clients[handler.Context.UserID].Add(handler);
-            m_logger.log("Added " + handler.Context.UserID + "\r", this.GetType().Name);
+            m_logger.log($"Added User {handler.Context.UserID}", this.GetType().Name);
         }
 
-        public List<ClientHandler> GetClient(string UserID)
+        public List<ClientHandler> Get(string UserID)
         {
             try
             {

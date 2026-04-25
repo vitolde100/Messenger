@@ -214,24 +214,27 @@ namespace MessengerServer.Data
             return list;
         }
 
+
         public void RemoveSession(string accessToken)
         {
             lock (_lock)
             {
-                using var cmd = _connection.CreateCommand();
-                cmd.CommandText = "DELETE FROM Sessions WHERE AccessToken = @token;";
-                cmd.Parameters.AddWithValue("@token", accessToken);
-                cmd.ExecuteNonQuery();
-
-                int rows = cmd.ExecuteNonQuery();
-
-                if (rows > 0)
+                try
                 {
-                    m_Logger.log("Session deleted: " + accessToken, this.GetType().Name);
+                    using var cmd = _connection.CreateCommand();
+                    cmd.CommandText = "DELETE FROM Sessions WHERE AccessToken = @token;";
+                    cmd.Parameters.AddWithValue("@token", accessToken);
+
+                    int rows = cmd.ExecuteNonQuery();
+
+                    if (rows > 0)
+                        m_Logger.log("Session deleted: " + accessToken, this.GetType().Name);
+                    else
+                        m_Logger.log("Session not found: " + accessToken, this.GetType().Name);
                 }
-                else
+                catch (Exception ex)
                 {
-                    m_Logger.log("Session not found: " + accessToken, this.GetType().Name);
+                    m_Logger.log("SQL ERROR (RemoveSession): " + ex.Message, this.GetType().Name);
                 }
             }
         }

@@ -1,12 +1,9 @@
 ﻿using System.Net;
-using System.Text.Json;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using MessengerServer.RequestHandlers;
 using MessengerServer.Services;
-using MessengerShared.Requests;
-using MessengerShared.Requests.Data;
 using MessengerServer.Data;
 
 namespace MessengerServer.Core
@@ -14,7 +11,8 @@ namespace MessengerServer.Core
     internal class Server
     {
         TcpListener _listener;
-        ClientRegistry _registry = ClientRegistry.instance;
+        ClientRegistry _clientRegistry = new ClientRegistry();
+        ChatRegistry _chatRegistry = new ChatRegistry();
         Logger _logger = Logger.instance;
         SessionService _sessionService;
         ClientService _clientService;
@@ -32,9 +30,9 @@ namespace MessengerServer.Core
             IStorage _sql = new SQLStorage();
             _sessionService = new SessionService(_sql);
             _clientService = new ClientService(_sql);
-            _messagingService = new MessagingService(_registry, _clientService, _sessionService);
+            _messagingService = new MessagingService(_clientRegistry, _clientService, _sessionService);
             _router = new RequestRouter(_sessionService); 
-            RequestRegistrar.RegiterAll(_router, _sessionService, _clientService, _messagingService, _registry);
+            RequestRegistrar.RegiterAll(_router, _sessionService, _clientService, _messagingService, _clientRegistry, _chatRegistry);
 
             _listener = new TcpListener(ip, port);
             _useTls = useTls;
@@ -97,7 +95,7 @@ namespace MessengerServer.Core
         private void OnClientDead(ClientHandler handler)
         {
             if (!(handler.Context.RegistryID == null || handler.Context.UserID == null))
-                _registry.Remove(handler.Context);
+                _clientRegistry.Remove(handler.Context);
         }
 
         public void Stop()
@@ -111,7 +109,7 @@ namespace MessengerServer.Core
             {
                 _logger.log(ex.Message, this.GetType().Name);
             }
-            _registry.DisconnectAll();
+            _clientRegistry.DisconnectAll();
             _logger.log("Server Closed\n", this.GetType().Name);
         }
     }

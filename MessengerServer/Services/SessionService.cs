@@ -42,46 +42,20 @@ namespace MessengerServer.Services
         {
             if (accessToken == null) return false;
             var session = _storage.GetSessionByAccessToken(accessToken);
-            if (session == null || session.IsAccessExpired())
-                return false;
-
-            if (session.IsRefreshExpired())
-            {
-                _storage.RemoveSession(accessToken);
-                return false;
-            }
-
-            return true;
+            return !(session == null || session.IsAccessExpired());
         }
 
         public bool isSessionRefreshValid(string? accessToken)
         {
             if (accessToken == null) return false;
             var session = _storage.GetSessionByAccessToken(accessToken);
-            if (session == null)
-                return false;
-
-            if (session.IsRefreshExpired())
-            {
-                _storage.RemoveSession(accessToken);
-                return false;
-            }
-
-            return true;
+            return !(session == null || session.IsRefreshExpired());
         }
 
         public Session? GetSessionByAccessToken(string? accessToken)
         {
             if (accessToken == null) return null;
             var session = _storage.GetSessionByAccessToken(accessToken);
-
-            if (session == null) return null;
-
-            if (session.IsRefreshExpired())
-            {
-                _storage.RemoveSession(accessToken);
-                return null;
-            }
 
             return session;
         }

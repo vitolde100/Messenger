@@ -5,7 +5,7 @@ namespace MessengerClient.Client.Protocol
 {
     public interface IProtocol
     {
-        public event Action<ChatMessageData> MessageReceived;
+        public event Action<ChatMessageData>? OnMessageReceived;
         Task<Response> SendAndReciveAsync(Request request);
         Task RunRecieveloop();
     }

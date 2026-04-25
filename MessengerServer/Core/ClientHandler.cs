@@ -1,9 +1,10 @@
 ﻿using MessengerServer.Core;
+using MessengerServer.Data;
 using MessengerServer.RequestHandlers;
-using MessengerServer.Requests;
 using MessengerShared;
 using MessengerShared.Requests;
 using MessengerShared.Requests.Data;
+using MessengerShared.Requests.Enums;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -105,39 +106,28 @@ internal class ClientHandler
         }
     }
 
-    public async Task Send(object obj)
+    public async Task Send(ServerCodes? serverCode)
+    {
+        await Send(new Code(serverCode.Value));
+    }
+
+    public async Task Send(IEnvelopePayload obj)
     {
         if (!_isConnected || !_stream.CanWrite)
             return;
 
-        var envelope = BuildEnvelope(obj);
+        var envelope = new Envelope(obj);
 
         try
         {
             byte[] msg = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(envelope));
             await _stream.WriteAsync(msg, 0, msg.Length);
-            _logger.log($"Sended: {JsonSerializer.Serialize(envelope)}", GetType().Name);
+            _logger.log($"Sended: {JsonSerializer.Serialize(envelope, new JsonSerializerOptions { WriteIndented = true })}", GetType().Name);
         }
         catch (Exception ex)
         {
             _logger.log($"Send error : {ex.Message}", GetType().Name);
         }
-    }
-
-    private Envelope BuildEnvelope(object payload)
-    {
-        var envelope = new Envelope
-        {
-            Type = payload switch
-            {
-                Response => "response",
-                ChatMessageData => "chat",
-                ServerCodes => "server",
-                _ => "unknown"
-            },
-            Payload = payload
-        };
-        return envelope;
     }
 
     public void Deauthenticate()

@@ -1,10 +1,19 @@
-﻿using System.Text.Json;
+﻿using MessengerShared.Requests.Data;
+using MessengerShared.Requests.Enums;
 
 namespace MessengerShared.Requests
 {
-    public class Envelope
+    public partial class Envelope
     {
-        public string Type { get; set; } // "response", "chat", "server"
+        public EnvelopeTypes Type { get; set; }
         public object Payload { get; set; }
+
+        public Envelope() { }
+
+        public Envelope(IEnvelopePayload payload)
+        {
+            Type = payload.EnvelopeType;
+            Payload = payload;
+        }
     }
 }

@@ -12,10 +12,13 @@ namespace MessengerClient.Interface.Forms
             InitializeComponent();
             SessionTextBox.Text = JsonSerializer.Serialize(Program.state.Session, new JsonSerializerOptions { WriteIndented = true });
             Program.AppContext.AuthService.OnReloginRequired += AuthService_OnReloginRequired;
+            Program.AppContext.Protocol.OnMessageReceived += MessageReceived;
         }
+
+
         private async void TestForm_Load(object sender, EventArgs e)
         {
-            await Program.AppContext.AuthService.Auth();
+            await Program.AppContext.AuthService.TryAuth();
         }
 
         private void AuthService_OnReloginRequired()
@@ -23,20 +26,38 @@ namespace MessengerClient.Interface.Forms
             Application.Exit();
         }
 
+        private void MessageReceived(ChatMessageData obj)
+        {
+            TextTextBox.Text = JsonSerializer.Serialize((ChatMessageData)obj, new JsonSerializerOptions { WriteIndented = true });
+        }
+
         private async void SendButton_Click(object sender, EventArgs e)
         {
             var message = new ChatMessageData(TargetBox.Text, MessageTextBox.Text);
-            var Responce = await _networkService.SendMessage(message);
-            if (!Responce.Success) { MSGErrorLable.Text = Responce.Error.ToString(); }
-            else { TextTextBox.Text = JsonSerializer.Serialize(Program.state.Session, new JsonSerializerOptions { WriteIndented = true }); }
+            var Response = await _networkService.SendMessage(message);
+            if (!Response.Success) { MSGErrorLable.Text = Response.Error.ToString(); }
+            TextTextBox.Text = JsonSerializer.Serialize(Response, new JsonSerializerOptions { WriteIndented = true });
         }
 
-        private async void button1_Click(object sender, EventArgs e)
+        private async void GetButton_Click(object sender, EventArgs e)
         {
-            var Responce = await _networkService.GetContact(UIDBox.Text);
-            if (!Responce.Success) { GroupErrorLable.Text = Responce.Error.ToString(); }
-            else { TextTextBox.Text = Responce.Error.ToString(); }
+            var Response = await _networkService.GetContact(LoginBox.Text);
+            if (!Response.Success) { UserListError.Text = Response.Error.ToString(); }
+            UserList.Text = JsonSerializer.Serialize(Response, new JsonSerializerOptions { WriteIndented = true });
         }
 
+        private async void AddButton_Click(object sender, EventArgs e)
+        {
+            var Response = await _networkService.AddToChat(UIDBox.Text, GroupIDBox.Text);
+            if (!Response.Success) { GroupErrorLable.Text = Response.Error.ToString(); }
+            ChatsBox.Text = JsonSerializer.Serialize(Response, new JsonSerializerOptions { WriteIndented = true });
+        }
+
+        private async void CreateButton_Click(object sender, EventArgs e)
+        {
+            var Response = await _networkService.CreateChat(true, NameBox.Text);
+            if (!Response.Success) { GroupErrorLable.Text = Response.Error.ToString(); }
+            ChatsBox.Text = JsonSerializer.Serialize(Response, new JsonSerializerOptions { WriteIndented = true });
+        }
     }
 }

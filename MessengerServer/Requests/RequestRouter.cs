@@ -2,33 +2,31 @@
 using MessengerServer.Requests.Handlers;
 using MessengerServer.Services;
 using MessengerShared.Requests;
-using System.Text.Json;
+using MessengerShared.Requests.Enums;
 
 namespace MessengerServer.RequestHandlers
 {
     internal class RequestRouter
     {
-        private Dictionary<string, IRequestHandler> _handlers = new Dictionary<string, IRequestHandler>();
+        private Dictionary<string, RequestHandler> _handlers = new Dictionary<string, RequestHandler>();
 
         private SessionService _sessionService;
-        private IRequestHandler _logoutHandler;
+        private RequestHandler _logoutHandler;
         private Logger _logger = Logger.instance;
 
         public RequestRouter(SessionService sessionService)
         {
             _sessionService = sessionService;
+            _logger.log($"Request Router Initialized", GetType().Name);
         }
 
-        public void RegisterHandler(IRequestHandler handler)
+        public void RegisterHandler(RequestHandler handler)
         {
             _handlers[handler.Type] = handler;
-            if (handler.Type == "Logout") _logoutHandler = handler;
         }
 
         public Response ProcessRequest(Request request, ClientHandler client)
         {
-
-
             if (request.AccessToken != client.Context.AccessToken && client.Context.isAuthenticated)
             {
                 client.Deauthenticate();
@@ -38,10 +36,11 @@ namespace MessengerServer.RequestHandlers
             if (_handlers.TryGetValue(request.Type, out var handler))
             {
                 var responce = new Response();
-                var session = _sessionService.GetSessionByAccessToken(request.AccessToken);
 
                 if (handler.ShouldBeAutorised && handler.Type != "Refresh")
                 {
+                    var session = _sessionService.GetSessionByAccessToken(request.AccessToken);
+                    
                     if (!client.Context.isAuthenticated)
                     {
                         _logger.log($"User Unathorised: {request.AccessToken}", GetType().Name);
@@ -51,26 +50,26 @@ namespace MessengerServer.RequestHandlers
                     if(session == null)
                     {
                         _logger.log($"Invalid access token: {request.AccessToken}", GetType().Name);
-                        _logoutHandler.HandleRequest(request, client);
+                        client.Deauthenticate();
                         return BuildResponce(request, ServerCodes.SessionNotExist);
                     }
 
-                    if(session.IsRefreshExpired())
+                    if(_sessionService.isSessionRefreshValid(session.accessToken))
                     {
                         _logger.log($"SessionExpired: {request.AccessToken}", GetType().Name);
-                        _logoutHandler.HandleRequest(request, client);
+                        client.Deauthenticate();
                         return BuildResponce(request, ServerCodes.SessionExpired);
                     }
                     
-                    if(session.IsAccessExpired())
+                    if(_sessionService.isSessionAccessValid(session.accessToken))
                     {
                         _logger.log($"AccessTokenExpired: {request.AccessToken}", GetType().Name);
                         return BuildResponce(request, ServerCodes.AccessTokenExpired);
                     }
 
-                    responce = handler.HandleRequest(request, client);
+                    responce = handler.Handle(request, client);
                 }
-                else responce = handler.HandleRequest(request, client);
+                else responce = handler.Handle(request, client);
                 
                 responce.Number = request.Number;
                 return responce;
@@ -81,7 +80,7 @@ namespace MessengerServer.RequestHandlers
                 return new Response
                 {
                     Number = request.Number,
-                    Type = request.Type,
+                    RequestType = request.Type,
                     Success = false,
                     Error = ServerCodes.BadRequest,
                     Data = null
@@ -94,7 +93,7 @@ namespace MessengerServer.RequestHandlers
             var responce = new Response
             {
                 Number = request.Number,
-                Type = request.Type,
+                RequestType = request.Type,
                 Error = code,
                 Success = false,
                 Data = null

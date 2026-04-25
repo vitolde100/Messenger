@@ -1,4 +1,4 @@
-﻿namespace MessengerServer.Requests
+﻿namespace MessengerServer.Data
 {
     internal class ClientContext
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MessengerShared.Requests.Data
+namespace MessengerShared.Requests.Data.Formats
 {
     public class StringData
     {

@@ -1,22 +1,18 @@
-﻿using MessengerClient.Client;
-using MessengerClient.Client.Protocol;
+﻿using MessengerClient.Client.Protocol;
 using MessengerShared.API;
 using MessengerShared.Requests;
 using MessengerShared.Requests.Data;
+using MessengerShared.Requests.Data.Formats;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace MessengerClient.Client.Services
 {
     public class NetworkService
     {
-        private IProtocol _protocol;
-        private AuthService _authService;
-        public NetworkService(IProtocol protocol, AuthService authService) 
-        { 
-            _protocol = protocol;
-            _authService = authService;
-        }
+        private IProtocol _protocol = Program.AppContext.Protocol;
+        private AuthService _authService = Program.AppContext.AuthService;
+        public NetworkService() { }
 
         public async Task<Response> Login(string Login, string Password) 
         {
@@ -24,6 +20,7 @@ namespace MessengerClient.Client.Services
             var Request = new Request(null, "Login", Data);
             var Responce = await _protocol.SendAndReciveAsync(Request);
             Responce.Data = GetData<Session>(Responce);
+            if (Responce.Success) _authService._authenticated = true;
             return Responce;
         }
 
@@ -33,12 +30,14 @@ namespace MessengerClient.Client.Services
             var Request = new Request(null, "Registration", Data);
             var Responce = await _protocol.SendAndReciveAsync(Request);
             Responce.Data = GetData<Session>(Responce);
+            if (Responce.Success) _authService._authenticated = true;
             return Responce;
         }
 
         public async Task<Response> Logout() 
         {
             var Request = new Request(Program.state.Session.accessToken, "Logout", null);
+            _authService._authenticated = false;
             return await _protocol.SendAndReciveAsync(Request);
         }
 
@@ -48,11 +47,19 @@ namespace MessengerClient.Client.Services
             return await _authService.SendWithAuth(Request);
         } 
 
-        public async Task<Response> CreateChat()
+        public async Task<Response> CreateChat(bool isPersonal, string Name)
         {
-            var Request = new Request(Program.state.Session.accessToken, "CreateChat", null);
+            var Request = new Request(Program.state.Session.accessToken, "CreateChat", new CreateChatData(isPersonal, Name));
             var Responce = await _authService.SendWithAuth(Request);
-            Responce.Data = GetData<string>(Responce);
+            Responce.Data = GetData<CreateChatData>(Responce);
+            return Responce;
+        }
+        
+        public async Task<Response> AddToChat(string UserId, string ChatId)
+        {
+            var Request = new Request(Program.state.Session.accessToken, "AddToChat", new AddToChatData { UserId = UserId, GroupId = ChatId });
+            var Responce = await _authService.SendWithAuth(Request);
+            Responce.Data = GetData<CreateChatData>(Responce);
             return Responce;
         }
 

@@ -4,7 +4,7 @@ using MessengerShared.Requests;
 
 namespace MessengerServer.Requests.Handlers
 {
-    internal class Logout : IRequestHandler
+    internal class Logout : RequestHandler
     {
         SessionService _sessionService;
         ClientRegistry _clientRegistry;
@@ -15,7 +15,7 @@ namespace MessengerServer.Requests.Handlers
             ShouldBeAutorised = true;
         }
 
-        public override Response HandleRequest(Request request, ClientHandler client)
+        public override Response Handle(Request request, ClientHandler client)
         {
             client.Deauthenticate();
 

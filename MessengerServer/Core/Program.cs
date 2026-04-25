@@ -1,9 +1,11 @@
-﻿using System.Net;
+﻿using MessengerServer.RequestHandlers;
+using MessengerServer.Services;
 using MessengerShared;
+using System.Net;
 
 namespace MessengerServer.Core
 {
-    class Program
+    public static class Program
     {
         static async Task Main(string[] args)
         {

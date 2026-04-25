@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace MessengerShared.API
 {
@@ -30,7 +27,7 @@ namespace MessengerShared.API
         {
             accessToken = accesstoken;
             refreshToken = accesstoken;
-            access_expires = DateTime.UtcNow.AddHours(1);
+            access_expires = DateTime.UtcNow.AddMinutes(15);
             refresh_expires = DateTime.UtcNow.AddDays(7);
             userID = userid;
         }
@@ -54,12 +51,12 @@ namespace MessengerShared.API
 
         public bool IsAccessExpired() 
         {
-            return access_expires.CompareTo(DateTime.UtcNow) <= 0;
+            return access_expires.CompareTo(DateTime.UtcNow) !> 0;
         }
 
         public bool IsRefreshExpired()
         {
-            return refresh_expires.CompareTo(DateTime.UtcNow) <= 0;
+            return refresh_expires.CompareTo(DateTime.UtcNow) !> 0;
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using MessengerServer.Services;
 using MessengerShared.Requests;
-using MessengerShared.Requests.Data;
+using MessengerShared.Requests.Data.Formats;
+using MessengerShared.Requests.Enums;
 using System.Text.Json;
 
 namespace MessengerServer.Requests.Handlers
 {
-    internal class Refresh : IRequestHandler
+    internal class Refresh : RequestHandler
     {
         private SessionService _sessionService;
         public Refresh(SessionService seService)
@@ -15,7 +16,7 @@ namespace MessengerServer.Requests.Handlers
             ShouldBeAutorised = false;
         }
 
-        public override Response HandleRequest(Request request, ClientHandler client)
+        public override Response Handle(Request request, ClientHandler client)
         {
             if (request.AccessToken == null) return BuildResponce(ServerCodes.Unauthorized);
 

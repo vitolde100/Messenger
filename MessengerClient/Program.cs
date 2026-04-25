@@ -59,18 +59,25 @@ namespace MessengerClient
 
             public void ToState(out State state)
             {
-                state = new State();
-                state.IP = IP;
-                state.Port = Port;
-                state.UserID = UserID;
-                state.Session = new Session()
+                    state = new State();
+                try
                 {
-                    accessToken = Unprotect(Session.accessToken),
-                    access_expires = Session.access_expires,
-                    refreshToken = Unprotect(Session.refreshToken),
-                    refresh_expires = Session.refresh_expires,
-                    userID = UserID
-                };
+                    state.IP = IP;
+                    state.Port = Port;
+                    state.UserID = UserID;
+                    state.Session = new Session()
+                    {
+                        accessToken = Unprotect(Session.accessToken),
+                        access_expires = Session.access_expires,
+                        refreshToken = Unprotect(Session.refreshToken),
+                        refresh_expires = Session.refresh_expires,
+                        userID = UserID
+                    };
+                }
+                catch
+                {
+                    
+                }
             }
         }
 
@@ -85,10 +92,10 @@ namespace MessengerClient
             string path = Path.Combine(dir, "config.json");
 
             Directory.CreateDirectory(dir);
-            ITransport transport = new TCPTransport();
-            IProtocol protocol = new JsonProtocol(transport);
-            AppContext.AuthService = new AuthService(protocol);
-            AppContext.NetworkService = new NetworkService(protocol, AppContext.AuthService);
+            AppContext.Transport = new TCPTransport();
+            AppContext.Protocol = new JsonProtocol();
+            AppContext.AuthService = new AuthService();
+            AppContext.NetworkService = new NetworkService();
 
             ApplicationConfiguration.Initialize();
 
@@ -99,8 +106,8 @@ namespace MessengerClient
                 Thread.Sleep(500);
                 try
                 {
-                    await transport.ConnectAsync(Program.state.IP, Program.state.Port);
-                    new Thread(() => protocol.RunRecieveloop()).Start();
+                    await AppContext.Transport.ConnectAsync(Program.state.IP, Program.state.Port);
+                    new Thread(() => AppContext.Protocol.RunRecieveloop()).Start();
                 }
                 catch (Exception ex)
                 {
@@ -112,9 +119,9 @@ namespace MessengerClient
             {
                 try
                 {
-                    if (!(state.isLoggedIn && transport.IsConnected))
+                    if (!(state.isLoggedIn && AppContext.Transport.IsConnected))
                     {
-                        Application.Run(new Hello( transport, protocol));
+                        Application.Run(new HelloForm());
                         continue;
                     }
                     else
@@ -122,16 +129,15 @@ namespace MessengerClient
                         Application.Run(new TestForm());
                         SaveConfig(path);
                         state.Clear();
-                        break;
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    break;
                 }
             }
-            transport.Disconnect();
+            AppContext.Transport.Disconnect();
         }
 
         private static void LoadConfig(string path)
@@ -146,6 +152,7 @@ namespace MessengerClient
                     return;
 
                 var config = JsonSerializer.Deserialize<Config>(json);
+                if (config.Session == null) return;
                 if (state == null)
                 {
                     Debug.Print(">>>>>>>>>Config is null");

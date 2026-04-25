@@ -1,4 +1,4 @@
-﻿namespace MessengerShared.Requests
+﻿namespace MessengerShared.Requests.Enums
 {
     public enum ServerCodes
     {
@@ -9,6 +9,8 @@
         BadRequest = 400, //Bad request format
         TooManyRequests = 429, //Too many messages, slow down!
         TooManyErrors = 1024, //Too many errors, you are so fucking silly, disconnecting you ¯\_(ツ)_/¯
+
+        AlreadyAuthorised = 123,
 
         AccessTokenExpired = 406, //Access token expired
         SessionExpired = 408, //Session expired
@@ -21,7 +23,7 @@
 
         NoTargetUser = 404, //IDK who is it
         NoTargetSession = 405, //IDK what session is it
-
+        NoTargetChat = 450,
 
         ClientAlreadyExist = 674,
     }

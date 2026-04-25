@@ -1,6 +1,6 @@
 ﻿namespace MessengerClient
 {
-    partial class Hello
+    partial class HelloForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Hello));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HelloForm));
             sel1 = new TabControl();
             Server = new TabPage();
             sErrLable = new Label();

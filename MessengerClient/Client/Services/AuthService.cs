@@ -1,25 +1,23 @@
 ﻿using MessengerClient.Client.Protocol;
 using MessengerShared.Requests.Data;
 using MessengerShared.Requests;
+using MessengerShared.Requests.Enums;
 
 namespace MessengerClient.Client.Services
 {
     public class AuthService
     {
         public event Action? OnReloginRequired;
-        private IProtocol _protocol;
-        bool _authenticated;
+        private IProtocol _protocol = Program.AppContext.Protocol;
+        public bool _authenticated;
         bool _isNeedRelogin;
 
-        public AuthService(IProtocol protocol)
-        {
-            _protocol = protocol;
-        }
+        public AuthService() { }
 
         public async Task<Response> SendWithAuth(Request request)
         {
             _isNeedRelogin = false;
-            await Auth();
+            await TryAuth();
             if (_isNeedRelogin)
             {
                 return new Response
@@ -30,6 +28,16 @@ namespace MessengerClient.Client.Services
             }
 
             var response = await _protocol.SendAndReciveAsync(request);
+
+            if (response.Error == ServerCodes.SessionExpired) NeedRelogin();
+            if (_isNeedRelogin)
+            {
+                return new Response
+                {
+                    Success = false,
+                    Error = ServerCodes.Unauthorized
+                };
+            }
 
             if (response.Error == ServerCodes.AccessTokenExpired)
             {
@@ -43,7 +51,11 @@ namespace MessengerClient.Client.Services
             return response;
         }
 
-        public async Task Auth()
+        /// <summary>
+        /// Wrapper over Hello for checks.
+        /// </summary>
+        /// <returns></returns>
+        public async Task TryAuth()
         {
             if (!_authenticated && Program.state.isLoggedIn)
             {
@@ -54,6 +66,7 @@ namespace MessengerClient.Client.Services
                 }
                 else _authenticated = true;
             }
+            if (Program.state.isLoggedIn == false) NeedRelogin(); 
         }
 
         private void NeedRelogin()

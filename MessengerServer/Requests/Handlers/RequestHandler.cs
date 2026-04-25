@@ -1,26 +1,25 @@
-﻿using MessengerServer.Core;
-using MessengerShared.Requests;
+﻿using MessengerShared.Requests;
+using MessengerShared.Requests.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 
 namespace MessengerServer.Requests.Handlers
 {
-    internal abstract class IRequestHandler
+    internal abstract class RequestHandler
     {
         public string Type;
         public bool ShouldBeAutorised = false;
-        public IRequestHandler()
+        public RequestHandler()
         {
             Type = GetType().Name;
         }
 
-        public abstract Response HandleRequest(Request request, ClientHandler handler);
+        public abstract Response Handle(Request request, ClientHandler handler);
 
         protected Response BuildResponce(ServerCodes code = ServerCodes.NoErrors)
         {
             var responce = new Response
             {
-                Type = GetType().Name,
+                RequestType = GetType().Name,
                 Error = code,
                 Data = null
             };
@@ -32,7 +31,7 @@ namespace MessengerServer.Requests.Handlers
         {
             return new Response
             {
-                Type = GetType().Name,
+                RequestType = GetType().Name,
                 Success = true,
                 Data = Data
             };
