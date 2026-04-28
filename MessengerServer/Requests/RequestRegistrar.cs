@@ -10,7 +10,6 @@ namespace MessengerServer.RequestHandlers
             SessionService sessionServise, ClientService clientService, MessagingService messagingService,
             ClientRegistry clientRegistry, ChatRegistry chatRegistry)
         {
-            router.RegisterHandler(new Hello(sessionServise, clientRegistry));
             router.RegisterHandler(new Login(sessionServise, clientService, clientRegistry));
             router.RegisterHandler(new Registration(sessionServise, clientService, clientRegistry));
             router.RegisterHandler(new Logout(sessionServise,clientRegistry));

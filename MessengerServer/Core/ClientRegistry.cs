@@ -1,98 +1,34 @@
-﻿using MessengerServer.Data;
+﻿using MessengerServer.Core;
 using System.Collections.Concurrent;
 
-namespace MessengerServer.Core
+internal class ClientRegistry
 {
-    internal class ClientGroup
+    private readonly ConcurrentDictionary<string, ClientHandler> _clients = new();
+    private Logger _logger = Logger.instance;
+
+    public void Add(string userId, ClientHandler handler)
     {
-        private int maxId = 1;
-        private List<ClientHandler> ClientHandlers = new List<ClientHandler>();
-
-        public void Add(ClientHandler handler)
+        // если уже есть старое соединение — убиваем его
+        if (_clients.TryGetValue(userId, out var oldHandler))
         {
-            handler.Context.RegistryID = maxId;
-            maxId++;
+            oldHandler.Deauthenticate();
+            oldHandler.ForceDisconnect(); // добавим ниже
         }
 
-        public List<ClientHandler> Get()
-        {
-            return ClientHandlers;
-        }
+        _clients[userId] = handler;
 
-        public ClientHandler Get(int RegistryID)
-        {
-            foreach (ClientHandler handler in ClientHandlers)
-            {
-                if (handler.Context.RegistryID == RegistryID) return handler;
-            }
-            return null;
-        }
-
-        public void Remove(int? id)
-        {
-            foreach (ClientHandler handler in ClientHandlers)
-            {
-                if (handler.Context.RegistryID == id)
-                {
-                    handler.Context.RegistryID = default;
-                    ClientHandlers.Remove(handler);
-                }
-            }
-        }
+        _logger.log($"User registered: {userId}", nameof(ClientRegistry));
     }
 
-    internal class ClientRegistry
+    public ClientHandler? Get(string userId)
     {
-        ConcurrentDictionary<string, ClientGroup> m_clients;
-        Logger m_logger = Logger.instance;
-
-        public ClientRegistry()
-        {
-            m_clients = new ConcurrentDictionary<string, ClientGroup>();
-            m_logger.log("Registry Initialized",this.GetType().Name);
-        }
-
-        public void Add (ClientHandler handler)
-        {
-            if (!m_clients.ContainsKey(handler.Context.UserID))
-            {
-                var group = new ClientGroup();
-                group.Add(handler);
-                m_clients.TryAdd(handler.Context.UserID, group);
-            }
-            else m_clients[handler.Context.UserID].Add(handler);
-            m_logger.log($"Added User {handler.Context.UserID}", this.GetType().Name);
-        }
-
-        public List<ClientHandler> Get(string UserID)
-        {
-            try
-            {
-                return m_clients[UserID].Get();
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public void Remove(ClientContext context)
-        {
-            try
-            {
-                m_clients[context.UserID].Remove(context.RegistryID);
-                    
-                m_logger.log("Deleted " + context.UserID + "\r", this.GetType().Name);
-            }
-            catch (Exception ex)
-            {
-                m_logger.log("Can't Delete: " + ex.Message, this.GetType().Name);
-            }
-        }
-
-        public void DisconnectAll()
-        {
-            throw new NotImplementedException();
-        }
+        _clients.TryGetValue(userId, out var handler);
+        return handler;
     }
+
+    public void Remove(string userId)
+    {
+        _clients.TryRemove(userId, out _);
+    }
+
 }

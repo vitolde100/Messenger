@@ -1,7 +1,7 @@
 ﻿using MessengerServer.Data;
 using MessengerServer.Services;
 using MessengerShared.Requests;
-using MessengerShared.Requests.Data;
+using MessengerShared.Requests.Data.Formats;
 using MessengerShared.Requests.Enums;
 using System.Text.Json;
 namespace MessengerServer.Requests.Handlers

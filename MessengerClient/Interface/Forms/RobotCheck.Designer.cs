@@ -83,6 +83,7 @@
             Name = "RobotCheck";
             Text = "RobotCheck";
             TopMost = true;
+            Load += RobotCheck_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();

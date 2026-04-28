@@ -138,18 +138,10 @@ namespace MessengerClient
 
         private void pictureBox3_Click(object sender, EventArgs e)
         {
-            var r = new RobotCheck().ShowDialog();
-            if (r == DialogResult.OK)
-            {
-                pictureBox3.Enabled = false;
-                SingInBut.Enabled = true;
-                SingUpBut.Enabled = true;
-                pictureBox3.Image = Resources.cS;
-            }
-            else
-            {
-                pictureBox3.Image = Resources.cF;
-            }
+            pictureBox3.Enabled = false;
+            SingInBut.Enabled = true;
+            SingUpBut.Enabled = true;
+            pictureBox3.Image = Resources.cS;
         }
     }
 }

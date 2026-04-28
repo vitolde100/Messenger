@@ -262,7 +262,7 @@
             label5.TabIndex = 7;
             label5.Text = "Данные";
             // 
-            // Hello
+            // HelloForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -271,7 +271,7 @@
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
-            Name = "Hello";
+            Name = "HelloForm";
             SizeGripStyle = SizeGripStyle.Hide;
             Text = "Hello";
             Load += Hello_Load;

@@ -1,4 +1,5 @@
 ﻿using MessengerServer.Core;
+using MessengerServer.Data;
 using MessengerServer.Services;
 using MessengerShared.Requests;
 
@@ -17,10 +18,14 @@ namespace MessengerServer.Requests.Handlers
 
         public override Response Handle(Request request, ClientHandler client)
         {
+            var userId = client.Context.UserID;
+
             client.Deauthenticate();
 
             _sessionService.Remove(request.AccessToken);
-            _clientRegistry.Remove(client.Context);
+
+            if (userId != null)
+                _clientRegistry.Remove(userId);
 
             return BuildResponce();
         }

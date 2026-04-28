@@ -19,7 +19,7 @@ namespace MessengerClient.Interface.Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(textBox1.Text.ToLower() == "наш" || textBox1.Text.ToLower() == "российский" || textBox1.Text.ToLower() == "русский")
+            if (textBox1.Text.ToLower() == "наш" || textBox1.Text.ToLower() == "российский" || textBox1.Text.ToLower() == "русский")
             {
                 this.DialogResult = DialogResult.OK;
             }
@@ -27,6 +27,11 @@ namespace MessengerClient.Interface.Forms
             {
                 this.DialogResult = DialogResult.Abort;
             }
+        }
+
+        private void RobotCheck_Load(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
         }
     }
 }

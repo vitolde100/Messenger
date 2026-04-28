@@ -23,22 +23,26 @@ namespace MessengerServer.Requests.Handlers
 
         public override Response Handle(Request request, ClientHandler client)
         {
-            var Data = JsonSerializer.Deserialize<ClientData>(JsonSerializer.Serialize(request.Data));
-            if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
+            var data = JsonSerializer.Deserialize<ClientData>(request.Data.ToString());
 
-            var User = _clientService.GetClientByLogin(Data.Login);
+            if (!Validate(data))
+                return BuildResponce(ServerCodes.BadRequest);
 
-            if (User == null)
+            var user = _clientService.GetClientByLogin(data.Login);
+
+            if (user == null)
                 return BuildResponce(ServerCodes.NoTargetUser);
-            
-            if (!BCrypt.Net.BCrypt.Verify(Data.Password, User.Password))
+
+            if (!BCrypt.Net.BCrypt.Verify(data.Password, user.Password))
                 return BuildResponce(ServerCodes.WrongPassword);
 
-            var session = _sessionService.CreateSession(User.ID);
+            var session = _sessionService.CreateSession(user.ID);
 
-            client.Context.UserID = User.ID;
+            // привязка сокета
+            client.Context.UserID = user.ID;
             client.Context.AccessToken = session.accessToken;
-            _clientRegistry.Add(client);
+
+            _clientRegistry.Add(user.ID,client);
 
             return BuildResponce(session);
         }

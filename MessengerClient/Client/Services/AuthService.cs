@@ -1,5 +1,5 @@
 ﻿using MessengerClient.Client.Protocol;
-using MessengerShared.Requests.Data;
+using MessengerShared.Requests.Data.Formats;
 using MessengerShared.Requests;
 using MessengerShared.Requests.Enums;
 
@@ -17,15 +17,6 @@ namespace MessengerClient.Client.Services
         public async Task<Response> SendWithAuth(Request request)
         {
             _isNeedRelogin = false;
-            await TryAuth();
-            if (_isNeedRelogin)
-            {
-                return new Response
-                {
-                    Success = false,
-                    Error = ServerCodes.Unauthorized
-                };
-            }
 
             var response = await _protocol.SendAndReciveAsync(request);
 
@@ -51,38 +42,12 @@ namespace MessengerClient.Client.Services
             return response;
         }
 
-        /// <summary>
-        /// Wrapper over Hello for checks.
-        /// </summary>
-        /// <returns></returns>
-        public async Task TryAuth()
-        {
-            if (!_authenticated && Program.state.isLoggedIn)
-            {
-                bool sayHello = await TrySayHello();
-                if (!sayHello)
-                {
-                    NeedRelogin();
-                }
-                else _authenticated = true;
-            }
-            if (Program.state.isLoggedIn == false) NeedRelogin(); 
-        }
-
         private void NeedRelogin()
         {
             _authenticated = false;
             Program.state.Clear();
             OnReloginRequired?.Invoke();
             _isNeedRelogin = true;
-        }
-
-        public async Task<bool> TrySayHello()
-        {
-            var helloRequest = new Request(Program.state.Session.accessToken, "Hello", null);
-            Response response = await _protocol.SendAndReciveAsync(helloRequest);
-
-            return response.Success;
         }
 
         private async Task<bool> TryRefresh()

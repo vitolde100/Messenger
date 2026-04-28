@@ -26,7 +26,7 @@ namespace MessengerShared.API
         public Session(string accesstoken, string refreshtoken, string userid)
         {
             accessToken = accesstoken;
-            refreshToken = accesstoken;
+            refreshToken = refreshtoken;
             access_expires = DateTime.UtcNow.AddMinutes(15);
             refresh_expires = DateTime.UtcNow.AddDays(7);
             userID = userid;

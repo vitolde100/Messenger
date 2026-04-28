@@ -95,7 +95,7 @@ namespace MessengerServer.Core
         private void OnClientDead(ClientHandler handler)
         {
             if (!(handler.Context.RegistryID == null || handler.Context.UserID == null))
-                _clientRegistry.Remove(handler.Context);
+                _clientRegistry.Remove(handler.Context.UserID);
         }
 
         public void Stop()
@@ -109,7 +109,6 @@ namespace MessengerServer.Core
             {
                 _logger.log(ex.Message, this.GetType().Name);
             }
-            _clientRegistry.DisconnectAll();
             _logger.log("Server Closed\n", this.GetType().Name);
         }
     }

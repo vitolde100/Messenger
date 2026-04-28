@@ -3,8 +3,8 @@ using MessengerShared.API;
 using MessengerShared.Requests;
 using MessengerShared.Requests.Data;
 using MessengerShared.Requests.Data.Formats;
+using MessengerShared.Requests.Data.Chats;
 using System.Text.Json;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace MessengerClient.Client.Services
 {

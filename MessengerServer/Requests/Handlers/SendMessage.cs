@@ -22,7 +22,7 @@ namespace MessengerServer.Requests.Handlers
             var Data = JsonSerializer.Deserialize<ChatMessageData>(JsonSerializer.Serialize(request.Data));
             if (!Validate(Data)) return BuildResponce(ServerCodes.BadRequest);
 
-            if(_messagingService.SendMessage(Data))
+            if(_messagingService.SendMessage(Data, Data.TargetID).Result)
                 return BuildResponce();
           
             return BuildResponce(ServerCodes.NoTargetUser);
